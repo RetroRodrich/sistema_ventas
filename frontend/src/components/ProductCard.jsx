@@ -8,7 +8,7 @@ function ProductCard({ product, onEdit, onDelete }) {
   return (
     <div className="product-card">
       <div className="product-image-container">
-        <img src={product.image} alt={product.name} className="product-image" />
+        <img src={product.image} alt={product.name} className="product-image" loading='lazy'/>
       </div>
       <h3 className="product-name">{product.name}</h3>
       <p className="product-category">Categoría: {product.category || 'N/A'}</p>
