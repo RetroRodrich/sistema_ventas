@@ -1,39 +1,49 @@
 .products-page {
-  padding: 2rem;
+  padding: 1.5rem;
+  background-color: #f9f9f9; /* Fondo claro para la sección */
+  border-radius: 8px; /* Bordes redondeados */
+  box-shadow: 0 0px 5px rgba(0, 0, 0, 0.185); /* Sombra para darle profundidad */
 }
 
 .products-page h1 {
   margin-bottom: 1rem;
-  font-size: 2rem;
+  font-size: 2.5rem;
   color: #333;
+  text-align: center;
+  position: relative;
+}
+
+.products-page h1::after {
+  content: '';
+  display: block;
+  width: 30%;
+  height: 4px;
+  background-color: #0cb1a0; /* Color principal */
+  margin: 0.5rem auto 0; /* Centrado debajo del título */
+  border-radius: 2px;
 }
 
 .products-controls {
   display: flex;
   align-items: center;
   justify-content: space-between; /* Distribuye los elementos uniformemente */
-  gap: 1rem;
-  margin-bottom: 2rem;
+  gap: 1rem; /* Espacio entre los elementos */
+  margin-bottom: 1.5rem; /* Ajusta el margen inferior */
   flex-wrap: wrap; /* Permite que los controles se ajusten en pantallas pequeñas */
 }
 
-.search-bar,
-.filter-dropdown,
-.add-product-button {
-  flex: 1; /* Asegura que todos los elementos tengan el mismo ancho */
-  max-width: 300px; /* Limita el ancho máximo de cada elemento */
-  min-width: 200px; /* Evita que se reduzcan demasiado */
-  box-sizing: border-box; /* Incluye el padding y el borde en el ancho total */
-}
-
 .search-bar {
+  flex: 2; /* Ocupa más espacio relativo que los otros elementos */
   padding: 0.5rem 1rem;
   font-size: 1rem;
   border: 1px solid #ccc;
   border-radius: 5px;
+  max-width: 500px; /* Limita el ancho máximo del input */
+  box-sizing: border-box;
 }
 
 .filter-dropdown {
+  flex: 1; /* Ocupa menos espacio relativo */
   padding: 0.5rem;
   font-size: 1rem;
   border: 1px solid #ccc;
@@ -41,6 +51,7 @@
 }
 
 .add-product-button {
+  flex: 1; /* Ocupa menos espacio relativo */
   padding: 0.5rem 1rem;
   font-size: 1rem;
   background-color: #0cb1a0;
@@ -48,18 +59,19 @@
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s ease, transform 0.2s ease;
   text-align: center; /* Centra el texto dentro del botón */
 }
 
 .add-product-button:hover {
   background-color: #099e8d;
+  transform: translateY(-2px); /* Efecto de elevación */
 }
 
 .products-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 1.5rem;
+  gap: 1.5rem; /* Espaciado más amplio entre las tarjetas */
 }
 
 /* Media query para pantallas pequeñas (móviles) */
