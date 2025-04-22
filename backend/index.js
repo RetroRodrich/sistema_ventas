@@ -1,22 +1,22 @@
+const { DB_PORT, FRONTEND_URL } = require('./config');
 const express = require('express');
 const cors = require('cors');
-const productRoutes = require('./routes/products'); // Importamos las rutas de productos
-const categoriesRoutes = require('./routes/categories'); // Importamos las rutas de categorías
+const productRoutes = require('./routes/products');
+const categoriesRoutes = require('./routes/categories');
 
 const app = express();
-const PORT = 5000;
+const PORT = DB_PORT;
 
-// Middleware
-app.use(cors());
+app.use(cors(
+{
+  origin: FRONTEND_URL,
+}
+));
 app.use(express.json());
 
-// Usar las rutas de productos
 app.use('/api/products', productRoutes);
-
-// Usar las rutas de categorías
 app.use('/api/categories', categoriesRoutes);
 
-// Iniciar el servidor
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
