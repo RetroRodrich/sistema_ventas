@@ -1,0 +1,146 @@
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 8px;
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 1rem;
+}
+
+.confirm-button {
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.confirm-button:hover {
+  background-color: #c0392b;
+}
+
+.cancel-button {
+  background-color: #ccc;
+  color: black;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.cancel-button:hover {
+  background-color: #bbb;
+}
+
+/* Fondo oscuro semitransparente */
+.delete-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6); /* Fondo oscuro */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* Contenedor del modal */
+.delete-modal-content {
+  background: linear-gradient(135deg, #ffffff, #f9f9f9); /* Fondo degradado */
+  padding: 2rem;
+  border-radius: 12px;
+  width: 400px;
+  max-width: 90%; /* Asegura que no exceda el ancho de la pantalla */
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3); /* Sombra más pronunciada */
+  text-align: center;
+  animation: fadeIn 0.3s ease-out; /* Animación de entrada */
+}
+
+/* Título del modal */
+.delete-modal-title {
+  font-size: 1.8rem;
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+.delete-modal-title::after {
+  content: '';
+  display: block;
+  width: 50%;
+  height: 4px;
+  background-color: #e74c3c; /* Rojo para resaltar */
+  margin: 0.5rem auto 0;
+  border-radius: 2px;
+}
+
+/* Botones del modal */
+.delete-modal-buttons {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 1.5rem;
+}
+
+.delete-confirm-button {
+  background-color: #e74c3c; /* Rojo para confirmar */
+  color: white;
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.delete-confirm-button:hover {
+  background-color: #c0392b; /* Rojo más oscuro al pasar el mouse */
+  transform: translateY(-2px); /* Efecto de elevación */
+}
+
+.delete-cancel-button {
+  background-color: #f5f5f5; /* Gris claro para cancelar */
+  color: #333;
+  border: 1px solid #ccc;
+  padding: 0.8rem 1.5rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.delete-cancel-button:hover {
+  background-color: #e0e0e0; /* Gris más oscuro al pasar el mouse */
+  transform: translateY(-2px); /* Efecto de elevación */
+}
+
+/* Animación de entrada */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

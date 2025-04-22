@@ -1,7 +1,10 @@
 import React from 'react';
-import '../styles/ProductCard.css'; // Archivo de estilos para las tarjetas
+import '../styles/ProductCard.css';
 
-function ProductCard({ product }) {
+/**
+ * Card para mostrar la información de un producto
+ */
+function ProductCard({ product, onEdit, onDelete }) {
   return (
     <div className="product-card">
       <div className="product-image-container">
@@ -13,6 +16,14 @@ function ProductCard({ product }) {
         Precio: S/ {product.price ? Number(product.price).toFixed(2) : 'N/A'}
       </p>
       <p className="product-stock">Stock: {product.stock ?? 'N/A'}</p>
+      <div className="product-card-buttons">
+        <button className="edit-button" onClick={() => onEdit(product)}>
+          Editar
+        </button>
+        <button className="delete-button" onClick={() => onDelete(product.id)}>
+          Eliminar
+        </button>
+      </div>
     </div>
   );
 }

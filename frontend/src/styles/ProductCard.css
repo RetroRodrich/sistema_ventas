@@ -28,7 +28,8 @@
 
 .product-name {
   font-size: 1.2rem;
-  margin: 0.5rem 0;
+  font-weight: 400;
+  margin: 1rem 0;
 }
 
 .product-category,
@@ -36,4 +37,46 @@
 .product-stock {
   font-size: 0.9rem;
   color: #555;
+}
+
+.product-card-buttons {
+  display: flex;
+  justify-content: space-between; /* Coloca un botón a la izquierda y otro a la derecha */
+  width: 100%; /* Asegura que los botones ocupen todo el ancho disponible */
+  margin-top: 1rem; /* Espaciado entre los textos y los botones */
+}
+
+.edit-button,
+.delete-button {
+  padding: 0.5rem 1rem; /* Tamaño cómodo para los botones */
+  font-size: 0.9rem; /* Tamaño de texto legible */
+  border: none;
+  border-radius: 6px; /* Bordes redondeados */
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem; /* Espaciado entre el ícono y el texto */
+  transition: background-color 0.3s ease, transform 0.2s ease; /* Animación suave */
+}
+
+.edit-button {
+  background-color: #0cb1a0; /* Verde para el botón de editar */
+  color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra ligera */
+}
+
+.edit-button:hover {
+  background-color: #099e8d; /* Verde más oscuro al pasar el mouse */
+  transform: translateY(-2px); /* Efecto de elevación */
+}
+
+.delete-button {
+  background-color: #e74c3c; /* Rojo para el botón de eliminar */
+  color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra ligera */
+}
+
+.delete-button:hover {
+  background-color: #c0392b; /* Rojo más oscuro al pasar el mouse */
+  transform: translateY(-2px); /* Efecto de elevación */
 }

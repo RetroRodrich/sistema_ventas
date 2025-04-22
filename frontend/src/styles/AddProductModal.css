@@ -1,0 +1,195 @@
+/* Fondo oscuro semitransparente */
+.add-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6); /* Fondo oscuro */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* Contenedor del modal */
+.add-modal-content {
+  background: #ffffff;
+  padding: 1.5rem; /* Espaciado interno más compacto */
+  border-radius: 12px;
+  width: 400px; /* Ancho reducido */
+  max-width: 80%; /* Asegura que no exceda el 80% del ancho de la pantalla */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3); /* Sombra más pronunciada */
+  text-align: center;
+  position: relative;
+  overflow-y: auto; /* Permite desplazamiento si el contenido es muy largo */
+  max-height: 95vh; /* Asegura que no exceda el 80% de la altura de la pantalla */
+  animation: fadeIn 0.3s ease-out; /* Animación de entrada */
+}
+
+/* Animación de entrada */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Título del modal */
+.add-modal-content h2 {
+  margin-bottom: 1rem;
+  font-size: 1.6rem; /* Tamaño del título ajustado */
+  color: #333;
+  text-align: center;
+}
+
+.add-modal-content h2::after {
+  content: '';
+  display: block;
+  width: 80%;
+  height: 3px;
+  background-color: #0cb1a0;
+  margin: 0.5rem auto 0;
+  border-radius: 2px;
+}
+
+/* Grupo de inputs */
+.input-group {
+  position: relative;
+  margin-bottom: 1rem;
+}
+
+.input-icon {
+  position: absolute;
+  top: 50%;
+  left: 10px;
+  transform: translateY(-50%);
+  color: #0cb1a0;
+  font-size: 1.2rem;
+}
+
+.input-group input,
+.input-group textarea,
+.input-group select {
+  width: 100%;
+  padding: 0.8rem 0.8rem 0.8rem 2.5rem; /* Espacio para el ícono */
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+  box-sizing: border-box;
+  transition: border-color 0.3s ease;
+  background: #f9f9f9;
+}
+
+.input-group input:focus,
+.input-group textarea:focus,
+.input-group select:focus {
+  border-color: #0cb1a0;
+  outline: none;
+}
+
+/* Botones del modal */
+.modal-buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.add-button {
+  background-color: #0cb1a0;
+  color: white;
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.add-button:hover {
+  background-color: #099e8d;
+  transform: translateY(-2px);
+}
+
+.cancel-button {
+  background-color: #f5f5f5;
+  color: #333;
+  border: 1px solid #ccc;
+  padding: 0.8rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.cancel-button:hover {
+  background-color: #e0e0e0;
+  transform: translateY(-2px);
+}
+
+/* Responsividad para pantallas pequeñas */
+@media (max-width: 768px) {
+  .add-modal-content {
+    width: 90%; /* El modal ocupará el 90% del ancho disponible */
+    padding: 1rem; /* Reducimos el padding */
+    transform: scale(0.9);
+  }
+
+  .add-modal-content h2 {
+    font-size: 1.4rem; /* Reducimos el tamaño del título */
+  }
+
+  .add-button,
+  .cancel-button {
+    font-size: 0.9rem; /* Reducimos el tamaño del texto en los botones */
+    padding: 0.6rem 1rem; /* Botones más compactos */
+  }
+}
+
+/* Fondo oscuro semitransparente */
+.add-product-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* Contenedor del modal */
+.add-product-modal-content {
+  background: linear-gradient(135deg, #ffffff, #f9f9f9);
+  padding: 2rem;
+  border-radius: 12px;
+  width: fit-content; /* Ancho del modal */
+  max-width: 90%; /* Asegura que no exceda el 90% del ancho de la pantalla */
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  text-align: center;
+  position: relative;
+}
+
+/* Título del modal */
+.add-product-modal-content h2 {
+  margin-bottom: 1.5rem;
+  font-size: 1.8rem;
+  color: #333;
+  text-align: center;
+}
+
+.add-product-modal-content h2::after {
+  content: '';
+  display: block;
+  width: 50%;
+  height: 4px;
+  background-color: #0cb1a0;
+  margin: 0.5rem auto 0;
+  border-radius: 2px;
+}
