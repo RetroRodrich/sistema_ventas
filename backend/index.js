@@ -1,4 +1,4 @@
-const { DB_PORT, FRONTEND_URL } = require('./config');
+import { DB_PORT } from './config.js';
 const express = require('express');
 const cors = require('cors');
 const productRoutes = require('./routes/products');
