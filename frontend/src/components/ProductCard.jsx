@@ -1,4 +1,5 @@
 import React from 'react';
+import { FaBox, FaTag, FaAlignLeft, FaDollarSign, FaBoxes, FaList, FaImage } from 'react-icons/fa';
 import '../styles/ProductCard.css';
 
 /**

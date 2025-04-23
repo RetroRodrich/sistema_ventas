@@ -1,40 +1,51 @@
 .product-card {
-  border: 1px solid #ddd; /* Borde más claro */
+  border: 1px solid #ddd;
   border-radius: 8px;
   padding: 1rem;
   text-align: center;
-  background-color: white; /* Fondo blanco para contraste */
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Sombra ligera */
+  background-color: white;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 0;
+  min-height: 360px;
 }
 
 .product-card:hover {
-  transform: scale(1.05); /* Efecto de zoom al pasar el mouse */
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Sombra más intensa */
+  transform: scale(1.01); /* Efecto de zoom al pasar el mouse */
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.2); /* Sombra más intensa */
 }
 
 .product-image-container {
   width: 100%;
-  height: 150px;           /* Aumenta el alto si quieres imágenes más grandes */
+  height: 150px;
   overflow: hidden;
-  border-radius: 8px;        /* Color de fondo mientras carga la imagen */
+  border-radius: 8px;
+  background: #eee;
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-bottom: 1rem;
 }
 
 .product-image {
-  width: 170px;
-  height: 170px; 
-  object-fit: cover;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
   display: block;
-  transition: opacity 0.3s ease;
+  background: #eee;
 }
 
 .product-name {
   font-size: 1.2rem;
   font-weight: 400;
-  margin: 1rem 0;
+  margin: 1rem 0 0.5rem 0;
+  min-height: 48px; /* Para alinear títulos de diferente largo */
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .product-category,
@@ -42,18 +53,19 @@
 .product-stock {
   font-size: 0.9rem;
   color: #555;
+  margin: 0.2rem 0;
 }
 
 .product-card-buttons {
   display: flex;
-  justify-content: space-between; /* Coloca un botón a la izquierda y otro a la derecha */
-  width: 100%; /* Asegura que los botones ocupen todo el ancho disponible */
-  margin-top: 1rem; /* Espaciado entre los textos y los botones */
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 1rem;
 }
 
 .edit-button,
 .delete-button {
-  padding: 0.5rem 1rem; /* Tamaño cómodo para los botones */
+  padding: 0.5rem 2rem;
   font-size: 0.9rem; /* Tamaño de texto legible */
   border: none;
   border-radius: 6px; /* Bordes redondeados */
