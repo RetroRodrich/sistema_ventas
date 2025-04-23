@@ -6,6 +6,7 @@ const categoriesRoutes = require('./routes/categories');
 
 const app = express();
 
+
 app.use(cors());
 app.use(express.json());
 
