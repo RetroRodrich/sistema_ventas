@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FaBox, FaTag, FaAlignLeft, FaDollarSign, FaBoxes, FaList, FaImage } from 'react-icons/fa';
 import '../styles/AddProductModal.css';
-import { API_BASE_URL } from '../pages/Products';
+import { API_BASE_URL } from '../Conexion';
 
 function AddProductModal({ onClose, onAddProduct, onSaveProduct, product }) {
   // Estado local para el formulario

@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { API_BASE_URL } from '../Conexion';
 import ProductCard from '../components/ProductCard';
 import AddProductModal from '../components/AddProductModal';
 import DeleteConfirmationModal from '../components/DeleteConfirmationModal';
 import '../styles/Products.css';
 
-export const API_BASE_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
 
 function Products() {
   // Estado para productos y controles de UI
