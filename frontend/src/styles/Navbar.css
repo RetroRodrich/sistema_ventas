@@ -2,7 +2,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #0cb1a0;
+  background: linear-gradient(to right, #2fcabd, #168b80);
   color: white;
   padding: 1rem;
 }
@@ -14,7 +14,7 @@
 }
 
 .navbar-hamburger-button {
-  background-color: #2db4a9;
+  background: linear-gradient(to right, #2fcabd, #168b80);
   color: white;
   border: none;
   font-size: 1.5rem;

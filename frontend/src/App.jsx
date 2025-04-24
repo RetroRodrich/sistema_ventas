@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Routes, Route, useNavigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import Products from './pages/Products';
@@ -9,10 +9,12 @@ import './styles/App.css';
 
 function App() {
   const [isLogged, setIsLogged] = useState(!!localStorage.getItem('token'));
+  const navigate = useNavigate();
 
   const handleLogout = () => {
     localStorage.removeItem('token');
     setIsLogged(false);
+    navigate('/');
   };
 
   if (!isLogged) {
@@ -20,7 +22,7 @@ function App() {
   }
 
   return (
-    <Router>
+    <>
       <Navbar onLogout={handleLogout} />
       <div className="content">
         <Routes>
@@ -29,7 +31,7 @@ function App() {
           <Route path="/sales" element={<Sales />} />
         </Routes>
       </div>
-    </Router>
+    </>
   );
 }
 

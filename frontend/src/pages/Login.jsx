@@ -2,12 +2,12 @@ import React, { useState } from 'react';
 import { API_BASE_URL } from '../Conexion';
 import '../styles/Login.css';
 import cartImg from '../assets/images/carrito_bgc.png';
-import { FaEye, FaEyeSlash } from 'react-icons/fa'; // Importa los íconos
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
 function Login({ onLogin }) {
   const [form, setForm] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
-  const [showPassword, setShowPassword] = useState(false); // Estado para mostrar/ocultar contraseña
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = e => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -38,7 +38,7 @@ function Login({ onLogin }) {
     <div className="login-bg">
       <div className="login-card">
         <div className="login-illustration">
-          <img src={cartImg} alt="Carrito" className="login-cart-img" />
+          <img src={cartImg} alt="Carrito" className="login-cart-img" loading='lazy' />
         </div>
         <form className="login-form" onSubmit={handleSubmit}>
           <h2>Iniciar Sesión</h2>
@@ -53,7 +53,7 @@ function Login({ onLogin }) {
           />
           <div className="password-container">
             <input
-              type={showPassword ? 'text' : 'password'} // Cambia el tipo de input
+              type={showPassword ? 'text' : 'password'}
               name="password"
               placeholder="Contraseña"
               value={form.password}
@@ -63,9 +63,9 @@ function Login({ onLogin }) {
             <button
               type="button"
               className="toggle-password"
-              onClick={() => setShowPassword(!showPassword)} // Cambia el estado
+              onClick={() => setShowPassword(!showPassword)}
             >
-              {showPassword ? <FaEyeSlash /> : <FaEye />} {/* Ícono dinámico */}
+              {showPassword ? <FaEyeSlash /> : <FaEye />}
             </button>
           </div>
           <button type="submit" className='btn-login'>Ingresar</button>
