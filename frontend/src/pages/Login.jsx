@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { API_BASE_URL } from '../Conexion';
 import '../styles/Login.css';
-import cartImg from '../assets/images/carrito_bgc.png';
+import cartImg from '../assets/images/carrito_bgc.webp';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
 function Login({ onLogin }) {
@@ -38,7 +38,7 @@ function Login({ onLogin }) {
     <div className="login-bg">
       <div className="login-card">
         <div className="login-illustration">
-          <img src={cartImg} alt="Carrito" className="login-cart-img" loading='lazy' />
+          <img src={cartImg} alt="Carrito" className="login-cart-img"/>
         </div>
         <form className="login-form" onSubmit={handleSubmit}>
           <h2>Iniciar Sesión</h2>
