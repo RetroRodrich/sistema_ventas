@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import Sidebar from './Sidebar'; // Importamos el componente Sidebar
-import '../styles/Navbar.css'; // Importamos los estilos
+import Sidebar from './Sidebar';
+import '../styles/Navbar.css';
 
-const Navbar = () => {
+const Navbar = ({ onLogout }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const toggleSidebar = () => {
@@ -20,7 +20,7 @@ const Navbar = () => {
         </div>
         <div className="navbar-buttons">
           <button className="navbar-button">Mi Perfil</button>
-          <button className="navbar-button">Cerrar Sesión</button>
+          <button className="navbar-button" onClick={onLogout}>Cerrar sesión</button>
         </div>
       </nav>
       <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />

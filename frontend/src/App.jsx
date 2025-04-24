@@ -1,15 +1,27 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Navbar from './components/Navbar'; // Importamos el componente Navbar
+import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import Products from './pages/Products';
 import Sales from './pages/Sales';
-import './styles/App.css'; // Archivo de estilos
+import Login from './pages/Login';
+import './styles/App.css';
 
 function App() {
+  const [isLogged, setIsLogged] = useState(!!localStorage.getItem('token'));
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    setIsLogged(false);
+  };
+
+  if (!isLogged) {
+    return <Login onLogin={() => setIsLogged(true)} />;
+  }
+
   return (
     <Router>
-      <Navbar /> {/* Agregamos el Navbar */}
+      <Navbar onLogout={handleLogout} />
       <div className="content">
         <Routes>
           <Route path="/" element={<Home />} />
