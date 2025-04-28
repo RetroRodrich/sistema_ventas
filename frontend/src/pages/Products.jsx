@@ -3,6 +3,7 @@ import { API_BASE_URL } from '../Conexion';
 import ProductCard from '../components/ProductCard';
 import AddProductModal from '../components/AddProductModal';
 import DeleteConfirmationModal from '../components/DeleteConfirmationModal';
+import { HiOutlinePlus } from 'react-icons/hi'
 import '../styles/Products.css';
 
 
@@ -152,7 +153,8 @@ function Products() {
           <option value="Ropa">Ropa</option>
         </select>
         <button onClick={handleOpenAddModal} className="add-product-button">
-          + Agregar Producto
+          <HiOutlinePlus style={{ fontSize: '1.2rem' }} />
+          Agregar Producto
         </button>
       </div>
       <div className="products-grid">

@@ -91,28 +91,23 @@
   }
 }
 
-/* Mejoras para móvil */
+/* Responsive: solo iconos en navbar-right en móvil */
 @media (max-width: 600px) {
-  .navbar {
-    padding: 0 0.5rem;
-    height: 52px;
-  }
-  .navbar-left {
+  .navbar-right {
     gap: 0.5rem;
   }
-  .navbar-sucursal {
-    font-size: 1rem;
-  }
-  .navbar-right {
-    gap: 0.3rem;
+  .navbar-user-text,
+  .navbar-logout-text {
+    display: none;
   }
   .navbar-user,
   .navbar-logout {
-    padding: 0.2rem 0.4rem;
-    border-radius: 3px;
+    padding: 0.3rem 0.5rem;
+    font-size: 0;
   }
   .navbar-user-icon,
   .navbar-logout-icon {
-    font-size: 1.1rem;
+    display: inline;
+    font-size: 1.3rem;
   }
 }
