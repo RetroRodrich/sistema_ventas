@@ -1,82 +1,118 @@
 .navbar {
+  background: #fff;
+  color: #263544;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  height: 60px;
   display: flex;
+  align-items: center;
   justify-content: space-between;
-  align-items: center;
-  background: linear-gradient(to right, #2fcabd, #168b80);
-  color: white;
-  padding: 1rem;
+  padding: 0 1rem;
+  position: sticky;
+  top: 0;
+  z-index: 1100;
 }
 
-.navbar-left-section {
+.navbar-left {
   display: flex;
   align-items: center;
   gap: 1rem;
 }
 
-.navbar-hamburger-button {
-  background: linear-gradient(to right, #2fcabd, #168b80);
-  color: white;
+.navbar-hamburger {
+  background: none;
   border: none;
-  font-size: 1.5rem;
+  color: #263544;
   cursor: pointer;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
+  display: block;
+  padding: 0.2rem;
+}
+.navbar-hamburger:hover {
+  color: #2fcabd;
+}
+
+.navbar-sucursal {
+  font-size: 1.1rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.navbar-right {
   display: flex;
-  justify-content: center;
   align-items: center;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.301);
-  transition: background-color 0.3s ease, transform 0.3s ease;
+  gap: 0.7rem;
 }
-
-.navbar-hamburger-button:hover {
-  background-color: #26a69a;
-  transform: scale(1.1);
-}
-
-.navbar-title {
-  margin: 0;
-  font-size: 1.2rem;
-}
-
-.navbar-buttons {
+.navbar-user {
   display: flex;
-  gap: 1rem;
+  align-items: center;
+  gap: 0.3rem;
+  font-weight: 500;
+  font-size: 0.97rem;
+  white-space: nowrap;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  background: #f4f7fa;
+}
+.navbar-user-icon {
+  color: #2fcabd;
+  font-size: 1.1rem;
+}
+.navbar-user-text {
+  font-size: 0.97rem;
+  color: #263544;
 }
 
-.navbar-button {
-  background-color: #2bbbad;
-  color: white;
+.navbar-logout {
+  background: #2fcabd;
+  color: #fff;
   border: none;
-  padding: 0.6rem 1.2rem;
-  font-size: 0.9rem;
-  cursor: pointer;
+  padding: 0.3rem 0.7rem;
   border-radius: 5px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-  transition: background-color 0.3s ease, transform 0.3s ease;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+.navbar-logout:hover {
+  background: #168b80;
+}
+.navbar-logout-icon {
+  font-size: 1.1rem;
 }
 
-.navbar-button:hover {
-  background-color: #26a69a;
-  transform: scale(1.1);
-}
-
-/* Responsividad para pantallas pequeñas */
-@media (max-width: 768px) {
+/* Desktop: hide hamburger, add left padding for sidebar */
+@media (min-width: 1024px) {
   .navbar {
-    padding: 0.8rem;
+    padding-left: 240px;
   }
-
-  .navbar-title {
+  .navbar-hamburger {
     display: none;
   }
+}
 
-  .navbar-buttons {
+/* Mejoras para móvil */
+@media (max-width: 600px) {
+  .navbar {
+    padding: 0 0.5rem;
+    height: 52px;
+  }
+  .navbar-left {
     gap: 0.5rem;
   }
-
-  .navbar-button {
-    padding: 0.4rem 0.6rem;
-    font-size: 0.7rem;
+  .navbar-sucursal {
+    font-size: 1rem;
+  }
+  .navbar-right {
+    gap: 0.3rem;
+  }
+  .navbar-user,
+  .navbar-logout {
+    padding: 0.2rem 0.4rem;
+    border-radius: 3px;
+  }
+  .navbar-user-icon,
+  .navbar-logout-icon {
+    font-size: 1.1rem;
   }
 }

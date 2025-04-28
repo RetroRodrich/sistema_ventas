@@ -132,7 +132,11 @@ function Products() {
 
   return (
     <div className="products-page">
-      <h1>Productos</h1>
+      <div className="products-header">
+        <span className="products-icon">🛒</span>
+        <h2>Catálogo de Productos</h2>
+        <p className="products-subtitle">Gestiona y visualiza tus productos de manera rápida y sencilla.</p>
+      </div>
       <div className="products-controls">
         <input
           type="text"
@@ -148,13 +152,13 @@ function Products() {
           <option value="Ropa">Ropa</option>
         </select>
         <button onClick={handleOpenAddModal} className="add-product-button">
-          Agregar Producto
+          + Agregar Producto
         </button>
       </div>
       <div className="products-grid">
         {filteredProducts.map((product) => (
           <ProductCard
-            key={product.id} // React requiere que cada hijo tenga una key única
+            key={product.id}
             product={product}
             onEdit={handleEdit}
             onDelete={handleDelete}
