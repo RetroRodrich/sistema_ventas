@@ -6,6 +6,7 @@ import Home from './pages/Home';
 import Products from './pages/Products';
 import Sales from './pages/Sales';
 import Login from './pages/Login';
+import SaleHistory from './pages/SaleHistory';
 import './styles/App.css';
 
 function App() {
@@ -38,6 +39,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/products" element={<Products />} />
           <Route path="/sales" element={<Sales />} />
+          <Route path="/salehistory" element={<SaleHistory />} />
         </Routes>
       </div>
     </>

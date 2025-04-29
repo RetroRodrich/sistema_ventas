@@ -64,18 +64,17 @@ const Sidebar = ({ isOpen, onClose }) => {
             className={location.pathname === '/sales' ? 'active link' : 'link'}
             onClick={handleLinkClick}
           >
-            <MdOutlineShoppingCart size={20} /> Ventas
+            <MdOutlineShoppingCart size={20} /> Generar Venta
           </Link>
         </li>
         <li>
-          <a href="#" className="link" onClick={handleLinkClick}>
-            <MdOutlineBarChart size={20} /> Reportes
-          </a>
-        </li>
-        <li>
-          <a href="#" className="link" onClick={handleLinkClick}>
-            <MdOutlinePeople size={20} /> Usuarios
-          </a>
+          <Link
+            to="/salehistory"
+            className={location.pathname === '/salehistory' ? 'active link' : 'link'}
+            onClick={handleLinkClick}
+          >
+            <MdOutlineBarChart size={20} /> Historial
+          </Link>
         </li>
       </ul>
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   HiOutlinePlus,
   HiOutlineTrash,
@@ -6,22 +6,35 @@ import {
   HiOutlineX
 } from 'react-icons/hi';
 import '../styles/Sales.css';
+import { API_BASE_URL } from '../Conexion';
 
 function Sales() {
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
   const [search, setSearch] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [cart, setCart] = useState([]);
+  const [clienteNombre, setClienteNombre] = useState('');
+  const [clienteDni, setClienteDni] = useState('');
+  const [products, setProducts] = useState([]);
+  const [loadingProducts, setLoadingProducts] = useState(false);
+  const [showSaleModal, setShowSaleModal] = useState(false);
 
-  const products = [
-    { id: 1, name: 'Producto A', price: 10.0, stock: 5 },
-    { id: 2, name: 'Producto B', price: 20.0, stock: 3 },
-    { id: 3, name: 'Producto C', price: 15.5, stock: 8 }
-  ];
-  const filtered = products.filter(p =>
-    p.name.toLowerCase().includes(search.toLowerCase())
-  );
+  // Efecto para buscar productos al escribir
+  useEffect(() => {
+    if (search.trim() === '') {
+      setProducts([]);
+      return;
+    }
+    setLoadingProducts(true);
+    fetch(`${API_BASE_URL}/api/products/search?q=${encodeURIComponent(search)}`)
+      .then(res => res.json())
+      .then(data => setProducts(data))
+      .finally(() => setLoadingProducts(false));
+  }, [search]);
+
+  const filtered = products; // Ya viene filtrado del backend
 
   const selectProduct = p => {
     setSelectedProduct(p);
@@ -57,14 +70,86 @@ function Sales() {
   };
 
   const subtotal = cart.reduce((sum, x) => sum + x.price * x.quantity, 0);
-  const igv = subtotal * 0.18;
-  const total = subtotal + igv;
+  // IGV incluido en el subtotal
+  const igv = subtotal / 1.18 * 0.18;
+  const baseImponible = subtotal - igv;
+  const total = subtotal; // El total ya incluye IGV
+
+  const handleConfirmSale = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/sales`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: user.id,
+          customer_name: clienteNombre.trim() || 'General public',
+          customer_dni: clienteDni.trim() || '',
+          total: Number(total.toFixed(2)),
+          igv: Number(igv.toFixed(2)),
+          items: cart.map(item => ({
+            id: item.id,
+            quantity: item.quantity,
+            price: Number(item.price)
+          }))
+        })
+      });
+      if (!response.ok) throw new Error('Error al registrar la venta');
+      setCart([]); setSearch(''); setSelectedProduct(null); setQuantity(1); setClienteNombre(''); setClienteDni('');
+      setShowSaleModal(true); // Mostrar modal de éxito
+    } catch (err) {
+      alert('Ocurrió un error al registrar la venta');
+    }
+  };
 
   return (
     <div className="sales-page">
+      {/* MODAL DE ÉXITO */}
+      {showSaleModal && (
+        <div className="sale-modal">
+          <div className="sale-modal-content sale-modal-animate">
+            <div className="sale-modal-check">
+              <svg width="60" height="60" viewBox="0 0 60 60">
+                <circle cx="30" cy="30" r="28" fill="#eafaf1" stroke="#1abc9c" strokeWidth="3"/>
+                <polyline points="18,32 27,41 43,23" fill="none" stroke="#1abc9c" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </div>
+            <h3>¡Pedido registrado exitosamente!</h3>
+            <button onClick={() => setShowSaleModal(false)}>Cerrar</button>
+          </div>
+        </div>
+      )}
       <header className="sales-header">
         <h2>Generar Venta</h2>
       </header>
+
+      {/* CLIENTE OPCIONAL */}
+      <div className="cliente-row">
+        <label htmlFor="cliente-input" className="cliente-label">Cliente:</label>
+        <input
+          id="cliente-input"
+          className="cliente-input"
+          type="text"
+          placeholder="Público general"
+          value={clienteNombre}
+          onChange={e => setClienteNombre(e.target.value)}
+          autoComplete="off"
+        />
+        <label htmlFor="dni-input" className="cliente-label">DNI:</label>
+        <input
+          id="dni-input"
+          className="cliente-input"
+          type="text"
+          placeholder="DNI"
+          maxLength={8}
+          value={clienteDni}
+          onChange={e => {
+            // Solo permite números y máximo 8 caracteres
+            const val = e.target.value.replace(/\D/g, '').slice(0, 8);
+            setClienteDni(val);
+          }}
+          autoComplete="off"
+        />
+      </div>
 
       {/* BUSCADOR • CANTIDAD • AGREGAR */}
       <div className="sales-row-inline">
@@ -79,13 +164,19 @@ function Sales() {
             onFocus={() => setShowSuggestions(true)}
             onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
           />
-          {showSuggestions && filtered.length > 0 && (
+          {showSuggestions && (
             <ul className="list-suggestions">
-              {filtered.map(p => (
+              {loadingProducts && <li>Cargando...</li>}
+              {!loadingProducts && filtered.length === 0 && (
+                <li className="no-suggestion">Sin coincidencias</li>
+              )}
+              {!loadingProducts && filtered.map(p => (
                 <li key={p.id} onMouseDown={() => selectProduct(p)}>
                   {p.name}
                   <span className="tag-stock">Stock: {p.stock}</span>
-                  <span className="tag-price">S/ {p.price.toFixed(2)}</span>
+                  <span className="tag-price">
+                    S/ {Number(p.price).toFixed(2)}
+                  </span>
                 </li>
               ))}
             </ul>
@@ -131,7 +222,9 @@ function Sales() {
         </div>
         <div>
           <small>Precio unitario</small>
-          <strong>{selectedProduct ? `S/ ${selectedProduct.price.toFixed(2)}` : '--'}</strong>
+          <strong>
+            {selectedProduct ? `S/ ${Number(selectedProduct.price).toFixed(2)}` : '--'}
+          </strong>
         </div>
       </div>
 
@@ -156,8 +249,8 @@ function Sales() {
               <tr key={item.id}>
                 <td>{item.name}</td>
                 <td>{item.quantity}</td>
-                <td>S/ {item.price.toFixed(2)}</td>
-                <td>S/ {(item.price * item.quantity).toFixed(2)}</td>
+                <td>S/ {Number(item.price).toFixed(2)}</td>
+                <td>S/ {(Number(item.price) * item.quantity).toFixed(2)}</td>
                 <td>
                   <button
                     className="btn-remove"
@@ -175,8 +268,8 @@ function Sales() {
       {/* TOTALES + ACCIONES */}
       <footer className="sales-footer">
         <div className="totals">
-          <span>Subtotal: S/ {subtotal.toFixed(2)}</span>
-          <span>IGV: S/ {igv.toFixed(2)}</span>
+          <span>Subtotal sin IGV: S/ {baseImponible.toFixed(2)}</span>
+          <span>IGV (18%): S/ {igv.toFixed(2)}</span>
           <span className="total">Total: S/ {total.toFixed(2)}</span>
         </div>
         <div className="actions">
@@ -189,6 +282,7 @@ function Sales() {
           <button
             className="btn-confirm"
             disabled={cart.length === 0}
+            onClick={handleConfirmSale}
           >
             Confirmar Venta
           </button>

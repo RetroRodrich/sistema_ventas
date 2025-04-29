@@ -1,0 +1,322 @@
+.sales-history-page {
+  width: 100%;
+  margin: 0 auto;
+  background: transparent;
+  box-shadow: none;
+  padding: 0;
+}
+
+.sales-history-page h2 {
+  text-align: left;
+  color: #192436;
+  margin-bottom: 2.2rem;
+  font-weight: 400;
+  letter-spacing: 0.2px;
+  font-size: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+.sales-history-page h2 span[role="img"] {
+  font-size: 2rem;
+  margin-right: 0.3rem;
+}
+
+.sales-history-page table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: transparent;
+  font-family: "Segoe UI", "Roboto", Arial, sans-serif;
+}
+
+.sales-history-page th,
+.sales-history-page td {
+  padding: 0.7rem 0.5rem;
+  text-align: center;
+  font-weight: 300;
+  font-size: 1rem;
+  border-bottom: 1px solid #e6e8ec;
+}
+
+.sales-history-page th {
+  background: #223046;
+  color: white;
+  font-weight: 500;
+  font-size: 1.01rem;
+  border-bottom: 2px solid #e6e8ec;
+  letter-spacing: 0.1px;
+}
+
+.sales-history-page tbody tr {
+  transition: background 0.13s;
+}
+
+.sales-history-page tbody tr:hover {
+  background: #f7fafd;
+}
+
+.sales-history-page td {
+  color: #000000;
+  font-weight: 100;
+  font-size: 0.95rem;
+}
+
+.sales-history-page td:last-child {
+  min-width: 110px;
+}
+
+.sales-history-page .btn-details {
+  background: none;
+  color: #205072;
+  border: 1px solid #dbe6ee;
+  border-radius: 5px;
+  padding: 0.32rem 1.05rem;
+  font-size: 0.97rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  cursor: pointer;
+  transition: background 0.13s, border 0.13s, color 0.13s;
+  box-shadow: none;
+  font-weight: 300;
+}
+.sales-history-page .btn-details:hover {
+  background: #eaf3fa;
+  border-color: #b0c4d6;
+  color: #1a3b5d;
+}
+.sales-history-page .btn-details svg {
+  font-size: 1.08rem;
+  vertical-align: middle;
+  color: #1a3b5d;
+}
+
+/* Estado visual elegante */
+.sales-history-page .status-pendiente {
+  background: #fff8e1;
+  color: #b89c1c;
+  border-radius: 7px;
+  padding: 0.13em 0.7em;
+  font-weight: 400;
+  font-size: 0.97em;
+  border: 1px solid #ffe082;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3em;
+}
+.sales-history-page .status-pagada {
+  background: #e8f5e9;
+  color: #2e7d32;
+  border-radius: 7px;
+  padding: 0.13em 0.7em;
+  font-weight: 400;
+  font-size: 0.97em;
+  border: 1px solid #c8e6c9;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3em;
+}
+.sales-history-page .status-anulada {
+  background: #fbe9e7;
+  color: #b71c1c;
+  border-radius: 7px;
+  padding: 0.13em 0.7em;
+  font-weight: 400;
+  font-size: 0.97em;
+  border: 1px solid #ffccbc;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3em;
+}
+
+/* Ajuste para el total */
+.sales-history-page td[style*="color: #1abc9c"] {
+  color: #205072 !important;
+  font-weight: 400;
+  font-size: 1.04rem;
+  letter-spacing: 0.2px;
+}
+
+/* Modal overlay */
+.sh-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+/* Modal content */
+.sh-modal__content {
+  background: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  padding: 0;
+  max-width: 500px;
+  position: relative;
+  overflow: hidden;
+  animation: shModalFadeIn 0.35s cubic-bezier(0.4, 1.7, 0.6, 0.97);
+}
+
+@keyframes shModalFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(40px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Modal header */
+.sh-modal__header {
+  background: #223046; /* Azul oscuro */
+  color: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  font-size: 1.25rem;
+}
+.sh-modal__header h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 200;
+}
+.sh-modal__close {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+.sh-modal__close:hover {
+  color: #f2f2f2;
+}
+
+/* Modal info */
+.sh-modal__info {
+  padding: 1.5rem;
+  font-size: 1rem;
+  color: #333;
+  display: grid;
+  gap: 0.8rem;
+}
+.sh-modal__info-item {
+  display: flex;
+  justify-content: space-between;
+  font-size: 1rem;
+}
+.sh-modal__info-item span:first-child {
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+/* Modal table */
+.sh-modal__table {
+  width: 100%;
+  padding: 0.5rem 0.5rem;
+  border-collapse: collapse;
+}
+.sh-modal__table th,
+.sh-modal__table td {
+  padding: 0.8rem;
+  font-size: 0.85rem;
+  border-bottom: 1px solid #e6e8ec;
+  text-align: center;
+}
+.sh-modal__table th {
+  background: #34495e;
+  color: #fff;
+  font-weight: 400;
+}
+.sh-modal__table tr:last-child td {
+  border-bottom: none;
+}
+
+/* Agrupa IGV y Total en el modal */
+.sh-modal__igv-total {
+  margin: 1.2rem 1.7rem 0.5rem 1.7rem;
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+.sh-modal__igv {
+  font-size: 1rem;
+  color: #223046;
+  font-weight: 500;
+}
+.sh-modal__total {
+  font-size: 1.13rem;
+  color: #223046;
+  font-weight: 600;
+}
+
+/* Modal actions */
+.sh-modal__actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin: 1.5rem;
+}
+
+/* Buttons */
+.sh-btn {
+  padding: 0.5rem 1rem;
+  font-size: 0.95rem;
+  font-weight: 300;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+}
+.sh-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.sh-btn--success {
+  background: #27ae60;
+  color: #fff;
+}
+.sh-btn--success:hover {
+  background: #1e8449;
+  transform: scale(1.05);
+}
+.sh-btn--danger {
+  background: #c0392b;
+  color: #fff;
+}
+.sh-btn--danger:hover {
+  background: #a93226;
+  transform: scale(1.05);
+}
+
+/* Responsive: modal más pequeño y con scale en pantallas pequeñas */
+@media (max-width: 600px) {
+  .sh-modal__content {
+    transform: scale(0.9);
+    border-radius: 10px;
+    animation: shModalFadeInSmall 0.35s cubic-bezier(0.4, 1.7, 0.6, 0.97);
+  }
+}
+
+@keyframes shModalFadeInSmall {
+  from {
+    opacity: 0;
+    transform: translateY(40px) scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(0.9);
+  }
+}

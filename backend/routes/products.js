@@ -146,4 +146,27 @@ router.put('/:id', (req, res) => {
   });
 });
 
+// Buscar productos por nombre (para el buscador del frontend)
+router.get('/search', (req, res) => {
+  const q = req.query.q || '';
+  const query = `
+    SELECT 
+      products.id, 
+      products.name, 
+      products.price, 
+      products.stock
+    FROM products
+    WHERE products.name LIKE ?
+    LIMIT 10
+  `;
+  db.query(query, [`%${q}%`], (err, results) => {
+    if (err) {
+      console.error('Error al buscar productos:', err);
+      res.status(500).json({ error: 'Error al buscar productos' });
+    } else {
+      res.json(results);
+    }
+  });
+});
+
 module.exports = router;
