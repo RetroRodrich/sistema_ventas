@@ -78,13 +78,13 @@
 .add-product-button {
   padding: 0.55rem 1.3rem;
   font-size: 1.03rem;
-  background: #3a4a5d;
+  background: #1c3657;
   color: #fff;
   border: none;
-  border-radius: 7px;
+  border-radius: 5px;
   cursor: pointer;
   font-weight: 600;
-  box-shadow: 0 2px 8px #3a4a5d11;
+  box-shadow: 0 2px 8px #0252b411;
   transition: background 0.2s, transform 0.18s;
   display: flex;
   align-items: center;

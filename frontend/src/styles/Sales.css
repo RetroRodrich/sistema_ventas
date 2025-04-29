@@ -1,0 +1,249 @@
+/* GLOBAL */
+.sales-page {
+  padding: 1rem;
+  font-family: Arial, sans-serif;
+  color: #333;
+}
+
+/* HEADER */
+.sales-header h2 {
+  font-size: 1.4rem;
+  font-weight: 400;
+  margin: 0 0 1rem;
+}
+
+/* ROW PRINCIPAL */
+.sales-row-inline {
+  display: flex;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  margin-bottom: 0.8rem;
+}
+
+/* BUSCADOR */
+.search-box {
+  position: relative;
+  flex: 2 1 auto;
+}
+.ico-search {
+  position: absolute;
+  top: 50%; left: 0.6rem;
+  transform: translateY(-50%);
+  color: #1abc9c;
+  font-size: 1.1rem;
+}
+.input-search {
+  width: 100%;
+  padding: 0.4rem 0.5rem 0.4rem 2rem;
+  font-size: 0.95rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  outline: none;
+  box-sizing: border-box;
+}
+.list-suggestions {
+  position: absolute;
+  top: calc(100% + 0.2rem);
+  left: 0; right: 0;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  max-height: 150px;
+  overflow-y: auto;
+  z-index: 10;
+}
+.list-suggestions li {
+  padding: 0.4rem 0.6rem;
+  font-size: 0.93rem;
+  display: flex;
+  justify-content: space-between;
+  cursor: pointer;
+}
+.list-suggestions li:hover {
+  background: #f0fdfa;
+}
+.tag-stock, .tag-price {
+  font-size: 0.82rem;
+  color: #666;
+}
+.no-suggestion {
+  padding: 0.4rem 0.6rem;
+  color: #888;
+}
+
+/* CANTIDAD */
+.qty-box {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.qty-box label {
+  font-size: 0.9rem;
+  margin-bottom: 0.2rem;
+  color: #1abc9c;
+}
+.input-qty {
+  width: 60px;
+  padding: 0.3rem 0.4rem;
+  font-size: 0.95rem;
+  border: 1px solid #ccc;
+  border-radius: 4px; /* Solo esquinas derechas redondeadas */
+  text-align: right;
+  box-sizing: border-box;
+  background: #fff;
+  margin-left: 0; /* Elimina cualquier margen extra */
+}
+
+/* BOTÓN AGREGAR */
+.btn-add {
+  background: #1abc9c;
+  color: #fff;
+  border: none;
+  padding: 0.5rem 1.2rem;
+  font-size: 0.95rem;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-add:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.btn-add:hover:not(:disabled) {
+  background: #16a085;
+}
+
+/* INFO (STOCK / PRECIO) */
+.info-row {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+  background: #f8fefc;
+  padding: 0.6rem 1rem;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+}
+.info-row div {
+  display: flex;
+  flex-direction: column;
+}
+.info-row small {
+  font-size: 0.85rem;
+  color: #1abc9c;
+}
+.info-row strong {
+  font-size: 0.95rem;
+  color: #223047;
+  margin-top: 0.1rem;
+}
+
+/* CARRITO */
+.cart-section {
+  overflow-x: auto;
+  margin-bottom: 1rem;
+}
+.cart-section table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.93rem;
+}
+.cart-section th,
+.cart-section td {
+  padding: 0.5rem 0.6rem;
+  border-bottom: 1px solid #eee;
+  text-align: left;
+}
+.cart-section th {
+  font-weight: 500;
+  background: #fafafa;
+}
+.empty {
+  text-align: center;
+  color: #aaa;
+}
+
+/* PIE DE PÁGINA: TOTALES + BOTONES */
+.sales-footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+.totals {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.95rem;
+}
+.total {
+  font-weight: 500;
+}
+.actions {
+  display: flex;
+  gap: 0.6rem;
+}
+.btn-cancel,
+.btn-confirm {
+  padding: 0.45rem 1.1rem;
+  font-size: 0.93rem;
+  border-radius: 20px;
+  border: 1px solid;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+.btn-cancel {
+  background: #fff;
+  color: #e74c3c;
+  border-color: #e74c3c;
+}
+.btn-cancel:hover {
+  background: #e74c3c;
+  color: #fff;
+}
+.btn-confirm {
+  background: #1abc9c;
+  color: #fff;
+  border-color: #1abc9c;
+}
+.btn-confirm:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.btn-confirm:hover:not(:disabled) {
+  background: #16a085;
+}
+
+/* RESPONSIVE */
+@media (max-width: 700px) {
+  .sales-row-inline,
+  .info-row,
+  .sales-footer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .actions {
+    flex-direction: row;
+    justify-content: center;
+    gap: 0.6rem;
+    margin-top: 0.7rem;
+  }
+  .btn-cancel,
+  .btn-confirm {
+    width: auto;
+    min-width: 120px;
+    max-width: 90vw;
+    font-size: 0.95rem;
+    padding: 0.45rem 1.1rem;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .btn-add {
+    width: 100%;
+    font-size: 1rem;
+  }
+}
