@@ -8,9 +8,9 @@
 
 .sales-history-page h2 {
   text-align: left;
-  color: #192436;
+  color: #1f2836;
   margin-bottom: 2.2rem;
-  font-weight: 400;
+  font-weight: 600;
   letter-spacing: 0.2px;
   font-size: 2rem;
   display: flex;
@@ -153,15 +153,15 @@
   z-index: 9999;
 }
 
-/* Modal content */
+/* Modal content más compacto */
 .sh-modal__content {
   background: #f9f9f9;
-  border-radius: 8px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.22);
   padding: 0;
-  max-width: 500px;
-  position: relative;
-  overflow: hidden;
+  max-width: 420px;
+  font-size: 0.93rem;
+  margin: 0 1.2rem;
   animation: shModalFadeIn 0.35s cubic-bezier(0.4, 1.7, 0.6, 0.97);
 }
 
@@ -176,129 +176,199 @@
   }
 }
 
-/* Modal header */
+/* Modal header más pequeño */
 .sh-modal__header {
-  background: #223046; /* Azul oscuro */
+  background: linear-gradient(90deg, #223046 80%, #205072 100%);
   color: #fff;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 1.5rem;
-  font-size: 1.25rem;
+  padding: 0.7rem 1.1rem;
+  font-size: 1rem;
+  border-bottom: 2px solid #e6e8ec;
 }
 .sh-modal__header h3 {
   margin: 0;
-  font-size: 1.25rem;
-  font-weight: 200;
+  font-size: 1rem;
+  font-weight: 400;
+  letter-spacing: 0.5px;
 }
 .sh-modal__close {
   background: none;
   border: none;
   color: #fff;
-  font-size: 1.5rem;
+  font-size: 1.4rem;
   cursor: pointer;
   transition: color 0.2s;
 }
 .sh-modal__close:hover {
-  color: #f2f2f2;
+  color: #e74c3c;
 }
 
-/* Modal info */
+/* Info más compacta */
 .sh-modal__info {
-  padding: 1.5rem;
-  font-size: 1rem;
+  padding: 0.7rem 1.5rem 0.2rem 1.5rem;
+  font-size: 0.93rem;
   color: #333;
   display: grid;
-  gap: 0.8rem;
+  gap: 0.4rem;
 }
 .sh-modal__info-item {
   display: flex;
   justify-content: space-between;
-  font-size: 1rem;
+  font-size: 0.93rem;
 }
 .sh-modal__info-item span:first-child {
   font-weight: 600;
   color: #2c3e50;
 }
 
-/* Modal table */
+/* Separador antes y después de la tabla */
+.sh-modal__table-separator {
+  height: 0.7rem;
+  background: transparent;
+  display: block;
+  width: 100%;
+}
+.sh-modal__table-separator-bottom {
+  height: 1.1rem;
+  background: transparent;
+  display: block;
+  width: 100%;
+}
+
+/* Tabla más compacta */
 .sh-modal__table {
   width: 100%;
-  padding: 0.5rem 0.5rem;
+  padding: 0.3rem 0.3rem;
   border-collapse: collapse;
+  margin: 0 auto;
 }
 .sh-modal__table th,
 .sh-modal__table td {
-  padding: 0.8rem;
+  padding: 0.32rem 0.2rem;
   font-size: 0.85rem;
   border-bottom: 1px solid #e6e8ec;
   text-align: center;
 }
 .sh-modal__table th {
-  background: #34495e;
+  background: #205072;
   color: #fff;
-  font-weight: 400;
+  font-weight: 500;
+  font-size: 0.91rem;
+  border-bottom: 2px solid #e6e8ec;
+  letter-spacing: 0.1px;
 }
 .sh-modal__table tr:last-child td {
   border-bottom: none;
 }
 
-/* Agrupa IGV y Total en el modal */
+/* Totales más pequeños y claros */
 .sh-modal__igv-total {
-  margin: 1.2rem 1.7rem 0.5rem 1.7rem;
+  margin: 0.7rem 1.5rem 0.5rem 1.5rem;
   text-align: right;
   display: flex;
   flex-direction: column;
-  gap: 0.2rem;
-}
-.sh-modal__igv {
-  font-size: 1rem;
-  color: #223046;
-  font-weight: 500;
-}
-.sh-modal__total {
-  font-size: 1.13rem;
-  color: #223046;
-  font-weight: 600;
+  gap: 0.08rem;
 }
 
-/* Modal actions */
+.sh-modal__sin-igv,
+.sh-modal__igv {
+  font-size: 0.85rem;
+  color: #223046;
+  font-weight: 400;
+}
+
+.sh-modal__total {
+  font-size: 0.93rem;
+  color: #205072;
+  font-weight: 700;
+  margin-top: 0.12rem;
+  letter-spacing: 0.5px;
+}
+
+/* Botones más chicos y textos cortos */
 .sh-modal__actions {
   display: flex;
-  gap: 1rem;
+  gap: 0.4rem;
   justify-content: center;
-  margin: 1.5rem;
+  margin: 2rem 0 1.3rem 0;
+  padding: 0 1.2rem 0 1.2rem; /* Espacio a los lados */
 }
 
-/* Buttons */
-.sh-btn {
-  padding: 0.5rem 1rem;
-  font-size: 0.95rem;
-  font-weight: 300;
+.sh-modal__actions .btn-print {
+  background: #fff;
+  border: 1.2px solid #205072;
+  color: #205072;
   border-radius: 4px;
-  border: none;
-  cursor: pointer;
-  transition: background 0.2s, transform 0.2s;
+  padding: 0.28rem 0.7rem;
+  font-size: 0.93rem;
+  font-weight: 500;
+  transition: background 0.18s, color 0.18s, border 0.18s;
+  box-shadow: 0 2px 8px rgba(34,48,70,0.06);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
 }
-.sh-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+.sh-modal__actions .btn-print:hover {
+  background: #205072;
+  color: #fff;
 }
-.sh-btn--success {
+.sh-modal__actions .btn-print span {
+  display: none; /* Oculta el texto largo si usas solo el icono */
+}
+.sh-modal__actions .btn-print::after {
+  content: "Imprimir";
+  margin-left: 0.3rem;
+  font-size: 0.93rem;
+}
+
+.sh-modal__actions .sh-btn--success {
   background: #27ae60;
   color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 0.28rem 0.7rem;
+  font-size: 0.93rem;
+  font-weight: 500;
+  box-shadow: 0 2px 8px rgba(39,174,96,0.08);
+  transition: background 0.18s, transform 0.18s;
 }
-.sh-btn--success:hover {
-  background: #1e8449;
-  transform: scale(1.05);
+.sh-modal__actions .sh-btn--success:hover {
+  background: #219150;
+  transform: scale(1.04);
 }
-.sh-btn--danger {
-  background: #c0392b;
+.sh-modal__actions .sh-btn--success span {
+  display: none; /* Oculta el texto largo si usas solo el icono */
+}
+.sh-modal__actions .sh-btn--success::after {
+  content: "Pagar";
+  margin-left: 0.3rem;
+  font-size: 0.93rem;
+}
+
+.sh-modal__actions .sh-btn--danger {
+  background: #e74c3c;
   color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 0.28rem 0.7rem;
+  font-size: 0.93rem;
+  font-weight: 500;
+  box-shadow: 0 2px 8px rgba(231,76,60,0.08);
+  transition: background 0.18s, transform 0.18s;
 }
-.sh-btn--danger:hover {
-  background: #a93226;
-  transform: scale(1.05);
+.sh-modal__actions .sh-btn--danger:hover {
+  background: #c0392b;
+  transform: scale(1.04);
+}
+.sh-modal__actions .sh-btn--danger span {
+  display: none; /* Oculta el texto largo si usas solo el icono */
+}
+.sh-modal__actions .sh-btn--danger::after {
+  content: "Anular";
+  margin-left: 0.3rem;
+  font-size: 0.93rem;
 }
 
 /* Responsive: modal más pequeño y con scale en pantallas pequeñas */
@@ -319,4 +389,201 @@
     opacity: 1;
     transform: translateY(0) scale(0.9);
   }
+}
+
+/* HEADER ELEGANTE COMO SALES */
+.sales-history-header {
+  background: linear-gradient(90deg, #e0e4ff 0%, #f8fefc 100%);
+  padding: 1.4rem 1.2rem 1.1rem 1.2rem;
+  margin-bottom: 1.2rem;
+  border-left: 6px solid #223047;
+  box-shadow: 0 2px 8px rgba(44, 62, 80, 0.04);
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  border-radius: 0 18px 0 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.sales-history-icon span[role="img"] {
+  font-size: 2.2rem;
+  color: #ffffff;
+  background: #223047;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(44, 62, 80, 0.07);
+  padding: 0.35rem 0.5rem 0.35rem 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sales-history-header h2 {
+  font-size: 2.1rem;
+  font-weight: 700;
+  margin: 0;
+  color: #223047;
+  letter-spacing: -1px;
+  text-shadow: 0 1px 0 #fff, 0 2px 8px rgba(44,62,80,0.04);
+}
+
+.sales-history-header > div:last-child {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.sales-history-subtitle {
+  color: #6c7a89;
+  font-size: 1.08rem;
+  margin-top: 0.18rem;
+  margin-bottom: 0.1rem;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  display: block;
+}
+
+/* Sales history table wrapper */
+.sales-history-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: 10px;
+  background: #f8fafc;
+  box-shadow: 0 2px 12px rgba(34,48,70,0.06);
+  margin-bottom: 2rem;
+}
+
+/* Sales history table */
+.sales-history-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+  font-size: 0.93rem;
+  background: transparent;
+}
+
+.sales-history-table th,
+.sales-history-table td {
+  padding: 0.45rem 0.5rem;
+  text-align: center;
+  font-weight: 400;
+  font-size: 0.93rem;
+  border-bottom: 1px solid #e6e8ec;
+  vertical-align: middle;
+}
+
+.sales-history-table th {
+  background: #223046;
+  color: #fff;
+  font-weight: 500;
+  font-size: 0.97rem;
+  border-bottom: 2px solid #e6e8ec;
+  letter-spacing: 0.1px;
+}
+
+.sales-history-table tbody tr {
+  transition: background 0.13s;
+}
+
+.sales-history-table tbody tr:hover {
+  background: #f1f5fa;
+}
+
+.sales-history-table td:last-child {
+  min-width: 120px;
+}
+
+/* Table actions */
+.sh-table-actions {
+  display: flex;
+  gap: 0.3rem;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Button details */
+.btn-details {
+  background: none;
+  color: #205072;
+  border: 1px solid #dbe6ee;
+  border-radius: 5px;
+  padding: 0.22rem 0.8rem;
+  font-size: 0.89rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  transition: background 0.13s, border 0.13s, color 0.13s;
+  box-shadow: none;
+  font-weight: 400;
+}
+.btn-details:hover {
+  background: #eaf3fa;
+  border-color: #b0c4d6;
+  color: #1a3b5d;
+}
+.btn-details svg {
+  font-size: 1rem;
+  vertical-align: middle;
+  color: #1a3b5d;
+}
+
+/* Botón de impresión en la tabla */
+.btn-print {
+  background: none;
+  border: 1px solid #dbe6ee;
+  color: #205072;
+  border-radius: 5px;
+  padding: 0.22rem 0.8rem;
+  font-size: 1rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  transition: background 0.13s, border 0.13s, color 0.13s;
+  box-shadow: none;
+  font-weight: 400;
+}
+
+.btn-print:hover {
+  background: #eaf3fa;
+  border-color: #b0c4d6;
+  color: #1a3b5d;
+}
+
+.btn-print svg {
+  font-size: 1.15rem;
+  vertical-align: middle;
+  color: #1a3b5d;
+}
+
+/* Table total */
+.sh-table-total {
+  color: #1abc9c;
+  font-weight: 600;
+  font-size: 0.97rem;
+  letter-spacing: 0.2px;
+}
+
+/* Table status */
+.sh-table-status {
+  border-radius: 6px;
+  padding: 0.13rem 0.7rem;
+  font-size: 0.89rem;
+  font-weight: 500;
+  display: inline-block;
+}
+
+.status-pendiente {
+  background: #fff8e1;
+  color: #bfa100;
+}
+.status-pagada {
+  background: #e6f9f3;
+  color: #0e8c5a;
+}
+.status-anulada {
+  background: #ffeaea;
+  color: #c0392b;
 }

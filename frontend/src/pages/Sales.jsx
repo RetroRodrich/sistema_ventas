@@ -1,27 +1,36 @@
-import React, { useState, useEffect } from 'react';
-import {
-  HiOutlinePlus,
-  HiOutlineTrash,
-  HiOutlineSearch,
-  HiOutlineX
-} from 'react-icons/hi';
+// =======================
+// Importaciones y dependencias
+// =======================
+import React, { useState, useEffect, useRef } from 'react';
+import { HiOutlinePlus, HiOutlineTrash, HiOutlineSearch, HiOutlineX, HiOutlineShoppingCart, HiOutlineCheckCircle, HiOutlineCreditCard } from 'react-icons/hi';
 import '../styles/Sales.css';
 import { API_BASE_URL } from '../Conexion';
 
+// =======================
+// Componente principal de ventas
+// =======================
 function Sales() {
-  const user = JSON.parse(localStorage.getItem('user') || '{}');
-  const [search, setSearch] = useState('');
-  const [showSuggestions, setShowSuggestions] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState(null);
-  const [quantity, setQuantity] = useState(1);
-  const [cart, setCart] = useState([]);
-  const [clienteNombre, setClienteNombre] = useState('');
-  const [clienteDni, setClienteDni] = useState('');
-  const [products, setProducts] = useState([]);
-  const [loadingProducts, setLoadingProducts] = useState(false);
-  const [showSaleModal, setShowSaleModal] = useState(false);
+  // =======================
+  // Estados principales
+  // =======================
+  const user = JSON.parse(localStorage.getItem('user') || '{}'); // Usuario autenticado
+  const [search, setSearch] = useState(''); // Texto de búsqueda
+  const [showSuggestions, setShowSuggestions] = useState(false); // Mostrar sugerencias
+  const [selectedProduct, setSelectedProduct] = useState(null); // Producto seleccionado
+  const [quantity, setQuantity] = useState(1); // Cantidad a agregar
+  const [cart, setCart] = useState([]); // Carrito de compras
+  const [clienteNombre, setClienteNombre] = useState(''); // Nombre del cliente
+  const [clienteDni, setClienteDni] = useState(''); // DNI del cliente
+  const [products, setProducts] = useState([]); // Productos encontrados
+  const [loadingProducts, setLoadingProducts] = useState(false); // Estado de carga de productos
+  const [showSaleModal, setShowSaleModal] = useState(false); // Mostrar modal de éxito
+  const searchInputRef = useRef(null);
+  const qtyInputRef = useRef(null);
+  const [suggestionIndex, setSuggestionIndex] = useState(-1);
 
-  // Efecto para buscar productos al escribir
+  // =======================
+  // Búsqueda de productos al escribir
+  // =======================
   useEffect(() => {
     if (search.trim() === '') {
       setProducts([]);
@@ -34,17 +43,29 @@ function Sales() {
       .finally(() => setLoadingProducts(false));
   }, [search]);
 
-  const filtered = products; // Ya viene filtrado del backend
+  // =======================
+  // Lista filtrada de productos (ya viene filtrada del backend)
+  // =======================
+  const filtered = products;
 
+  // =======================
+  // Selección de producto de la lista de sugerencias
+  // =======================
   const selectProduct = p => {
     setSelectedProduct(p);
     setSearch(p.name);
     setShowSuggestions(false);
+    setQuantity(""); // Deja vacío para que el cajero escriba
+    setTimeout(() => qtyInputRef.current && qtyInputRef.current.focus(), 0);
   };
 
+  // =======================
+  // Agregar producto al carrito
+  // =======================
   const addToCart = () => {
     if (
       !selectedProduct ||
+      !quantity ||
       quantity < 1 ||
       quantity > selectedProduct.stock
     ) return;
@@ -53,28 +74,45 @@ function Sales() {
       if (exists) {
         return prev.map(x =>
           x.id === selectedProduct.id
-            ? { ...x, quantity: x.quantity + quantity }
+            ? { ...x, quantity: x.quantity + Number(quantity) }
             : x
         );
       }
-      return [...prev, { ...selectedProduct, quantity }];
+      return [...prev, { ...selectedProduct, quantity: Number(quantity) }];
     });
-    setSearch(''); setSelectedProduct(null); setQuantity(1);
+    setSearch('');
+    setSelectedProduct(null);
+    setQuantity("");
+    setTimeout(() => searchInputRef.current && searchInputRef.current.focus(), 0);
   };
 
+  // =======================
+  // Eliminar producto del carrito
+  // =======================
   const removeFromCart = id =>
     setCart(prev => prev.filter(x => x.id !== id));
 
+  // =======================
+  // Cancelar venta y limpiar campos
+  // =======================
   const cancelSale = () => {
-    setCart([]); setSearch(''); setSelectedProduct(null); setQuantity(1);
+    setCart([]);
+    setSearch('');
+    setSelectedProduct(null);
+    setQuantity(1);
   };
 
-  const subtotal = cart.reduce((sum, x) => sum + x.price * x.quantity, 0);
-  // IGV incluido en el subtotal
-  const igv = subtotal / 1.18 * 0.18;
-  const baseImponible = subtotal - igv;
+  // =======================
+  // Cálculo de totales
+  // =======================
+  const subtotal = cart.reduce((sum, x) => sum + x.price * x.quantity, 0); // Suma de productos
+  const igv = subtotal / 1.18 * 0.18; // IGV incluido en el subtotal
+  const baseImponible = subtotal - igv; // Subtotal sin IGV
   const total = subtotal; // El total ya incluye IGV
 
+  // =======================
+  // Confirmar venta (envío al backend)
+  // =======================
   const handleConfirmSale = async () => {
     try {
       const response = await fetch(`${API_BASE_URL}/api/sales`, {
@@ -86,6 +124,7 @@ function Sales() {
           customer_dni: clienteDni.trim() || '',
           total: Number(total.toFixed(2)),
           igv: Number(igv.toFixed(2)),
+          status: "pendiente", // Estado pendiente por defecto
           items: cart.map(item => ({
             id: item.id,
             quantity: item.quantity,
@@ -94,15 +133,25 @@ function Sales() {
         })
       });
       if (!response.ok) throw new Error('Error al registrar la venta');
-      setCart([]); setSearch(''); setSelectedProduct(null); setQuantity(1); setClienteNombre(''); setClienteDni('');
-      setShowSaleModal(true); // Mostrar modal de éxito
+      // Limpiar todo y mostrar modal de éxito
+      setCart([]);
+      setSearch('');
+      setSelectedProduct(null);
+      setQuantity(1);
+      setClienteNombre('');
+      setClienteDni('');
+      setShowSaleModal(true);
     } catch (err) {
       alert('Ocurrió un error al registrar la venta');
     }
   };
 
+  // =======================
+  // Renderizado principal
+  // =======================
   return (
     <div className="sales-page">
+
       {/* MODAL DE ÉXITO */}
       {showSaleModal && (
         <div className="sale-modal">
@@ -118,11 +167,21 @@ function Sales() {
           </div>
         </div>
       )}
+
+      {/* CABECERA */}
       <header className="sales-header">
-        <h2>Generar Venta</h2>
+        <span className="header-icon">
+          <HiOutlineShoppingCart />
+        </span>
+        <div className="sales-header-content">
+          <h2>Generar Venta</h2>
+          <span className="sales-header-desc">
+            Busca productos, agrégalos al carrito y confirma la venta para llevar el control de tus operaciones.
+          </span>
+        </div>
       </header>
 
-      {/* CLIENTE OPCIONAL */}
+      {/* FORMULARIO DE CLIENTE */}
       <div className="cliente-row">
         <label htmlFor="cliente-input" className="cliente-label">Cliente:</label>
         <input
@@ -151,18 +210,38 @@ function Sales() {
         />
       </div>
 
-      {/* BUSCADOR • CANTIDAD • AGREGAR */}
+      {/* BUSCADOR, CANTIDAD Y AGREGAR */}
       <div className="sales-row-inline">
         <div className="search-box">
           <HiOutlineSearch className="ico-search" />
           <input
+            ref={searchInputRef}
             className="input-search"
             type="text"
             placeholder="Buscar producto..."
             value={search}
-            onChange={e => { setSearch(e.target.value); setShowSuggestions(true); }}
+            onChange={e => {
+              setSearch(e.target.value);
+              setShowSuggestions(true);
+              setSuggestionIndex(-1);
+            }}
             onFocus={() => setShowSuggestions(true)}
             onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
+            onKeyDown={e => {
+              if (!showSuggestions || filtered.length === 0) return;
+              if (e.key === "ArrowDown") {
+                setSuggestionIndex(idx => Math.min(idx + 1, filtered.length - 1));
+                e.preventDefault();
+              } else if (e.key === "ArrowUp") {
+                setSuggestionIndex(idx => Math.max(idx - 1, 0));
+                e.preventDefault();
+              } else if (e.key === "Enter" && suggestionIndex >= 0) {
+                selectProduct(filtered[suggestionIndex]);
+                setSuggestionIndex(-1);
+                setTimeout(() => qtyInputRef.current && qtyInputRef.current.focus(), 0);
+                e.preventDefault();
+              }
+            }}
           />
           {showSuggestions && (
             <ul className="list-suggestions">
@@ -170,21 +249,30 @@ function Sales() {
               {!loadingProducts && filtered.length === 0 && (
                 <li className="no-suggestion">Sin coincidencias</li>
               )}
-              {!loadingProducts && filtered.map(p => (
-                <li key={p.id} onMouseDown={() => selectProduct(p)}>
-                  {p.name}
-                  <span className="tag-stock">Stock: {p.stock}</span>
-                  <span className="tag-price">
-                    S/ {Number(p.price).toFixed(2)}
-                  </span>
-                </li>
-              ))}
+              {!loadingProducts &&
+                filtered.map((p, idx) => (
+                  <li
+                    key={p.id}
+                    onMouseDown={() => selectProduct(p)}
+                    className={suggestionIndex === idx ? "active-suggestion" : ""}
+                    style={{
+                      background: suggestionIndex === idx ? "#eafaf1" : undefined,
+                    }}
+                  >
+                    {p.name}
+                    <span className="tag-stock">Stock: {p.stock}</span>
+                    <span className="tag-price">
+                      S/ {Number(p.price).toFixed(2)}
+                    </span>
+                  </li>
+                ))}
             </ul>
           )}
         </div>
         <div className="qty-box">
           <label>Cant.</label>
           <input
+            ref={qtyInputRef}
             className="input-qty"
             type="number"
             min="1"
@@ -196,6 +284,12 @@ function Sales() {
                 setQuantity(selectedProduct.stock);
               } else {
                 setQuantity(val);
+              }
+            }}
+            onKeyDown={e => {
+              if (e.key === "Enter" && selectedProduct && quantity > 0) {
+                addToCart();
+                setTimeout(() => searchInputRef.current && searchInputRef.current.focus(), 0);
               }
             }}
             disabled={!selectedProduct}
@@ -214,7 +308,7 @@ function Sales() {
         </button>
       </div>
 
-      {/* STOCK • PRECIO */}
+      {/* INFORMACIÓN DE STOCK Y PRECIO */}
       <div className="info-row">
         <div>
           <small>Stock disponible</small>
@@ -228,7 +322,7 @@ function Sales() {
         </div>
       </div>
 
-      {/* CARRITO */}
+      {/* TABLA DEL CARRITO */}
       <section className="cart-section">
         <table>
           <thead>
@@ -265,10 +359,10 @@ function Sales() {
         </table>
       </section>
 
-      {/* TOTALES + ACCIONES */}
+      {/* TOTALES Y ACCIONES */}
       <footer className="sales-footer">
         <div className="totals">
-          <span>Subtotal sin IGV: S/ {baseImponible.toFixed(2)}</span>
+          <span>Total Gravado: S/ {baseImponible.toFixed(2)}</span>
           <span>IGV (18%): S/ {igv.toFixed(2)}</span>
           <span className="total">Total: S/ {total.toFixed(2)}</span>
         </div>
@@ -284,7 +378,45 @@ function Sales() {
             disabled={cart.length === 0}
             onClick={handleConfirmSale}
           >
-            Confirmar Venta
+            <HiOutlineCheckCircle /> Confirmar Pedido
+          </button>
+          <button
+            className="btn-confirm pay"
+            disabled={cart.length === 0}
+            onClick={async () => {
+              try {
+                const response = await fetch(`${API_BASE_URL}/api/sales`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    userId: user.id,
+                    customer_name: clienteNombre.trim() || 'General public',
+                    customer_dni: clienteDni.trim() || '',
+                    total: Number(total.toFixed(2)),
+                    igv: Number(igv.toFixed(2)),
+                    status: "pagada",
+                    items: cart.map(item => ({
+                      id: item.id,
+                      quantity: item.quantity,
+                      price: Number(item.price)
+                    }))
+                  })
+                });
+                if (!response.ok) throw new Error('Error al registrar la venta');
+                setCart([]);
+                setSearch('');
+                setSelectedProduct(null);
+                setQuantity(1);
+                setClienteNombre('');
+                setClienteDni('');
+                setShowSaleModal(true);
+              } catch (err) {
+                alert('Ocurrió un error al registrar la venta');
+              }
+            }}
+            title="Registrar y marcar como pagada"
+          >
+            <HiOutlineCreditCard /> Confirmar y Pagar
           </button>
         </div>
       </footer>

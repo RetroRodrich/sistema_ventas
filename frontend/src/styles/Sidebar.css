@@ -68,9 +68,15 @@
   flex-direction: column;
 }
 .sidebar-username {
-  font-size: 1rem;
-  font-weight: 600;
+  font-size: 0.9rem;
+  font-weight: 400;
 }
+
+.sidebar-role{
+  font-size: 0.7rem;
+  color: #acacaca1;
+}
+
 .sidebar-status {
   font-size: 0.75rem;
   color: var(--sidebar-accent);

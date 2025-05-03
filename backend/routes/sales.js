@@ -3,20 +3,23 @@ const db = require('../config/db');
 const router = express.Router();
 
 router.post('/', (req, res) => {
-  const { userId, customer_name, customer_dni, total, igv, items } = req.body;
+  const { userId, customer_name, customer_dni, total, igv, items, status } = req.body;
   if (!items || !Array.isArray(items) || items.length === 0) {
     return res.status(400).json({ error: 'No sale items provided' });
   }
 
-  // Inserta la venta (incluyendo IGV)
+  // Usa el estado recibido o 'pendiente' por defecto
+  const saleStatus = status === 'pagada' ? 'pagada' : 'pendiente';
+
   const saleQuery = `
     INSERT INTO sales (userId, createdAt, status, customer_name, customer_dni, total, igv)
-    VALUES (?, NOW(), 'pendiente', ?, ?, ?, ?)
+    VALUES (?, NOW(), ?, ?, ?, ?, ?)
   `;
   db.query(
     saleQuery,
     [
       userId,
+      saleStatus,
       customer_name || 'General public',
       customer_dni || '',
       total,
@@ -117,15 +120,53 @@ router.put('/:id/status', (req, res) => {
   if (!validStatuses.includes(status)) {
     return res.status(400).json({ error: 'Estado inválido' });
   }
-  db.query(
-    'UPDATE sales SET status = ? WHERE id = ?',
-    [status, saleId],
-    (err, result) => {
-      if (err) return res.status(500).json({ error: 'Error al actualizar estado' });
-      if (result.affectedRows === 0) return res.status(404).json({ error: 'Venta no encontrada' });
-      res.json({ success: true });
-    }
-  );
+
+  if (status === 'anulada') {
+    // 1. Obtener los detalles de la venta
+    const detailsQuery = `
+      SELECT productId, quantity FROM saledetails WHERE saleId = ?
+    `;
+    db.query(detailsQuery, [saleId], (err, details) => {
+      if (err) return res.status(500).json({ error: 'Error al obtener detalles' });
+
+      // 2. Retornar stock de cada producto
+      const updates = details.map(item =>
+        new Promise((resolve, reject) => {
+          db.query(
+            'UPDATE products SET stock = stock + ? WHERE id = ?',
+            [item.quantity, item.productId],
+            (err2) => (err2 ? reject(err2) : resolve())
+          );
+        })
+      );
+
+      Promise.all(updates)
+        .then(() => {
+          // 3. Cambiar estado de la venta
+          db.query(
+            'UPDATE sales SET status = ? WHERE id = ?',
+            [status, saleId],
+            (err3, result) => {
+              if (err3) return res.status(500).json({ error: 'Error al actualizar estado' });
+              if (result.affectedRows === 0) return res.status(404).json({ error: 'Venta no encontrada' });
+              res.json({ success: true });
+            }
+          );
+        })
+        .catch(() => res.status(500).json({ error: 'Error al actualizar stock' }));
+    });
+  } else {
+    // Solo cambiar estado normalmente
+    db.query(
+      'UPDATE sales SET status = ? WHERE id = ?',
+      [status, saleId],
+      (err, result) => {
+        if (err) return res.status(500).json({ error: 'Error al actualizar estado' });
+        if (result.affectedRows === 0) return res.status(404).json({ error: 'Venta no encontrada' });
+        res.json({ success: true });
+      }
+    );
+  }
 });
 
 module.exports = router;

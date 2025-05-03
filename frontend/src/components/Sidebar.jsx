@@ -5,13 +5,16 @@ import {
   MdOutlineCategory,
   MdOutlineShoppingCart,
   MdOutlineBarChart,
-  MdOutlinePeople
 } from 'react-icons/md'
 import { HiOutlineShoppingBag } from 'react-icons/hi'
 import '../styles/Sidebar.css'
 
 const Sidebar = ({ isOpen, onClose }) => {
   const location = useLocation()
+
+  const user = JSON.parse(localStorage.getItem('user')) || '{}';
+  const username = user.username || user.name || 'Invitado';
+  const userRole = user.role = 'admin' ? 'Administrador' : 'Empleado';
 
   const handleLinkClick = () => {
     if (window.innerWidth < 1024 && onClose) onClose()
@@ -33,7 +36,8 @@ const Sidebar = ({ isOpen, onClose }) => {
           className="sidebar-avatar"
         />
         <div className="sidebar-user-info">
-          <div className="sidebar-username">Montenegro John</div>
+          <div className="sidebar-username">{username}</div>
+          <div className="sidebar-role">{userRole}</div>
           <div className="sidebar-status">● Online</div>
         </div>
       </div>

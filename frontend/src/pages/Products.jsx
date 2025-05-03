@@ -3,7 +3,7 @@ import { API_BASE_URL } from '../Conexion';
 import ProductCard from '../components/ProductCard';
 import AddProductModal from '../components/AddProductModal';
 import DeleteConfirmationModal from '../components/DeleteConfirmationModal';
-import { HiOutlinePlus } from 'react-icons/hi'
+import { HiOutlineShoppingBag, HiOutlinePlus } from 'react-icons/hi';
 import '../styles/Products.css';
 
 
@@ -134,9 +134,13 @@ function Products() {
   return (
     <div className="products-page">
       <div className="products-header">
-        <span className="products-icon">🛒</span>
-        <h2>Catálogo de Productos</h2>
-        <p className="products-subtitle">Gestiona y visualiza tus productos de manera rápida y sencilla.</p>
+        <span className="products-icon">
+          <HiOutlineShoppingBag />
+        </span>
+        <div>
+          <h2>Catálogo de Productos</h2>
+          <p className="products-subtitle">Gestiona y visualiza tus productos de manera rápida y sencilla.</p>
+        </div>
       </div>
       <div className="products-controls">
         <input
