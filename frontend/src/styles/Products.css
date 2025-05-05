@@ -1,145 +1,313 @@
-.products-page,
-.products-grid {
-  max-width: 100vw;
-  overflow-x: hidden;
-}
-
+/* --- CONTENEDOR PRINCIPAL --- */
 .products-page {
-  background: transparent;
-  box-shadow: none;
-  border-radius: 0;
-  padding: 0;
-  max-width: 100%;
+  color: #1f2a37;
+  background: #f3f3f3;
+  min-height: 100vh;
+  margin: -1rem;
+  border-radius: 15px 0 15px 0;
+  padding: 0.8rem 0.8rem;
+  box-shadow: 0px 0px 8px 0px #1f2a3771 inset;
 }
 
+/* --- HEADER TARJETA --- */
+.products-header-card {
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+}
+
+/* --- HEADER --- */
 .products-header {
   display: flex;
+  flex-direction: row;
+  gap: 1rem;
   align-items: center;
-  gap: 1.1rem;
-  background: linear-gradient(90deg, #eafaf1 0%, #f8fefc 100%);
-  border-left: 6px solid #1abc9c;
-  box-shadow: 0 2px 8px rgba(44, 62, 80, 0.04);
-  border-radius: 0 18px 0 0;
-  padding: 1.4rem 1.2rem 1.1rem 1.2rem;
-  margin-bottom: 2.2rem;
-  text-align: left;
+  padding: 1rem;
+  background: linear-gradient(135deg, #1f2a37 25%, #2fcabd 80%);
+  border-radius: 10px 0 10px 0;
+  margin-bottom: 0.5rem;
 }
 
 .products-icon {
   font-size: 2.2rem;
-  color: #1abc9c;
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(44, 62, 80, 0.07);
-  padding: 0.35rem 0.5rem 0.35rem 0.5rem;
+  color: #fff;
+  background: linear-gradient(135deg, #2fcabd -5%, #223047 100%);
+  border-radius: 50%;
+  padding: 0.6rem 0.6rem;
   display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
-.products-header h2 {
-  font-size: 2.1rem;
+.products-header-titles {
+  display: flex;
+  flex-direction: column;
+}
+
+.products-title {
+  font-size: 1.1rem;
   font-weight: 700;
-  margin: 0;
-  color: #223047;
-  letter-spacing: -1px;
-  text-shadow: 0 1px 0 #fff, 0 2px 8px rgba(44,62,80,0.04);
-  background: none;
-  display: inline-block;
+  color: #2fcabd;
+  letter-spacing: 0.04em;
 }
 
 .products-subtitle {
-  color: #6c7a89;
-  font-size: 1.08rem;
-  margin-top: 0.2rem;
-  margin-bottom: 0.7rem;
+  color: #fff;
+  font-size: 0.9rem;
   font-weight: 400;
-  letter-spacing: 0.01em;
-  display: block;
+  letter-spacing: 0.04em;
 }
 
+/* --- CONTROLES --- */
 .products-controls {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 1.2rem;
-  margin-bottom: 2.2rem;
-  flex-wrap: wrap;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.1rem;
+  border-radius: 0;
 }
 
-.search-bar,
-.filter-dropdown {
-  padding: 0.55rem 1rem;
-  font-size: 1.03rem;
-  border: 1.2px solid #d3dae6;
-  border-radius: 7px;
-  background: #f8fafb;
-  transition: border 0.2s;
+.search-bar-wrapper {
+  position: relative;
+  width: 100%;;
+  margin-bottom: 0;
+}
+
+.search-icon {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  display: flex;
+}
+
+.search-bar {
+  width: 100%;
+  padding: 0.45rem 0.5rem 0.45rem 2.2rem;
+  font-size: 0.9rem;
+  border: none;
+  border-radius: 50px;
+  background: #ffffff;
+  box-sizing: border-box;
   outline: none;
-  color: #222e3a;
   font-weight: 400;
-  box-shadow: none;
+  box-shadow: 0 0 5px 1px #0303032f inset;
+  height: 2.5rem;
+}
+.search-bar:focus {
+  box-shadow: 0 0 4px 1px #1f2a37 inset;
 }
 
-.search-bar:focus,
-.filter-dropdown:focus {
-  border-color: #3a4a5d;
-  background: #fff;
+/* --- FILA DE SELECT Y BOTÓN --- */
+.products-controls-row {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0;
+  padding: 0 0.5rem;
+}
+
+.filter-dropdown {
+  margin-bottom: 0;
 }
 
 .add-product-button {
-  padding: 0.55rem 1.3rem;
-  font-size: 1.03rem;
-  background: #1c3657;
+  display: flex;
+  flex: auto;
+  min-width: 70px;
+  max-width: 120px;
+  padding: 0.18rem 0.7rem;
+  font-size: 0.98rem;
+  border-radius: 16px;
+  margin-left: 0.2rem;
+  align-items: center;
+  justify-content: center;
+  background: #223047;
   color: #fff;
   border: none;
-  border-radius: 5px;
   cursor: pointer;
   font-weight: 600;
-  box-shadow: 0 2px 8px #0252b411;
-  transition: background 0.2s, transform 0.18s;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  letter-spacing: 0.01em;
+  transition: background 0.15s, transform 0.10s;
 }
 .add-product-button:hover {
-  background: #223047;
-  transform: translateY(-2px) scale(1.03);
+  background: #159c86;
+  transform: translateY(-1px) scale(1.04);
 }
 
-.products-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 2.7rem 2.7rem;
-  margin-top: 1.5rem;
-  padding-bottom: 1rem;
+/* --- SELECT --- */
+.filter-dropdown {
+  padding: 0.4rem 1rem;
+  font-size: 1rem;
+  border: none;
+  border-bottom: #223047 1.5px solid;
+  color: #223047;
+  transition: border 0.13s, box-shadow 0.13s;
+  outline: none;
+}
+
+/* --- TABLA DE PRODUCTOS (puedes personalizar más si quieres) --- */
+.products-table-container {
+  background: #fcfcfc;
+  padding: 0.7rem 1.1rem 1.1rem 1.1rem;
+  margin-top: 0.7rem;
+  overflow-x: auto;
+}
+
+.products-table {
   width: 100%;
-  box-sizing: border-box;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 1rem;
+  background: transparent;
+  min-width: 600px;
 }
 
-@media (max-width: 900px) {
-  .products-header h2 {
-    font-size: 1.5rem;
-  }
-  .products-controls {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0.8rem;
-  }
-  .products-grid {
-    gap: 1.5rem;
-  }
+.products-table th, .products-table td {
+  padding: 0.7rem 0.5rem;
+  text-align: left;
+  border-bottom: 1px solid #f0f2f5;
+  vertical-align: middle;
+  font-size: 0.97rem;
+  background: transparent;
 }
-@media (max-width: 700px) {
-  .products-header h2 {
-    font-size: 1.1rem;
+
+.products-table th {
+  background: #1f2a37;
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.85rem;
+  letter-spacing: 0.03em;
+  border: none;
+  border-bottom: 4px solid #2fcabd;  
+}
+
+.products-table tr {
+  transition: background 0.08s;
+}
+
+.products-table tr:nth-child(even) {
+  background: #89baf51a;
+}
+
+.products-table tr:hover {
+  background: #eafaf6;
+}
+
+.products-table tr:last-child td {
+  border-bottom: none;
+}
+
+.table-product-image {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+  margin: 0 auto;
+  box-shadow: 0px 0px 5px 0px #1f2a376b;
+}
+
+/* --- ACCIONES --- */
+.table-action {
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 1.1rem;
+  margin-right: 0.2rem;
+  border-radius: 50%;
+  padding: 0.2rem 0.4rem;
+  transition: background 0.08s, color 0.08s;
+  color: #7a869a;
+}
+.table-action.edit:hover {
+  background: #2230472d;
+  color: #223047;
+}
+.table-action.delete:hover {
+  background: #fdeceb;
+  color: #ff3576;
+}
+
+/* --- PAGINACIÓN --- */
+.pagination-bar {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.7rem;
+  margin-top: 0.7rem;
+  font-size: 1rem;
+}
+.pagination-bar button {
+  color: #fff;
+  background: linear-gradient(135deg, #223047 10%, #2fcabd 80%);
+  background-size: 200% 100%;
+  background-position: 0 0;
+  border: none;
+  border-radius: 50%;
+  padding: 0.3rem 0.3rem 0rem 0.4rem;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: background-position 0.3s ease;
+}
+
+.pagination-bar button:hover {
+  background-position: 100% 0;
+}
+.pagination-bar button:disabled {
+  color: #bfcad6;
+  cursor: not-allowed;
+  background: #f3f3f3;
+}
+.pagination-bar span {
+  color: #7a869a;
+  font-weight: 600;
+}
+
+/* --- CONFIGURACIONES <= 1024px --- */
+@media (max-width: 1024px) {
+  .products-header {
+    gap: 0.8rem;
+    padding: 0.8rem;
   }
+
+  .products-icon {
+    font-size: 1.5rem;
+    padding: 0.5rem;
+  }
+
+  .products-title {
+    font-size: 0.85rem;
+  }
+
   .products-subtitle {
-    font-size: 0.97rem;
+    font-size: 0.75rem;
   }
-  .products-grid {
-    gap: 0.7rem;
-    grid-template-columns: 1fr;
+
+  .products-controls {
+    gap: 0;
+    transform: scale(0.95);
+  }
+
+  .products-table th, .products-table td {
+    padding: 0.35rem;
+  }
+
+  .products-table th {
+    font-size: 0.8rem;
+  }
+
+  .products-table td {
+    font-size: 0.8rem;
+  }
+  
+  .products-table img {
+    width: 1.7rem;
+    height: 1.7rem;
+  }
+
+  .pagination-bar {
+    font-size: 0.85rem;
+    justify-content: center;
+    gap: 0.5rem;
   }
 }
