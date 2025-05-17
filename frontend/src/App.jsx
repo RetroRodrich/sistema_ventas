@@ -5,35 +5,44 @@ import Sidebar from './components/Sidebar';
 import Home from './pages/Home';
 import Products from './pages/Products';
 import Sales from './pages/Sales';
-import Login from './pages/Login';
 import SaleHistory from './pages/SaleHistory';
+import Login from './pages/Login';
+import Register from './pages/Register';
 import './styles/App.css';
 
 function App() {
   const [isLogged, setIsLogged] = useState(!!localStorage.getItem('token'));
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false); // <--- Nuevo estado
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const navigate = useNavigate();
 
   const handleLogout = () => {
     localStorage.removeItem('token');
     setIsLogged(false);
-    navigate('/');
+    navigate('/login');
   };
 
-  // Abre el sidebar (desde el botón hamburguesa)
-  const openSidebar = () => setIsSidebarOpen(true);
-  // Cierra el sidebar (desde el overlay o menú)
-  const closeSidebar = () => setIsSidebarOpen(false);
-
   if (!isLogged) {
-    return <Login onLogin={() => setIsLogged(true)} />;
+    return (
+      <Routes>
+        <Route
+          path="/register"
+          element={<Register onRegister={() => setIsLogged(true)} />}
+        />
+        <Route
+          path="*"
+          element={<Login onLogin={() => setIsLogged(true)} />}
+        />
+      </Routes>
+    );
   }
 
   return (
     <>
-      <Navbar onLogout={handleLogout} onOpenSidebar={openSidebar} />
-      <Sidebar isOpen={isSidebarOpen} onClose={closeSidebar} />
-      {isSidebarOpen && <div className="sidebar-overlay" onClick={closeSidebar}></div>}
+      <Navbar onLogout={handleLogout} onOpenSidebar={() => setIsSidebarOpen(true)} />
+      <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
+      {isSidebarOpen && (
+        <div className="sidebar-overlay" onClick={() => setIsSidebarOpen(false)} />
+      )}
       <div className="content">
         <Routes>
           <Route path="/" element={<Home />} />

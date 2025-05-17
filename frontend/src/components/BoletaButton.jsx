@@ -1,6 +1,10 @@
 import React from "react";
 import jsPDF from "jspdf";
 
+/**
+ * Botón para generar e imprimir la boleta en PDF.
+ * Incluye información de la venta, productos, totales, cliente y vendedor.
+ */
 const BoletaButton = ({ sale, details, icon, text, ...props }) => {
   // Variables para nombre de empresa y RUC (modificables)
   const empresaNombre = "RODRIGO TE ENDEUDA S.A.C.";
@@ -30,23 +34,27 @@ const BoletaButton = ({ sale, details, icon, text, ...props }) => {
     doc.setFont(undefined, "normal");
     doc.text("Av. Principal 123", 40, 32, { align: "center" });
 
-    // Cliente y fecha
+    // Cliente, vendedor y fecha
     doc.setFontSize(8);
     doc.setFont(undefined, "bold");
     doc.text("Cliente:", 8, 38);
     doc.setFont(undefined, "normal");
     doc.text(sale.customer_name, 25, 38);
     doc.setFont(undefined, "bold");
-    doc.text("Emisión:", 8, 42);
+    doc.text("Vendedor:", 8, 42);
     doc.setFont(undefined, "normal");
-    doc.text(new Date(sale.createdAt).toLocaleDateString(), 25, 42);
+    doc.text(sale.user_name || "-", 25, 42);
+    doc.setFont(undefined, "bold");
+    doc.text("Emisión:", 8, 46);
+    doc.setFont(undefined, "normal");
+    doc.text(new Date(sale.createdAt).toLocaleDateString(), 25, 46);
 
     // Línea separadora
     doc.setLineWidth(0.4);
-    doc.line(6, 45, 74, 45);
+    doc.line(6, 49, 74, 49);
 
     // Tabla encabezado (más espacio para producto)
-    let y = 49;
+    let y = 53;
     doc.setFontSize(8);
     doc.setFont(undefined, "bold");
     doc.text("Producto", 8, y);
@@ -111,6 +119,7 @@ const BoletaButton = ({ sale, details, icon, text, ...props }) => {
     <button {...props} onClick={handleGenerateBoleta}>
       {icon}
       {text && <span style={{ marginLeft: 6 }}>{text}</span>}
+      Imprimir Boleta
     </button>
   );
 };

@@ -5,7 +5,8 @@ import {
   MdOutlineCategory,
   MdOutlineShoppingCart,
   MdOutlineBarChart,
-} from 'react-icons/md'
+} from 'react-icons/md';
+import { FaUserCircle } from 'react-icons/fa';
 import { HiOutlineShoppingBag } from 'react-icons/hi'
 import '../styles/Sidebar.css'
 
@@ -14,7 +15,7 @@ const Sidebar = ({ isOpen, onClose }) => {
 
   const user = JSON.parse(localStorage.getItem('user')) || '{}';
   const username = user.username || user.name || 'Invitado';
-  const userRole = user.role = 'admin' ? 'Administrador' : 'Empleado';
+  const userRole = user.role === 'admin' ? 'Administrador' : 'Empleado';
 
   const handleLinkClick = () => {
     if (window.innerWidth < 1024 && onClose) onClose()
@@ -30,11 +31,7 @@ const Sidebar = ({ isOpen, onClose }) => {
 
       {/* User info */}
       <div className="sidebar-user">
-        <img
-          src="https://i.pravatar.cc/44"
-          alt="avatar"
-          className="sidebar-avatar"
-        />
+        <FaUserCircle className="sidebar-avatar"/>
         <div className="sidebar-user-info">
           <div className="sidebar-username">{username}</div>
           <div className="sidebar-role">{userRole}</div>

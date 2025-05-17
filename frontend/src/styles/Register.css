@@ -1,0 +1,137 @@
+.register-bg {
+    min-height: 100vh;
+    width: 100vw;
+    background: linear-gradient(135deg, #223047 0%, #334155 40%, #38f9d7 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+.register-card {
+    background: linear-gradient(125deg, #334155 30%,#223047 100%);  
+    box-shadow: 10px 10px 10px 1.1px #101722;
+    max-width: 330px;
+    width: 100%;
+    text-align: center;
+    padding: 1rem;
+    animation: fadeIn 0.7s cubic-bezier(.39, .575, .565, 1.000);
+}
+
+.register-icon {
+    font-size: 3rem;
+    color: #fff;
+    padding: 0.5rem;
+    background: linear-gradient(90deg, #334155 0%, #159c86 100%);
+    border-radius: 50%;
+    border: #fff 2px solid;
+    width: 60px;
+    height: 60px;
+    margin: 0 auto 1rem auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@media (max-height: 600px) {
+    .register-card {
+        max-width: 320px;
+        padding: 1rem 0.7rem 1rem 0.7rem;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.register-card h2 {
+    margin-bottom: 0.7rem;
+    color: #fff;
+    font-weight: 700;
+    letter-spacing: 1px;
+    font-size: 1.35rem;
+}
+
+.register-form {
+    max-width: 300px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.register-form input,
+.register-form select {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.8rem 1rem;
+    margin-bottom: 1rem;
+    border: none;
+    border-radius: 5px;
+    background: #fff;
+    font-size: 0.85rem;
+    color: #334155;
+    transition: box-shadow 0.2s;
+    box-shadow: 0 1px 2px rgba(59, 107, 246, 0.03);
+}
+
+.register-form input:focus,
+.register-form select:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px #334155;
+    background: #dbf9fd;
+}
+
+.register-btn {
+    width: 100%;
+    padding: 0.7rem;
+    background: linear-gradient(90deg, #159c86 0%, #38f9d7 100%);
+    color: #fff;
+    border: none;
+    border-radius: 7px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.3s;
+    box-shadow: 0 2px 8px rgba(59, 107, 246, 0.08);
+}
+
+.register-btn:hover {
+    background: #fff;
+    transform: translateY(-1px) scale(1.01);
+    color: #334155;
+}
+
+.register-error {
+    margin-bottom: 0.7rem;
+    color: #c53030;
+    font-size: 0.95rem;
+    background: #ffeaea;
+    border-radius: 5px;
+    padding: 0.4rem;
+}
+
+.register-link {
+    margin-top: 0.8rem;
+    font-size: 0.97rem;
+    color: #ffffff;
+}
+
+.register-link a {
+    color: #38f9d7;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+.register-link a:hover {
+    color: #fff;
+    text-decoration: underline;
+}

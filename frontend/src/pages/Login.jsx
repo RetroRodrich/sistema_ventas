@@ -3,11 +3,13 @@ import { API_BASE_URL } from '../Conexion';
 import '../styles/Login.css';
 import cartImg from '../assets/images/carrito_bgc.webp';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
+import { Link, useNavigate } from 'react-router-dom';
 
 function Login({ onLogin }) {
   const [form, setForm] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
 
   const handleChange = e => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -25,8 +27,9 @@ function Login({ onLogin }) {
       const data = await res.json();
       if (res.ok) {
         localStorage.setItem('token', data.token);
-        localStorage.setItem('user', JSON.stringify(data.user)); // <--- agrega esto
+        localStorage.setItem('user', JSON.stringify(data.user));
         if (onLogin) onLogin();
+        navigate('/');
       } else {
         setError(data.message || 'Credenciales incorrectas');
       }
@@ -71,6 +74,9 @@ function Login({ onLogin }) {
           </div>
           <button type="submit" className='btn-login'>Ingresar</button>
         </form>
+        <p className="login-link">
+          ¿No tienes cuenta? <Link to="/register">Regístrate</Link>
+        </p>
       </div>
     </div>
   );

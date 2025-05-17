@@ -72,12 +72,28 @@ router.post('/', (req, res) => {
 
 // Obtener todas las ventas
 router.get('/', (req, res) => {
-  const query = `
-    SELECT id, userId, createdAt, status, customer_name, customer_dni, total, igv
-    FROM sales
-    ORDER BY createdAt DESC
+  const { filter, from, to } = req.query;
+  let query = `
+    SELECT s.id, s.userId, u.name AS user_name, s.createdAt, s.status, s.customer_name, s.customer_dni, s.total, s.igv
+    FROM sales s
+    JOIN users u ON s.userId = u.id
   `;
-  db.query(query, (err, results) => {
+  const params = [];
+
+  if (filter === "hoy") {
+    query += " WHERE DATE(s.createdAt) = CURDATE()";
+  } else if (filter === "mes") {
+    query += " WHERE YEAR(s.createdAt) = YEAR(CURDATE()) AND MONTH(s.createdAt) = MONTH(CURDATE())";
+  } else if (filter === "anio") {
+    query += " WHERE YEAR(s.createdAt) = YEAR(CURDATE())";
+  } else if (filter === "personalizado" && from && to) {
+    query += " WHERE DATE(s.createdAt) BETWEEN ? AND ?";
+    params.push(from, to);
+  }
+
+  query += " ORDER BY s.createdAt DESC";
+
+  db.query(query, params, (err, results) => {
     if (err) {
       console.error('Error al obtener las ventas:', err);
       return res.status(500).json({ error: 'Error al obtener las ventas' });

@@ -42,4 +42,40 @@ router.post('/login', (req, res) => {
   });
 });
 
+// Registro de usuario
+router.post('/register', (req, res) => {
+  const { name, email, password, role } = req.body;      // <— extrae role
+  if (!name || !email || !password || !role)
+    return res.status(400).json({ message: 'Todos los campos son requeridos' });
+
+  if (!['admin','employee'].includes(role))              // <— valida role
+    return res.status(400).json({ message: 'Role inválido' });
+
+  db.query('SELECT id FROM users WHERE email = ?', [email], (err, results) => {
+    if (err) return res.status(500).json({ message: 'Error de servidor' });
+    if (results.length)
+      return res.status(409).json({ message: 'El email ya está registrado' });
+
+    bcrypt.hash(password, 10, (errHash, hash) => {
+      if (errHash) return res.status(500).json({ message: 'Error de servidor' });
+
+      // inserta con el role que llega desde el frontend
+      db.query(
+        'INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)',
+        [name, email, hash, role],                       // <— usa role dinámico
+        (err2, result) => {
+          if (err2) return res.status(500).json({ message: 'Error al crear usuario' });
+
+          const userId = result.insertId;
+          const token = jwt.sign({ id: userId, email, role }, JWT_SECRET, { expiresIn: '8h' });
+          res.status(201).json({
+            token,
+            user: { id: userId, name, email, role }
+          });
+        }
+      );
+    });
+  });
+});
+
 module.exports = router;

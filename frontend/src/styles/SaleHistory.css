@@ -1,449 +1,67 @@
+/* ==========================================================
+   CONTENEDOR PRINCIPAL DE LA PÁGINA
+   ========================================================== */
 .sales-history-page {
-  width: 100%;
-  margin: 0 auto;
-  background: transparent;
-  box-shadow: none;
-  padding: 0;
+  color: #1f2a37;
+  background: #f3f3f3;
+  min-height: 100vh;
+  margin: -1rem;
+  border-radius: 15px 0 15px 0;
+  padding: 0.8rem 0.8rem;
+  box-shadow: 0px 0px 10px 0px #44444444 inset;
 }
 
-.sales-history-page h2 {
-  text-align: left;
-  color: #1f2836;
-  margin-bottom: 2.2rem;
-  font-weight: 600;
-  letter-spacing: 0.2px;
-  font-size: 2rem;
-  display: flex;
-  align-items: center;
-  gap: 0.7rem;
-}
-
-.sales-history-page h2 span[role="img"] {
-  font-size: 2rem;
-  margin-right: 0.3rem;
-}
-
-.sales-history-page table {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-  background: transparent;
-  font-family: "Segoe UI", "Roboto", Arial, sans-serif;
-}
-
-.sales-history-page th,
-.sales-history-page td {
-  padding: 0.7rem 0.5rem;
-  text-align: center;
-  font-weight: 300;
-  font-size: 1rem;
-  border-bottom: 1px solid #e6e8ec;
-}
-
-.sales-history-page th {
-  background: #223046;
-  color: white;
-  font-weight: 500;
-  font-size: 1.01rem;
-  border-bottom: 2px solid #e6e8ec;
-  letter-spacing: 0.1px;
-}
-
-.sales-history-page tbody tr {
-  transition: background 0.13s;
-}
-
-.sales-history-page tbody tr:hover {
-  background: #f7fafd;
-}
-
-.sales-history-page td {
-  color: #000000;
-  font-weight: 100;
-  font-size: 0.95rem;
-}
-
-.sales-history-page td:last-child {
-  min-width: 110px;
-}
-
-.sales-history-page .btn-details {
-  background: none;
-  color: #205072;
-  border: 1px solid #dbe6ee;
-  border-radius: 5px;
-  padding: 0.32rem 1.05rem;
-  font-size: 0.97rem;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-  cursor: pointer;
-  transition: background 0.13s, border 0.13s, color 0.13s;
-  box-shadow: none;
-  font-weight: 300;
-}
-.sales-history-page .btn-details:hover {
-  background: #eaf3fa;
-  border-color: #b0c4d6;
-  color: #1a3b5d;
-}
-.sales-history-page .btn-details svg {
-  font-size: 1.08rem;
-  vertical-align: middle;
-  color: #1a3b5d;
-}
-
-/* Estado visual elegante */
-.sales-history-page .status-pendiente {
-  background: #fff8e1;
-  color: #b89c1c;
-  border-radius: 7px;
-  padding: 0.13em 0.7em;
-  font-weight: 400;
-  font-size: 0.97em;
-  border: 1px solid #ffe082;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3em;
-}
-.sales-history-page .status-pagada {
-  background: #e8f5e9;
-  color: #2e7d32;
-  border-radius: 7px;
-  padding: 0.13em 0.7em;
-  font-weight: 400;
-  font-size: 0.97em;
-  border: 1px solid #c8e6c9;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3em;
-}
-.sales-history-page .status-anulada {
-  background: #fbe9e7;
-  color: #b71c1c;
-  border-radius: 7px;
-  padding: 0.13em 0.7em;
-  font-weight: 400;
-  font-size: 0.97em;
-  border: 1px solid #ffccbc;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3em;
-}
-
-/* Ajuste para el total */
-.sales-history-page td[style*="color: #1abc9c"] {
-  color: #205072 !important;
-  font-weight: 400;
-  font-size: 1.04rem;
-  letter-spacing: 0.2px;
-}
-
-/* Modal overlay */
-.sh-modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.6);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
-}
-
-/* Modal content más compacto */
-.sh-modal__content {
-  background: #f9f9f9;
-  border-radius: 10px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.22);
-  padding: 0;
-  max-width: 420px;
-  font-size: 0.93rem;
-  margin: 0 1.2rem;
-  animation: shModalFadeIn 0.35s cubic-bezier(0.4, 1.7, 0.6, 0.97);
-}
-
-@keyframes shModalFadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(40px) scale(0.97);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-/* Modal header más pequeño */
-.sh-modal__header {
-  background: linear-gradient(90deg, #223046 80%, #205072 100%);
-  color: #fff;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.7rem 1.1rem;
-  font-size: 1rem;
-  border-bottom: 2px solid #e6e8ec;
-}
-.sh-modal__header h3 {
-  margin: 0;
-  font-size: 1rem;
-  font-weight: 400;
-  letter-spacing: 0.5px;
-}
-.sh-modal__close {
-  background: none;
-  border: none;
-  color: #fff;
-  font-size: 1.4rem;
-  cursor: pointer;
-  transition: color 0.2s;
-}
-.sh-modal__close:hover {
-  color: #e74c3c;
-}
-
-/* Info más compacta */
-.sh-modal__info {
-  padding: 0.7rem 1.5rem 0.2rem 1.5rem;
-  font-size: 0.93rem;
-  color: #333;
-  display: grid;
-  gap: 0.4rem;
-}
-.sh-modal__info-item {
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.93rem;
-}
-.sh-modal__info-item span:first-child {
-  font-weight: 600;
-  color: #2c3e50;
-}
-
-/* Separador antes y después de la tabla */
-.sh-modal__table-separator {
-  height: 0.7rem;
-  background: transparent;
-  display: block;
-  width: 100%;
-}
-.sh-modal__table-separator-bottom {
-  height: 1.1rem;
-  background: transparent;
-  display: block;
-  width: 100%;
-}
-
-/* Tabla más compacta */
-.sh-modal__table {
-  width: 100%;
-  padding: 0.3rem 0.3rem;
-  border-collapse: collapse;
-  margin: 0 auto;
-}
-.sh-modal__table th,
-.sh-modal__table td {
-  padding: 0.32rem 0.2rem;
-  font-size: 0.85rem;
-  border-bottom: 1px solid #e6e8ec;
-  text-align: center;
-}
-.sh-modal__table th {
-  background: #205072;
-  color: #fff;
-  font-weight: 500;
-  font-size: 0.91rem;
-  border-bottom: 2px solid #e6e8ec;
-  letter-spacing: 0.1px;
-}
-.sh-modal__table tr:last-child td {
-  border-bottom: none;
-}
-
-/* Totales más pequeños y claros */
-.sh-modal__igv-total {
-  margin: 0.7rem 1.5rem 0.5rem 1.5rem;
-  text-align: right;
+/* ==========================================================
+   HEADER DE LA PÁGINA
+   ========================================================== */
+.sales-history-header-card {
+  margin-bottom: 1rem;
   display: flex;
   flex-direction: column;
-  gap: 0.08rem;
 }
 
-.sh-modal__sin-igv,
-.sh-modal__igv {
-  font-size: 0.85rem;
-  color: #223046;
-  font-weight: 400;
-}
-
-.sh-modal__total {
-  font-size: 0.93rem;
-  color: #205072;
-  font-weight: 700;
-  margin-top: 0.12rem;
-  letter-spacing: 0.5px;
-}
-
-/* Botones más chicos y textos cortos */
-.sh-modal__actions {
-  display: flex;
-  gap: 0.4rem;
-  justify-content: center;
-  margin: 2rem 0 1.3rem 0;
-  padding: 0 1.2rem 0 1.2rem; /* Espacio a los lados */
-}
-
-.sh-modal__actions .btn-print {
-  background: #fff;
-  border: 1.2px solid #205072;
-  color: #205072;
-  border-radius: 4px;
-  padding: 0.28rem 0.7rem;
-  font-size: 0.93rem;
-  font-weight: 500;
-  transition: background 0.18s, color 0.18s, border 0.18s;
-  box-shadow: 0 2px 8px rgba(34,48,70,0.06);
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-}
-.sh-modal__actions .btn-print:hover {
-  background: #205072;
-  color: #fff;
-}
-.sh-modal__actions .btn-print span {
-  display: none; /* Oculta el texto largo si usas solo el icono */
-}
-.sh-modal__actions .btn-print::after {
-  content: "Imprimir";
-  margin-left: 0.3rem;
-  font-size: 0.93rem;
-}
-
-.sh-modal__actions .sh-btn--success {
-  background: #27ae60;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  padding: 0.28rem 0.7rem;
-  font-size: 0.93rem;
-  font-weight: 500;
-  box-shadow: 0 2px 8px rgba(39,174,96,0.08);
-  transition: background 0.18s, transform 0.18s;
-}
-.sh-modal__actions .sh-btn--success:hover {
-  background: #219150;
-  transform: scale(1.04);
-}
-.sh-modal__actions .sh-btn--success span {
-  display: none; /* Oculta el texto largo si usas solo el icono */
-}
-.sh-modal__actions .sh-btn--success::after {
-  content: "Pagar";
-  margin-left: 0.3rem;
-  font-size: 0.93rem;
-}
-
-.sh-modal__actions .sh-btn--danger {
-  background: #e74c3c;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  padding: 0.28rem 0.7rem;
-  font-size: 0.93rem;
-  font-weight: 500;
-  box-shadow: 0 2px 8px rgba(231,76,60,0.08);
-  transition: background 0.18s, transform 0.18s;
-}
-.sh-modal__actions .sh-btn--danger:hover {
-  background: #c0392b;
-  transform: scale(1.04);
-}
-.sh-modal__actions .sh-btn--danger span {
-  display: none; /* Oculta el texto largo si usas solo el icono */
-}
-.sh-modal__actions .sh-btn--danger::after {
-  content: "Anular";
-  margin-left: 0.3rem;
-  font-size: 0.93rem;
-}
-
-/* Responsive: modal más pequeño y con scale en pantallas pequeñas */
-@media (max-width: 600px) {
-  .sh-modal__content {
-    transform: scale(0.9);
-    border-radius: 10px;
-    animation: shModalFadeInSmall 0.35s cubic-bezier(0.4, 1.7, 0.6, 0.97);
-  }
-}
-
-@keyframes shModalFadeInSmall {
-  from {
-    opacity: 0;
-    transform: translateY(40px) scale(0.8);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(0.9);
-  }
-}
-
-/* HEADER ELEGANTE COMO SALES */
 .sales-history-header {
-  background: linear-gradient(90deg, #e0e4ff 0%, #f8fefc 100%);
-  padding: 1.4rem 1.2rem 1.1rem 1.2rem;
-  margin-bottom: 1.2rem;
-  border-left: 6px solid #223047;
-  box-shadow: 0 2px 8px rgba(44, 62, 80, 0.04);
   display: flex;
+  flex-direction: row;
+  gap: 1rem;
   align-items: center;
-  gap: 0.9rem;
-  border-radius: 0 18px 0 0;
-  position: relative;
-  overflow: hidden;
+  padding: 1rem;
+  background: linear-gradient(135deg, #1f2a37 25%, #2fcabd 80%);
+  border-radius: 10px 0 10px 0;
+  margin-bottom: 0.5rem;
 }
 
-.sales-history-icon span[role="img"] {
+.sales-history-icon {
   font-size: 2.2rem;
-  color: #ffffff;
-  background: #223047;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(44, 62, 80, 0.07);
-  padding: 0.35rem 0.5rem 0.35rem 0.5rem;
+  color: #fff;
+  background: linear-gradient(135deg, #2fcabd -5%, #223047 100%);
+  border-radius: 50%;
+  padding: 0.6rem 0.6rem;
   display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
-.sales-history-header h2 {
-  font-size: 2.1rem;
-  font-weight: 700;
-  margin: 0;
-  color: #223047;
-  letter-spacing: -1px;
-  text-shadow: 0 1px 0 #fff, 0 2px 8px rgba(44,62,80,0.04);
-}
-
-.sales-history-header > div:last-child {
+.sales-history-header-titles {
   display: flex;
   flex-direction: column;
-  gap: 0.15rem;
+}
+
+.sales-history-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #2fcabd;
+  letter-spacing: 0.04em;
 }
 
 .sales-history-subtitle {
-  color: #6c7a89;
-  font-size: 1.08rem;
-  margin-top: 0.18rem;
-  margin-bottom: 0.1rem;
+  color: #fff;
+  font-size: 0.9rem;
   font-weight: 400;
-  letter-spacing: 0.01em;
-  display: block;
+  letter-spacing: 0.04em;
 }
 
-/* Sales history table wrapper */
+/* ==========================================================
+   TABLA DE HISTORIAL DE VENTAS
+   ========================================================== */
 .sales-history-table-wrapper {
   width: 100%;
   overflow-x: auto;
@@ -453,7 +71,6 @@
   margin-bottom: 2rem;
 }
 
-/* Sales history table */
 .sales-history-table {
   width: 100%;
   border-collapse: separate;
@@ -494,7 +111,9 @@
   min-width: 120px;
 }
 
-/* Table actions */
+/* ==========================================================
+   ACCIONES EN LA TABLA DE HISTORIAL
+   ========================================================== */
 .sh-table-actions {
   display: flex;
   gap: 0.3rem;
@@ -502,7 +121,6 @@
   align-items: center;
 }
 
-/* Button details */
 .btn-details {
   background: none;
   color: #205072;
@@ -529,44 +147,9 @@
   color: #1a3b5d;
 }
 
-/* Botón de impresión en la tabla */
-.btn-print {
-  background: none;
-  border: 1px solid #dbe6ee;
-  color: #205072;
-  border-radius: 5px;
-  padding: 0.22rem 0.8rem;
-  font-size: 1rem;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  cursor: pointer;
-  transition: background 0.13s, border 0.13s, color 0.13s;
-  box-shadow: none;
-  font-weight: 400;
-}
-
-.btn-print:hover {
-  background: #eaf3fa;
-  border-color: #b0c4d6;
-  color: #1a3b5d;
-}
-
-.btn-print svg {
-  font-size: 1.15rem;
-  vertical-align: middle;
-  color: #1a3b5d;
-}
-
-/* Table total */
-.sh-table-total {
-  color: #1abc9c;
-  font-weight: 600;
-  font-size: 0.97rem;
-  letter-spacing: 0.2px;
-}
-
-/* Table status */
+/* ==========================================================
+   ESTADOS DE VENTA (PAGADA, PENDIENTE, ANULADA)
+   ========================================================== */
 .sh-table-status {
   border-radius: 6px;
   padding: 0.13rem 0.7rem;
@@ -576,7 +159,7 @@
 }
 
 .status-pendiente {
-  background: #fff8e1;
+  background: #fdf7d7;
   color: #bfa100;
 }
 .status-pagada {
@@ -586,4 +169,317 @@
 .status-anulada {
   background: #ffeaea;
   color: #c0392b;
+}
+
+/* ==========================================================
+   TOTAL EN LA TABLA DE HISTORIAL
+   ========================================================== */
+.sh-table-total {
+  color: #1abc9c;
+  font-weight: 600;
+  font-size: 0.97rem;
+  letter-spacing: 0.2px;
+}
+
+/* ==========================================================
+   MODAL DE DETALLES DE VENTA
+   ========================================================== */
+.sh-modal {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.562);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sh-modal__content {
+  border-radius: 14px;
+  box-shadow: 0 8px 32px rgba(34,48,70,0.18);
+  padding: 0;
+  min-width: 340px;
+  max-width: 420px;
+  width: 100%;
+  position: relative;
+  animation: shModalFadeIn 0.18s;
+  overflow: hidden;
+}
+
+@keyframes shModalFadeIn {
+  from { transform: translateY(30px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.sh-modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #223046;
+  border-radius: 14px 14px 0 0;
+  padding: 1rem 1.2rem 0.8rem 1.2rem;
+  box-shadow: 0 1px 4px rgba(34,48,70,0.04);
+}
+
+.sh-modal__header h3 {
+  font-size: 1.13rem;
+  font-weight: 700;
+  color: #fff;
+  margin: 0;
+  background: transparent;
+  padding: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.sh-modal__close {
+  background: none;
+  border: none;
+  color: #2fcabd;
+  font-size: 1.3rem;
+  cursor: pointer;
+  padding: 0.2rem;
+  border-radius: 50%;
+  transition: background 0.13s;
+}
+
+/* ==========================================================
+   BODY DEL MODAL
+   ========================================================== */
+.sh-modal__body {
+  padding: 1.2rem 1.2rem 1rem 1.2rem;
+  background: #ebebeb;
+}
+
+/* ==========================================================
+   INFORMACIÓN GENERAL DEL MODAL
+   ========================================================== */
+.sh-modal__info {
+  border-radius: 8px;
+  padding: 0.7rem;
+  margin-bottom: 0.7rem;
+  font-size: 0.98rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+/* ==========================================================
+   TABLA DE PRODUCTOS EN EL MODAL
+   ========================================================== */
+.sh-modal__table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  margin-bottom: 0.7rem;
+  display: flex;
+  justify-content: center; /* Centra la tabla horizontalmente */
+}
+
+.sh-modal__table {
+  width: 100%;
+  min-width: 340px;
+  max-width: 100%;
+  margin: 0;
+  border-collapse: collapse;
+}
+.sh-modal__table th,
+.sh-modal__table td {
+  padding: 0.35rem 0.5rem;
+  text-align: center;
+  font-size: 0.93rem;
+  border-bottom: 1px solid #1f2a37;
+}
+.sh-modal__table th {
+  font-weight: 600;
+  font-size: 0.97rem;
+  border-bottom: 2px solid #1a3b5d;
+  background: #1a3b5d;
+  color: #fff;
+}
+.sh-modal__table td {
+  font-weight: 400;
+}
+.sh-modal__loading,
+.sh-modal__empty {
+  color: #b0b8c1;
+  font-style: italic;
+  text-align: center;
+  background: transparent;
+}
+
+/* ==========================================================
+   TOTALES EN EL MODAL
+   ========================================================== */
+.sh-modal__igv-total {
+  border-radius: 8px;
+  padding: 0.7rem;
+  margin-bottom: 0.7rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+.sh-modal__sin-igv,
+.sh-modal__igv,
+.sh-modal__total {
+  font-size: 0.97rem;
+  display: flex;
+  justify-content: space-between;
+}
+.sh-modal__total {
+  font-weight: 700;
+  color: #2fcabd;
+}
+
+/* ==========================================================
+   ACCIONES DEL MODAL (BOTONES)
+   ========================================================== */
+.sh-modal__actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+  margin-top: 0.5rem;
+}
+
+.btn-print {
+  background: #1a3b5d;
+  color: #fff !important;
+  border: none;
+  border-radius: 6px;
+  padding: 0.32rem 1.1rem;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: background 0.13s;
+  font-weight: 500;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: visible;
+}
+.btn-print:hover {
+  background: #205072;
+  color: #fff;
+}
+
+.sh-btn {
+  border: none;
+  border-radius: 6px;
+  padding: 0.32rem 0.7rem;
+  font-size: 1.05rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  transition: background 0.13s;
+}
+.sh-btn--success {
+  background: #e6f9f3;
+  color: #0e8c5a;
+}
+.sh-btn--success:hover {
+  background: #2fcabd;
+  color: #fff;
+}
+.sh-btn--danger {
+  background: #ffeaea;
+  color: #c0392b;
+}
+.sh-btn--danger:hover {
+  background: #c0392b;
+  color: #fff;
+}
+.sh-btn--hoy {
+  background: #eaf3fa;
+  color: #223046;
+  border: 1px solid #b0c4d6;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.13s;
+}
+.sh-btn--hoy:hover {
+  background: #2fcabd;
+  color: #fff;
+  border-color: #2fcabd;
+}
+
+/* ==========================================================
+   FILTROS DE FECHA Y BÚSQUEDA
+   ========================================================== */
+.sh-filters-bar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: #f8fafc;
+  border-radius: 8px;
+  padding: 0.7rem 1rem;
+  margin-bottom: 1.2rem;
+  box-shadow: 0 1px 4px rgba(34,48,70,0.04);
+  flex-wrap: wrap;
+}
+
+.sh-filter-select {
+  padding: 0.35rem 0.8rem;
+  border-radius: 6px;
+  border: 1px solid #dbe6ee;
+  font-size: 1rem;
+  background: #fff;
+  color: #223046;
+}
+
+.sh-filter-custom {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.sh-filter-date {
+  padding: 0.32rem 0.7rem;
+  border-radius: 6px;
+  border: 1px solid #dbe6ee;
+  font-size: 1rem;
+  background: #fff;
+  color: #223046;
+}
+
+.sh-btn--search {
+  background: #1a3b5d;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.32rem 1.1rem;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: background 0.13s;
+  font-weight: 500;
+}
+.sh-btn--search:hover {
+  background: #1f2a37;
+  color: #fff;
+}
+
+/* ==========================================================
+   RESPONSIVE: ADAPTACIÓN A PANTALLAS PEQUEÑAS
+   ========================================================== */
+@media (max-width: 600px) {
+  .sh-modal__content {
+    min-width: unset;
+    max-width: 98vw;
+    width: 98vw;
+    padding: 0;
+  }
+  .sh-modal__body {
+    padding: 0.7rem 0.2rem 0.7rem 0.2rem;
+  }
+  .sh-modal__table {
+    min-width: 340px;
+    font-size: 0.89rem;
+  }
+  .sh-modal__table th,
+  .sh-modal__table td {
+    padding: 0.28rem 0.25rem;
+    font-size: 0.89rem;
+  }
 }

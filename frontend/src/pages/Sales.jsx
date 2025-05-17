@@ -169,17 +169,19 @@ function Sales() {
       )}
 
       {/* CABECERA */}
-      <header className="sales-header">
-        <span className="header-icon">
-          <HiOutlineShoppingCart />
-        </span>
-        <div className="sales-header-content">
-          <h2>Generar Venta</h2>
-          <span className="sales-header-desc">
-            Busca productos, agrégalos al carrito y confirma la venta para llevar el control de tus operaciones.
+      <div className="sales-header-card">
+        <div className="sales-header">
+          <span className="sales-icon">
+            <HiOutlineShoppingCart />
           </span>
+          <div className="sales-header-titles">
+            <span className="sales-title">Generar Venta</span>
+            <span className="sales-subtitle">
+              Busca productos, agrégalos al carrito y confirma la venta para llevar el control de tus operaciones.
+            </span>
+          </div>
         </div>
-      </header>
+      </div>
 
       {/* FORMULARIO DE CLIENTE */}
       <div className="cliente-row">
@@ -269,11 +271,11 @@ function Sales() {
             </ul>
           )}
         </div>
-        <div className="qty-box">
+        <div className="qty-box-inline">
           <label>Cant.</label>
           <input
             ref={qtyInputRef}
-            className="input-qty"
+            className="input-qty-inline"
             type="number"
             min="1"
             max={selectedProduct ? selectedProduct.stock : ''}
@@ -378,7 +380,7 @@ function Sales() {
             disabled={cart.length === 0}
             onClick={handleConfirmSale}
           >
-            <HiOutlineCheckCircle /> Confirmar Pedido
+            <HiOutlineCheckCircle /> Pendiente
           </button>
           <button
             className="btn-confirm pay"
