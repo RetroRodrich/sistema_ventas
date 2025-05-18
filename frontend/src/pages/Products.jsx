@@ -9,11 +9,12 @@ import {
   FiChevronLeft,
   FiChevronRight,
 } from "react-icons/fi";
-import { HiOutlineSearch } from "react-icons/hi";
+import { HiOutlineSearch, HiOutlineX } from "react-icons/hi";
 import "../styles/Products.css";
 
 function Products() {
   const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [filter, setFilter] = useState("all");
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -29,6 +30,13 @@ function Products() {
       .then((data) => setProducts(data))
       .catch((error) =>
         console.error("Error al obtener los productos:", error)
+      );
+    // Obtener categorías
+    fetch(`${API_BASE_URL}/api/products/categories`)
+      .then((response) => response.json())
+      .then((data) => setCategories(data))
+      .catch((error) =>
+        console.error("Error al obtener las categorías:", error)
       );
   }, []);
 
@@ -153,6 +161,16 @@ function Products() {
               onChange={handleSearchChange}
               className="search-bar"
             />
+            {searchTerm && (
+              <button
+                className="clear-search-btn"
+                onClick={() => setSearchTerm("")}
+                title="Limpiar búsqueda"
+                type="button"
+              >
+                <HiOutlineX />
+              </button>
+            )}
           </div>
           <div className="products-controls-row">
             <select
@@ -161,9 +179,11 @@ function Products() {
               className="filter-dropdown"
             >
               <option value="all">Todas las categorías</option>
-              <option value="Electrodomésticos">Electrodomésticos</option>
-              <option value="Tecnología">Tecnología</option>
-              <option value="Ropa">Ropa</option>
+              {categories.map((cat) => (
+                <option key={cat.id} value={cat.name}>
+                  {cat.name}
+                </option>
+              ))}
             </select>
             <div className="rows-per-page-wrapper">
               <select

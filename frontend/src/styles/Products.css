@@ -2,7 +2,6 @@
 .products-page {
   color: #1f2a37;
   background: #f3f3f3;
-  min-height: 100vh;
   margin: -1rem;
   border-radius: 15px 0 15px 0;
   padding: 0.8rem 0.8rem;
@@ -310,4 +309,23 @@
     justify-content: center;
     gap: 0.5rem;
   }
+}
+
+.clear-search-btn {
+  background: none;
+  border: none;
+  position: absolute;
+  right: 8px;
+  bottom: 0px;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #888;
+  padding: 0;
+  font-size: 1.1em;
+}
+.clear-search-btn:hover {
+  color: #1abc9c;
+}
+.search-bar-wrapper, .search-box {
+  position: relative;
 }

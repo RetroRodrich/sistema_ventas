@@ -169,4 +169,17 @@ router.get('/search', (req, res) => {
   });
 });
 
+// Obtener todas las categorías
+router.get('/categories', (req, res) => {
+  const query = 'SELECT id, name FROM categories';
+  db.query(query, (err, results) => {
+    if (err) {
+      console.error('Error al obtener las categorías:', err);
+      res.status(500).json({ error: 'Error al obtener las categorías' });
+    } else {
+      res.json(results);
+    }
+  });
+});
+
 module.exports = router;

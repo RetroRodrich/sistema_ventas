@@ -24,9 +24,11 @@ function Sales() {
   const [products, setProducts] = useState([]); // Productos encontrados
   const [loadingProducts, setLoadingProducts] = useState(false); // Estado de carga de productos
   const [showSaleModal, setShowSaleModal] = useState(false); // Mostrar modal de éxito
+  const [saleModalMessage, setSaleModalMessage] = useState("Pedido registrado exitosamente!");
   const searchInputRef = useRef(null);
   const qtyInputRef = useRef(null);
   const [suggestionIndex, setSuggestionIndex] = useState(-1);
+  const [horaActual, setHoraActual] = useState(new Date());
 
   // =======================
   // Búsqueda de productos al escribir
@@ -42,6 +44,14 @@ function Sales() {
       .then(data => setProducts(data))
       .finally(() => setLoadingProducts(false));
   }, [search]);
+
+  // =======================
+  // Actualizar la hora cada segundo
+  // =======================
+  useEffect(() => {
+    const timer = setInterval(() => setHoraActual(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
 
   // =======================
   // Lista filtrada de productos (ya viene filtrada del backend)
@@ -151,7 +161,6 @@ function Sales() {
   // =======================
   return (
     <div className="sales-page">
-
       {/* MODAL DE ÉXITO */}
       {showSaleModal && (
         <div className="sale-modal">
@@ -162,7 +171,7 @@ function Sales() {
                 <polyline points="18,32 27,41 43,23" fill="none" stroke="#1abc9c" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
             </div>
-            <h3>¡Pedido registrado exitosamente!</h3>
+            <h3>{saleModalMessage}</h3>
             <button onClick={() => setShowSaleModal(false)}>Cerrar</button>
           </div>
         </div>
@@ -183,245 +192,287 @@ function Sales() {
         </div>
       </div>
 
-      {/* FORMULARIO DE CLIENTE */}
-      <div className="cliente-row">
-        <label htmlFor="cliente-input" className="cliente-label">Cliente:</label>
-        <input
-          id="cliente-input"
-          className="cliente-input"
-          type="text"
-          placeholder="Público general"
-          value={clienteNombre}
-          onChange={e => setClienteNombre(e.target.value)}
-          autoComplete="off"
-        />
-        <label htmlFor="dni-input" className="cliente-label">DNI:</label>
-        <input
-          id="dni-input"
-          className="cliente-input"
-          type="text"
-          placeholder="DNI"
-          maxLength={8}
-          value={clienteDni}
-          onChange={e => {
-            // Solo permite números y máximo 8 caracteres
-            const val = e.target.value.replace(/\D/g, '').slice(0, 8);
-            setClienteDni(val);
-          }}
-          autoComplete="off"
-        />
-      </div>
-
-      {/* BUSCADOR, CANTIDAD Y AGREGAR */}
-      <div className="sales-row-inline">
-        <div className="search-box">
-          <HiOutlineSearch className="ico-search" />
-          <input
-            ref={searchInputRef}
-            className="input-search"
-            type="text"
-            placeholder="Buscar producto..."
-            value={search}
-            onChange={e => {
-              setSearch(e.target.value);
-              setShowSuggestions(true);
-              setSuggestionIndex(-1);
-            }}
-            onFocus={() => setShowSuggestions(true)}
-            onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
-            onKeyDown={e => {
-              if (!showSuggestions || filtered.length === 0) return;
-              if (e.key === "ArrowDown") {
-                setSuggestionIndex(idx => Math.min(idx + 1, filtered.length - 1));
-                e.preventDefault();
-              } else if (e.key === "ArrowUp") {
-                setSuggestionIndex(idx => Math.max(idx - 1, 0));
-                e.preventDefault();
-              } else if (e.key === "Enter" && suggestionIndex >= 0) {
-                selectProduct(filtered[suggestionIndex]);
-                setSuggestionIndex(-1);
-                setTimeout(() => qtyInputRef.current && qtyInputRef.current.focus(), 0);
-                e.preventDefault();
-              }
-            }}
-          />
-          {showSuggestions && (
-            <ul className="list-suggestions">
-              {loadingProducts && <li>Cargando...</li>}
-              {!loadingProducts && filtered.length === 0 && (
-                <li className="no-suggestion">Sin coincidencias</li>
-              )}
-              {!loadingProducts &&
-                filtered.map((p, idx) => (
-                  <li
-                    key={p.id}
-                    onMouseDown={() => selectProduct(p)}
-                    className={suggestionIndex === idx ? "active-suggestion" : ""}
+      {/* CONTENIDO PRINCIPAL POS */}
+      <div className="sales-main-content">
+        {/* Tarjeta izquierda: Cliente, búsqueda y agregar */}
+        <div className="sales-card sales-card-left">
+          {/* Cliente y DNI en una sola fila */}
+          <div className="cliente-row">
+            <div className="cliente-group">
+              <label className="cliente-label">Cliente:</label>
+              <input
+                className="cliente-input"
+                type="text"
+                placeholder="Público general"
+                value={clienteNombre}
+                onChange={e => setClienteNombre(e.target.value)}
+                autoComplete="off"
+              />
+            </div>
+            <div className="cliente-group">
+              <label className="cliente-label">DNI:</label>
+              <input
+                className="cliente-input"
+                type="text"
+                placeholder="DNI"
+                maxLength={8}
+                value={clienteDni}
+                onChange={e => {
+                  const val = e.target.value.replace(/\D/g, '').slice(0, 8);
+                  setClienteDni(val);
+                }}
+                autoComplete="off"
+              />
+            </div>
+          </div>
+          {/* Buscador y cantidad en una fila */}
+          <div className="sales-row-inline">
+            <div className="search-qty-row">
+              <div className="search-box">
+                <HiOutlineSearch className="ico-search" />
+                <input
+                  ref={searchInputRef}
+                  className="input-search"
+                  type="text"
+                  placeholder="Buscar producto..."
+                  value={search}
+                  onChange={e => {
+                    setSearch(e.target.value);
+                    setShowSuggestions(true);
+                    setSuggestionIndex(-1);
+                  }}
+                  onFocus={() => setShowSuggestions(true)}
+                  onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
+                  onKeyDown={e => {
+                    if (!showSuggestions || filtered.length === 0) return;
+                    if (e.key === "ArrowDown") {
+                      setSuggestionIndex(idx => Math.min(idx + 1, filtered.length - 1));
+                      e.preventDefault();
+                    } else if (e.key === "ArrowUp") {
+                      setSuggestionIndex(idx => Math.max(idx - 1, 0));
+                      e.preventDefault();
+                    } else if (e.key === "Enter" && suggestionIndex >= 0) {
+                      selectProduct(filtered[suggestionIndex]);
+                      setSuggestionIndex(-1);
+                      setTimeout(() => qtyInputRef.current && qtyInputRef.current.focus(), 0);
+                      e.preventDefault();
+                    }
+                  }}
+                />
+                {/* Botón para limpiar búsqueda */}
+                {search && (
+                  <button
+                    className="clear-search-btn"
+                    onClick={() => {
+                      setSearch("");
+                      setShowSuggestions(false);
+                      setSelectedProduct(null);
+                    }}
+                    title="Limpiar búsqueda"
+                    type="button"
+                    tabIndex={-1}
                     style={{
-                      background: suggestionIndex === idx ? "#eafaf1" : undefined,
+                      background: "none",
+                      border: "none",
+                      position: "absolute",
+                      right: 8,
+                      top: "50%",
+                      transform: "translateY(-50%)",
+                      cursor: "pointer",
+                      color: "#888"
                     }}
                   >
-                    {p.name}
-                    <span className="tag-stock">Stock: {p.stock}</span>
-                    <span className="tag-price">
-                      S/ {Number(p.price).toFixed(2)}
-                    </span>
-                  </li>
-                ))}
-            </ul>
-          )}
-        </div>
-        <div className="qty-box-inline">
-          <label>Cant.</label>
-          <input
-            ref={qtyInputRef}
-            className="input-qty-inline"
-            type="number"
-            min="1"
-            max={selectedProduct ? selectedProduct.stock : ''}
-            value={quantity}
-            onChange={e => {
-              const val = +e.target.value;
-              if (selectedProduct && val > selectedProduct.stock) {
-                setQuantity(selectedProduct.stock);
-              } else {
-                setQuantity(val);
-              }
-            }}
-            onKeyDown={e => {
-              if (e.key === "Enter" && selectedProduct && quantity > 0) {
-                addToCart();
-                setTimeout(() => searchInputRef.current && searchInputRef.current.focus(), 0);
-              }
-            }}
-            disabled={!selectedProduct}
-          />
-        </div>
-        <button
-          className="btn-add"
-          onClick={addToCart}
-          disabled={
-            !selectedProduct ||
-            quantity < 1 ||
-            (selectedProduct && quantity > selectedProduct.stock)
-          }
-        >
-          <HiOutlinePlus /> Agregar
-        </button>
-      </div>
-
-      {/* INFORMACIÓN DE STOCK Y PRECIO */}
-      <div className="info-row">
-        <div>
-          <small>Stock disponible</small>
-          <strong>{selectedProduct ? selectedProduct.stock : '--'}</strong>
-        </div>
-        <div>
-          <small>Precio unitario</small>
-          <strong>
-            {selectedProduct ? `S/ ${Number(selectedProduct.price).toFixed(2)}` : '--'}
-          </strong>
-        </div>
-      </div>
-
-      {/* TABLA DEL CARRITO */}
-      <section className="cart-section">
-        <table>
-          <thead>
-            <tr>
-              <th>Producto</th>
-              <th>Cant.</th>
-              <th>Precio</th>
-              <th>Subt.</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            {cart.length === 0 ? (
-              <tr>
-                <td colSpan="5" className="empty">No hay productos</td>
-              </tr>
-            ) : cart.map(item => (
-              <tr key={item.id}>
-                <td>{item.name}</td>
-                <td>{item.quantity}</td>
-                <td>S/ {Number(item.price).toFixed(2)}</td>
-                <td>S/ {(Number(item.price) * item.quantity).toFixed(2)}</td>
-                <td>
-                  <button
-                    className="btn-remove"
-                    onClick={() => removeFromCart(item.id)}
-                  >
-                    <HiOutlineTrash />
+                    <HiOutlineX />
                   </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </section>
-
-      {/* TOTALES Y ACCIONES */}
-      <footer className="sales-footer">
-        <div className="totals">
-          <span>Total Gravado: S/ {baseImponible.toFixed(2)}</span>
-          <span>IGV (18%): S/ {igv.toFixed(2)}</span>
-          <span className="total">Total: S/ {total.toFixed(2)}</span>
-        </div>
-        <div className="actions">
-          <button
-            className="btn-cancel"
-            onClick={cancelSale}
-          >
-            <HiOutlineX /> Cancelar
-          </button>
-          <button
-            className="btn-confirm"
-            disabled={cart.length === 0}
-            onClick={handleConfirmSale}
-          >
-            <HiOutlineCheckCircle /> Pendiente
-          </button>
-          <button
-            className="btn-confirm pay"
-            disabled={cart.length === 0}
-            onClick={async () => {
-              try {
-                const response = await fetch(`${API_BASE_URL}/api/sales`, {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({
-                    userId: user.id,
-                    customer_name: clienteNombre.trim() || 'General public',
-                    customer_dni: clienteDni.trim() || '',
-                    total: Number(total.toFixed(2)),
-                    igv: Number(igv.toFixed(2)),
-                    status: "pagada",
-                    items: cart.map(item => ({
-                      id: item.id,
-                      quantity: item.quantity,
-                      price: Number(item.price)
-                    }))
-                  })
-                });
-                if (!response.ok) throw new Error('Error al registrar la venta');
-                setCart([]);
-                setSearch('');
-                setSelectedProduct(null);
-                setQuantity(1);
-                setClienteNombre('');
-                setClienteDni('');
-                setShowSaleModal(true);
-              } catch (err) {
-                alert('Ocurrió un error al registrar la venta');
+                )}
+                {/* Sugerencias flotantes */}
+                {showSuggestions && (
+                  <ul className="list-suggestions">
+                    {loadingProducts && <li>Cargando...</li>}
+                    {!loadingProducts && filtered.length === 0 && (
+                      <li className="no-suggestion">Sin coincidencias</li>
+                    )}
+                    {!loadingProducts &&
+                      filtered.map((p, idx) => (
+                        <li
+                          key={p.id}
+                          onMouseDown={() => selectProduct(p)}
+                          className={suggestionIndex === idx ? "active-suggestion" : ""}
+                          style={{
+                            background: suggestionIndex === idx ? "#eafaf1" : undefined,
+                          }}
+                        >
+                          {p.name}
+                          <span className="tag-stock">Stock: {p.stock}</span>
+                          <span className="tag-price">
+                            S/ {Number(p.price).toFixed(2)}
+                          </span>
+                        </li>
+                      ))}
+                  </ul>
+                )}
+              </div>
+              <div className="qty-box-inline">
+                <span className="qty-label">Cant.</span>
+                <input
+                  ref={qtyInputRef}
+                  className="input-qty-inline"
+                  type="number"
+                  min="1"
+                  max={selectedProduct ? selectedProduct.stock : ''}
+                  value={quantity}
+                  onChange={e => {
+                    const val = +e.target.value;
+                    if (selectedProduct && val > selectedProduct.stock) {
+                      setQuantity(selectedProduct.stock);
+                    } else {
+                      setQuantity(val);
+                    }
+                  }}
+                  onKeyDown={e => {
+                    if (e.key === "Enter" && selectedProduct && quantity > 0) {
+                      addToCart();
+                      setTimeout(() => searchInputRef.current && searchInputRef.current.focus(), 0);
+                    }
+                  }}
+                  disabled={!selectedProduct}
+                />
+              </div>
+            </div>
+            {/* Botón agregar debajo */}
+            <button
+              className="btn-add"
+              onClick={addToCart}
+              disabled={
+                !selectedProduct ||
+                quantity < 1 ||
+                (selectedProduct && quantity > selectedProduct.stock)
               }
-            }}
-            title="Registrar y marcar como pagada"
-          >
-            <HiOutlineCreditCard /> Confirmar y Pagar
-          </button>
+            >
+              <HiOutlinePlus /> Agregar
+            </button>
+          </div>
+          {/* Info stock/precio */}
+          <div className="info-bar">
+            <span className="info-stock">
+              <svg width="16" height="16" style={{marginRight: 4, verticalAlign: 'middle'}} fill="none" stroke="#1abc9c" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 2"/></svg>
+              Stock: <b>{selectedProduct ? selectedProduct.stock : '--'}</b>
+            </span>
+            <span className="info-price">
+              <svg width="16" height="16" style={{marginRight: 4, verticalAlign: 'middle'}} fill="none" stroke="#223047" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7H14.5a3.5 3.5 0 0 1 0 7H6"/></svg>
+              Precio: <b>{selectedProduct ? `S/ ${Number(selectedProduct.price).toFixed(2)}` : '--'}</b>
+            </span>
+          </div>
         </div>
-      </footer>
+
+        {/* Tarjeta derecha: Carrito y totales */}
+        <div className="sales-card sales-card-right">
+          {/* Hora actual encima de la tabla */}
+          <div className="hora-actual-box">
+            <span className="hora-label">Hora:</span>
+            <span className="hora-value">{horaActual.toLocaleTimeString()}</span>
+          </div>
+          <section className="cart-section">
+            <table>
+              <thead>
+                <tr>
+                  <th>Producto</th>
+                  <th>Cant.</th>
+                  <th>Precio</th>
+                  <th>Subt.</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {cart.length === 0 ? (
+                  <tr>
+                    <td colSpan="5" className="empty">No hay productos</td>
+                  </tr>
+                ) : cart.map(item => (
+                  <tr key={item.id}>
+                    <td>{item.name}</td>
+                    <td>{item.quantity}</td>
+                    <td>S/ {Number(item.price).toFixed(2)}</td>
+                    <td>S/ {(Number(item.price) * item.quantity).toFixed(2)}</td>
+                    <td>
+                      <button
+                        className="btn-remove"
+                        onClick={() => removeFromCart(item.id)}
+                      >
+                        <HiOutlineTrash />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </section>
+          <footer className="sales-footer">
+            <div className="totals">
+              <span>Total Gravado: S/ {baseImponible.toFixed(2)}</span>
+              <span>IGV (18%): S/ {igv.toFixed(2)}</span>
+              <span className="total">Total: S/ {total.toFixed(2)}</span>
+            </div>
+            <div className="actions">
+              <button
+                className="btn-cancel"
+                onClick={cancelSale}
+              >
+                <HiOutlineX /> Cancelar
+              </button>
+              <button
+                className="btn-confirm"
+                disabled={cart.length === 0}
+                onClick={async () => {
+                  setSaleModalMessage("Pedido Generado Exitosamente");
+                  await handleConfirmSale();
+                }}
+              >
+                <HiOutlineCheckCircle /> Pendiente
+              </button>
+              <button
+                className="btn-confirm pay"
+                disabled={cart.length === 0}
+                onClick={async () => {
+                  setSaleModalMessage("Venta Realizada Exitosamente");
+                  try {
+                    const response = await fetch(`${API_BASE_URL}/api/sales`, {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({
+                        userId: user.id,
+                        customer_name: clienteNombre.trim() || 'General public',
+                        customer_dni: clienteDni.trim() || '',
+                        total: Number(total.toFixed(2)),
+                        igv: Number(igv.toFixed(2)),
+                        status: "pagada",
+                        items: cart.map(item => ({
+                          id: item.id,
+                          quantity: item.quantity,
+                          price: Number(item.price)
+                        }))
+                      })
+                    });
+                    if (!response.ok) throw new Error('Error al registrar la venta');
+                    setCart([]);
+                    setSearch('');
+                    setSelectedProduct(null);
+                    setQuantity(1);
+                    setClienteNombre('');
+                    setClienteDni('');
+                    setShowSaleModal(true);
+                  } catch (err) {
+                    alert('Ocurrió un error al registrar la venta');
+                  }
+                }}
+                title="Registrar y marcar como pagada"
+              >
+                <HiOutlineCreditCard /> Confirmar y Pagar
+              </button>
+            </div>
+          </footer>
+        </div>
+      </div>
     </div>
   );
 }

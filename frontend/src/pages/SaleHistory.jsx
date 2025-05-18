@@ -10,6 +10,7 @@ import { HiOutlineShoppingBag } from "react-icons/hi2";
 import { API_BASE_URL } from "../Conexion";
 import "../styles/SaleHistory.css";
 import BoletaButton from "../components/BoletaButton";
+import ExportExcelButton from "../components/ExportExcelButton";
 
 /**
  * Página de historial de ventas/pedidos.
@@ -182,7 +183,23 @@ function SaleHistory() {
         >
           <HiOutlineSearch /> Buscar
         </button>
-        {/* <button className="sh-btn sh-btn--excel"><HiOutlineDocumentDownload /> Exportar Excel</button> */}
+        <ExportExcelButton
+          data={sales}
+          filename="historial_ventas.xlsx"
+          columns={[
+            { label: "ID", value: "id" },
+            { label: "Cliente", value: "customer_name" },
+            { label: "Vendedor", value: "user_name" },
+            { label: "Fecha", value: (row) => new Date(row.createdAt).toLocaleString() },
+            { label: "Total", value: (row) => Number(row.total).toFixed(2) },
+            { label: "Estado", value: (row) => row.status.charAt(0).toUpperCase() + row.status.slice(1) }
+          ]}
+          filterType={filterType}
+          customFrom={customFrom}
+          customTo={customTo}
+        >
+          Exportar a Excel
+        </ExportExcelButton>
       </div>
 
       {/* Tabla de historial o mensajes de estado */}
@@ -211,7 +228,7 @@ function SaleHistory() {
                 <tr key={sale.id}>
                   <td>{sale.id}</td>
                   <td>{sale.customer_name}</td>
-                  <td>{sale.user_name}</td> {/* Mostrar el nombre del usuario */}
+                  <td>{sale.user_name}</td>
                   <td>{new Date(sale.createdAt).toLocaleString()}</td>
                   <td>
                     <span className="sh-table-total">
@@ -220,8 +237,7 @@ function SaleHistory() {
                   </td>
                   <td>
                     <span className={`status-${sale.status} sh-table-status`}>
-                      {sale.status.charAt(0).toUpperCase() +
-                        sale.status.slice(1)}
+                      {sale.status.charAt(0).toUpperCase() + sale.status.slice(1)}
                     </span>
                   </td>
                   <td>

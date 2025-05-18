@@ -4,7 +4,6 @@
 .sales-history-page {
   color: #1f2a37;
   background: #f3f3f3;
-  min-height: 100vh;
   margin: -1rem;
   border-radius: 15px 0 15px 0;
   padding: 0.8rem 0.8rem;
@@ -482,4 +481,27 @@
     padding: 0.28rem 0.25rem;
     font-size: 0.89rem;
   }
+}
+
+/* ==========================================================
+   BOTON EXCEL
+   ========================================================== */
+.sh-btn--excel {
+  background: #1d6f42;
+  color: #fff;
+  border: none;
+  border-radius: 7px;
+  padding: 0.35rem 1rem;
+  font-size: 1.05rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: background 0.18s, box-shadow 0.18s;
+  box-shadow: 0 1px 4px #1d6f4222;
+}
+.sh-btn--excel:hover {
+  background: #218c54;
+  box-shadow: 0 2px 8px #1d6f4244;
 }

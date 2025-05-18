@@ -6,7 +6,7 @@ body {
 
 .content {
   padding: 2rem;
-  min-height: 110vh;
+  height: auto;
   background: #f7f7f7;
   margin-left: 0;
 }
