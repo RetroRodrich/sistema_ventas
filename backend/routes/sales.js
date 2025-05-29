@@ -2,72 +2,73 @@ const express = require('express');
 const db = require('../config/db');
 const router = express.Router();
 
-router.post('/', (req, res) => {
+router.post('/', async (req, res) => {
   const { userId, customer_name, customer_dni, total, igv, items, status } = req.body;
   if (!items || !Array.isArray(items) || items.length === 0) {
     return res.status(400).json({ error: 'No sale items provided' });
   }
-
-  // Usa el estado recibido o 'pendiente' por defecto
   const saleStatus = status === 'pagada' ? 'pagada' : 'pendiente';
 
-  const saleQuery = `
-    INSERT INTO sales (userId, createdAt, status, customer_name, customer_dni, total, igv)
-    VALUES (?, NOW(), ?, ?, ?, ?, ?)
-  `;
-  db.query(
-    saleQuery,
-    [
-      userId,
-      saleStatus,
-      customer_name || 'General public',
-      customer_dni || '',
-      total,
-      igv
-    ],
-    (err, result) => {
-      if (err) {
-        console.error('Error inserting sale:', err);
-        return res.status(500).json({ error: 'Error inserting sale' });
-      }
-      const saleId = result.insertId;
+  // Iniciar transacción con conexión propia
+  db.getConnection(async (err, connection) => {
+    if (err) return res.status(500).json({ error: 'Error obteniendo conexión' });
 
-      // Inserta los detalles de la venta
-      const detailsQuery = `
-        INSERT INTO saledetails (saleId, productId, quantity, price, subtotal)
-        VALUES ?
-      `;
-      const detailsValues = items.map(item => [
-        saleId,
-        item.id,
-        item.quantity,
-        item.price,
-        (item.price * item.quantity)
-      ]);
-      db.query(detailsQuery, [detailsValues], (err2) => {
-        if (err2) {
-          console.error('Error inserting sale details:', err2);
-          return res.status(500).json({ error: 'Error inserting sale details' });
-        }
-        // Actualiza el stock de los productos
-        const stockUpdates = items.map(item =>
-          new Promise((resolve, reject) => {
-            db.query(
-              'UPDATE products SET stock = stock - ? WHERE id = ?',
-              [item.quantity, item.id],
-              (err3) => (err3 ? reject(err3) : resolve())
-            );
-          })
+    try {
+      await connection.promise().beginTransaction();
+
+      // 1. Insertar venta
+      const [saleResult] = await connection.promise().query(
+        `INSERT INTO sales (userId, createdAt, status, customer_name, customer_dni, total, igv)
+         VALUES (?, NOW(), ?, ?, ?, ?, ?)`,
+        [userId, saleStatus, customer_name || 'General public', customer_dni || '', total, igv]
+      );
+      const saleId = saleResult.insertId;
+      let saleDetails = [];
+
+      // 2. Para cada producto, descontar de los lotes más próximos
+      for (const item of items) {
+        let qtyToSell = item.quantity;
+        const [batches] = await connection.promise().query(
+          `SELECT id, stock FROM product_batches
+           WHERE productId = ? AND stock > 0
+           ORDER BY (CASE WHEN expirationDate IS NULL THEN 1 ELSE 0 END), expirationDate ASC, id ASC`,
+          [item.id]
         );
-        Promise.all(stockUpdates)
-          .then(() => res.status(201).json({ message: 'Sale registered successfully' }))
-          .catch(err4 => {
-            console.error('Error updating stock:', err4);
-            res.status(500).json({ error: 'Error updating stock' });
-          });
-      });
+        for (const batch of batches) {
+          if (qtyToSell <= 0) break;
+          const takeQty = Math.min(batch.stock, qtyToSell);
+          await connection.promise().query(
+            `UPDATE product_batches SET stock = stock - ? WHERE id = ?`,
+            [takeQty, batch.id]
+          );
+          saleDetails.push([
+            saleId,
+            item.id,
+            batch.id,
+            takeQty,
+            item.price,
+            (item.price * takeQty)
+          ]);
+          qtyToSell -= takeQty;
+        }
+        if (qtyToSell > 0) throw new Error('Stock insuficiente para el producto');
+      }
+
+      // 3. Insertar detalles de venta
+      await connection.promise().query(
+        `INSERT INTO saledetails (saleId, productId, batchId, quantity, price, subtotal) VALUES ?`,
+        [saleDetails]
+      );
+
+      await connection.promise().commit();
+      connection.release();
+      res.status(201).json({ message: 'Venta registrada correctamente' });
+    } catch (e) {
+      await connection.promise().rollback();
+      connection.release();
+      res.status(500).json({ error: e.message || 'Error procesando venta' });
     }
-  );
+  });
 });
 
 // Obtener todas las ventas
@@ -140,17 +141,17 @@ router.put('/:id/status', (req, res) => {
   if (status === 'anulada') {
     // 1. Obtener los detalles de la venta
     const detailsQuery = `
-      SELECT productId, quantity FROM saledetails WHERE saleId = ?
+      SELECT productId, batchId, quantity FROM saledetails WHERE saleId = ?
     `;
     db.query(detailsQuery, [saleId], (err, details) => {
       if (err) return res.status(500).json({ error: 'Error al obtener detalles' });
 
-      // 2. Retornar stock de cada producto
+      // 2. Retornar stock al lote correspondiente
       const updates = details.map(item =>
         new Promise((resolve, reject) => {
           db.query(
-            'UPDATE products SET stock = stock + ? WHERE id = ?',
-            [item.quantity, item.productId],
+            'UPDATE product_batches SET stock = stock + ? WHERE id = ?',
+            [item.quantity, item.batchId],
             (err2) => (err2 ? reject(err2) : resolve())
           );
         })

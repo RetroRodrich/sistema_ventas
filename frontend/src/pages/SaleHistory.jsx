@@ -31,6 +31,7 @@ function SaleHistory() {
   // --- Efecto: cargar ventas al montar el componente ---
   useEffect(() => {
     fetchSales();
+    // eslint-disable-next-line
   }, []);
 
   /**
@@ -109,6 +110,30 @@ function SaleHistory() {
     const today = new Date();
     today.setMinutes(today.getMinutes() - today.getTimezoneOffset());
     return today.toISOString().split("T")[0];
+  }
+
+  /**
+   * Agrupa los detalles por producto (usando productId o product_name).
+   * Suma cantidades y subtotales para mostrar solo una fila por producto.
+   * @param {Array} details - Detalles originales de la venta
+   * @returns {Array} Detalles agrupados por producto
+   */
+  function groupDetailsByProduct(details) {
+    const grouped = {};
+    details.forEach((d) => {
+      const key = d.productId || d.product_name;
+      if (!grouped[key]) {
+        grouped[key] = {
+          ...d,
+          quantity: Number(d.quantity),
+          subtotal: Number(d.subtotal),
+        };
+      } else {
+        grouped[key].quantity += Number(d.quantity);
+        grouped[key].subtotal += Number(d.subtotal);
+      }
+    });
+    return Object.values(grouped);
   }
 
   // --- Renderizado de la interfaz ---
@@ -281,7 +306,7 @@ function SaleHistory() {
                 </div>
                 <div className="sh-modal__info-item">
                   <span>Vendedor:</span>{" "}
-                  <span>{selectedSale.user_name}</span> {/* <-- Aquí se muestra el vendedor */}
+                  <span>{selectedSale.user_name}</span>
                 </div>
                 <div className="sh-modal__info-item">
                   <span>Fecha:</span>{" "}
@@ -302,7 +327,7 @@ function SaleHistory() {
                 </div>
               </div>
               <div className="sh-modal__table-separator"></div>
-              {/* Tabla de productos de la venta */}
+              {/* Tabla de productos de la venta (agrupados por producto) */}
               <table className="sh-modal__table">
                 <thead>
                   <tr>
@@ -326,7 +351,7 @@ function SaleHistory() {
                       </td>
                     </tr>
                   ) : (
-                    details.map((d, i) => (
+                    groupDetailsByProduct(details).map((d, i) => (
                       <tr key={i}>
                         <td>{d.product_name || d.productId}</td>
                         <td>{d.quantity}</td>
@@ -358,7 +383,7 @@ function SaleHistory() {
                 {selectedSale.status === "pagada" && (
                   <BoletaButton
                     sale={selectedSale}
-                    details={details}
+                    details={groupDetailsByProduct(details)}
                     icon={<HiOutlinePrinter />}
                     className="btn-print"
                     title="Imprimir boleta"
