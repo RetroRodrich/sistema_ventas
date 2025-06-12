@@ -5,33 +5,45 @@ import {
   MdOutlineCategory,
   MdOutlineShoppingCart,
   MdOutlineBarChart,
-} from 'react-icons/md';
-import { FaUserCircle } from 'react-icons/fa';
+} from 'react-icons/md'
+import { FaUserCircle } from 'react-icons/fa'
 import { HiOutlineShoppingBag } from 'react-icons/hi'
 import '../styles/Sidebar.css'
 
+/**
+ * Sidebar - Menú lateral de navegación principal.
+ * Muestra información del usuario, enlaces de navegación y un footer.
+ *
+ * Props:
+ * - isOpen: booleano para mostrar/ocultar el sidebar.
+ * - onClose: función para cerrar el sidebar (en móvil).
+ */
 const Sidebar = ({ isOpen, onClose }) => {
   const location = useLocation()
 
-  const user = JSON.parse(localStorage.getItem('user')) || '{}';
-  const username = user.username || user.name || 'Invitado';
-  const userRole = user.role === 'admin' ? 'Administrador' : 'Empleado';
+  // Obtener usuario desde localStorage
+  const user = JSON.parse(localStorage.getItem('user')) || {}
+  const username = user.username || user.name || 'Invitado'
+  const userRole = user.role === 'admin' ? 'Administrador' : 'Empleado'
 
+  // Cierra el sidebar en móvil al hacer clic en un enlace
   const handleLinkClick = () => {
     if (window.innerWidth < 1024 && onClose) onClose()
   }
 
   return (
     <aside className={`sidebar${isOpen ? ' open' : ''}`}>
-      {/* Header / Logo */}
+      {/* Logo y título */}
       <div className="sidebar-header sidebar-header-compact">
         <HiOutlineShoppingBag className="sidebar-header-icon" size={28} />
-        <span className="sidebar-header-title" style={{marginLeft: '5px', color: '#2fcabd'}}>More Sales...</span>
+        <span className="sidebar-header-title" style={{ marginLeft: '5px', color: '#2fcabd' }}>
+          More Sales...
+        </span>
       </div>
 
-      {/* User info */}
+      {/* Información del usuario */}
       <div className="sidebar-user">
-        <FaUserCircle className="sidebar-avatar"/>
+        <FaUserCircle className="sidebar-avatar" />
         <div className="sidebar-user-info">
           <div className="sidebar-username">{username}</div>
           <div className="sidebar-role">{userRole}</div>
@@ -39,7 +51,7 @@ const Sidebar = ({ isOpen, onClose }) => {
         </div>
       </div>
 
-      {/* Navigation links */}
+      {/* Enlaces de navegación */}
       <ul className="sidebar-menu">
         <li>
           <Link

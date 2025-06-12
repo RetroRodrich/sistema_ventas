@@ -5,16 +5,34 @@ import cartImg from '../assets/images/carrito_bgc.webp';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
 
+/**
+ * Login - Página de inicio de sesión.
+ * Permite a los usuarios autenticarse con correo y contraseña.
+ *
+ * Props:
+ * - onLogin: función opcional que se ejecuta tras el login exitoso.
+ */
 function Login({ onLogin }) {
+  // Estado del formulario de login
   const [form, setForm] = useState({ email: '', password: '' });
+  // Estado para mostrar errores
   const [error, setError] = useState('');
+  // Estado para mostrar/ocultar contraseña
   const [showPassword, setShowPassword] = useState(false);
+  // Hook de navegación
   const navigate = useNavigate();
 
+  /**
+   * Actualiza el estado del formulario al escribir en los campos.
+   */
   const handleChange = e => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  /**
+   * Envía el formulario al backend para autenticar al usuario.
+   * Si es exitoso, guarda el token y usuario en localStorage y redirige al home.
+   */
   const handleSubmit = async e => {
     e.preventDefault();
     setError('');
@@ -38,6 +56,7 @@ function Login({ onLogin }) {
     }
   };
 
+  // Renderizado del formulario de login
   return (
     <div className="login-bg">
       <div className="login-card">

@@ -1,3 +1,6 @@
+/* =========================
+   Navbar Principal
+   ========================= */
 .navbar {
   background: #fff;
   color: #263544;
@@ -12,12 +15,16 @@
   z-index: 1100;
 }
 
+/* =========================
+   Sección Izquierda (Logo y Menú)
+   ========================= */
 .navbar-left {
   display: flex;
   align-items: center;
   gap: 1rem;
 }
 
+/* Botón hamburguesa para abrir el sidebar */
 .navbar-hamburger {
   background: none;
   border: none;
@@ -25,22 +32,29 @@
   cursor: pointer;
   display: block;
   padding: 0.2rem;
+  transition: color 0.18s;
 }
 .navbar-hamburger:hover {
   color: #2fcabd;
 }
 
+/* Nombre de la sucursal */
 .navbar-sucursal {
   font-size: 1.1rem;
   font-weight: 600;
   white-space: nowrap;
 }
 
+/* =========================
+   Sección Derecha (Usuario, Notificaciones, Logout)
+   ========================= */
 .navbar-right {
   display: flex;
   align-items: center;
   gap: 0.7rem;
 }
+
+/* Usuario (si aplica) */
 .navbar-user {
   display: flex;
   align-items: center;
@@ -61,6 +75,7 @@
   color: #263544;
 }
 
+/* Botón de cierre de sesión */
 .navbar-logout {
   background: #2fcabd;
   color: #fff;
@@ -81,7 +96,97 @@
   font-size: 1.1rem;
 }
 
-/* Desktop: hide hamburger, add left padding for sidebar */
+/* =========================
+   Notificaciones de Stock Bajo
+   ========================= */
+
+/* Botón de notificaciones */
+.navbar-notifications {
+  border-radius: 50%;
+  transition: background 0.18s, color 0.18s;
+  padding: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+}
+.navbar-notifications:hover,
+.navbar-notifications:focus {
+  background: #e6fcfa !important;
+}
+.navbar-notifications.active {
+  background: #2fcabd22 !important;
+}
+.navbar-notifications.active svg,
+.navbar-notifications:hover svg,
+.navbar-notifications:focus svg {
+  color: #168b80 !important;
+}
+
+/* Burbuja elegante alineada a la izquierda del botón de notificaciones */
+.navbar-notifications-bubble.elegant.left {
+  position: absolute; /* Colocar la burbuja respecto al botón */
+  top: 0;
+  right: calc(100% + 10px); /* A la izquierda del botón */
+  min-width: 220px;
+  background: #263544;
+  border-radius: 8px;
+  padding: 0.7rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  animation: notifBubbleIn 0.25s cubic-bezier(0.4, 1.3, 0.6, 1);
+}
+
+/* Lista de notificaciones */
+.navbar-notifications-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+.navbar-notifications-list li {
+  font-size: 0.8rem;
+  color: #e6fcfa;
+  font-weight: 400;
+  padding: 0.5rem 0.2rem;
+  border-bottom: 1px solid #35546a;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  letter-spacing: 0.02em;
+  line-height: 1.4;
+}
+.navbar-notifications-list li:last-child {
+  border-bottom: none;
+}
+
+/* Badge de cantidad de notificaciones */
+.navbar-notifications-badge {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  min-width: 16px;
+  height: 16px;
+  background: #e53935;
+  color: #fff;
+  font-size: 0.55rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+  pointer-events: none;
+  z-index: 2;
+  line-height: 1;
+  padding: 0;
+}
+
+/* =========================
+   Responsive
+   ========================= */
+
+/* Desktop: ocultar hamburguesa y agregar padding para sidebar */
 @media (min-width: 1024px) {
   .navbar {
     padding-left: 240px;
@@ -91,7 +196,7 @@
   }
 }
 
-/* Responsive: solo iconos en navbar-right en móvil */
+/* Móvil: solo iconos en navbar-right */
 @media (max-width: 600px) {
   .navbar-right {
     gap: 0.5rem;
@@ -109,5 +214,19 @@
   .navbar-logout-icon {
     display: inline;
     font-size: 1.3rem;
+  }
+}
+
+/* =========================
+   Animaciones
+   ========================= */
+@keyframes notifBubbleIn {
+  from {
+    opacity: 0;
+    transform: translateX(20px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
   }
 }

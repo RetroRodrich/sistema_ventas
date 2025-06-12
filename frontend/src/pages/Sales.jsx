@@ -2,13 +2,22 @@
 // Importaciones y dependencias
 // =======================
 import React, { useState, useEffect, useRef } from 'react';
-import { HiOutlinePlus, HiOutlineTrash, HiOutlineSearch, HiOutlineX, HiOutlineShoppingCart, HiOutlineCheckCircle, HiOutlineCreditCard } from 'react-icons/hi';
+import {
+  HiOutlinePlus,
+  HiOutlineTrash,
+  HiOutlineSearch,
+  HiOutlineX,
+  HiOutlineShoppingCart,
+  HiOutlineCheckCircle,
+  HiOutlineCreditCard
+} from 'react-icons/hi';
 import '../styles/Sales.css';
 import { API_BASE_URL } from '../Conexion';
 
-// =======================
-// Componente principal de ventas
-// =======================
+/**
+ * Sales - Página principal para registrar ventas.
+ * Permite buscar productos, agregarlos al carrito, registrar ventas y marcar como pagadas.
+ */
 function Sales() {
   // =======================
   // Estados principales

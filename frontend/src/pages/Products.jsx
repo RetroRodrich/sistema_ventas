@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { API_BASE_URL } from "../Conexion";
 import AddProductModal from "../components/AddProductModal";
 import DeleteConfirmationModal from "../components/DeleteConfirmationModal";
-import { HiOutlineShoppingBag, HiPlus } from "react-icons/hi2"; // Cambia a HiPlus para un icono más moderno
+import { HiOutlineShoppingBag, HiPlus } from "react-icons/hi2";
 import {
   FiEdit2,
   FiTrash2,
@@ -12,7 +12,14 @@ import {
 import { HiOutlineSearch, HiOutlineX } from "react-icons/hi";
 import "../styles/Products.css";
 
+/**
+ * Products - Página principal de productos.
+ * Permite listar, buscar, filtrar, agregar, editar y eliminar productos.
+ */
 function Products() {
+  // =======================
+  // Estados principales
+  // =======================
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -24,6 +31,9 @@ function Products() {
   const [itemsPerPage, setItemsPerPage] = useState(5);
   const [currentPage, setCurrentPage] = useState(1);
 
+  // =======================
+  // Efectos: cargar productos y categorías al montar
+  // =======================
   useEffect(() => {
     fetch(`${API_BASE_URL}/api/products`)
       .then((response) => response.json())
@@ -31,7 +41,6 @@ function Products() {
       .catch((error) =>
         console.error("Error al obtener los productos:", error)
       );
-    // Obtener categorías
     fetch(`${API_BASE_URL}/api/products/categories`)
       .then((response) => response.json())
       .then((data) => setCategories(data))
@@ -40,9 +49,15 @@ function Products() {
       );
   }, []);
 
+  // =======================
+  // Handlers de búsqueda y filtrado
+  // =======================
   const handleSearchChange = (e) => setSearchTerm(e.target.value);
   const handleFilterChange = (e) => setFilter(e.target.value);
 
+  // =======================
+  // Agregar producto
+  // =======================
   const handleAddProduct = (productData) => {
     fetch(`${API_BASE_URL}/api/products`, {
       method: "POST",
@@ -60,16 +75,25 @@ function Products() {
       .catch((error) => console.error("Error al agregar el producto:", error));
   };
 
+  // =======================
+  // Editar producto
+  // =======================
   const handleEdit = (product) => {
     setSelectedProduct(product);
     setIsModalOpen(true);
   };
 
+  // =======================
+  // Eliminar producto
+  // =======================
   const handleDelete = (id) => {
     setProductToDelete(id);
     setIsDeleteModalOpen(true);
   };
 
+  // =======================
+  // Confirmar eliminación
+  // =======================
   const confirmDelete = () => {
     fetch(`${API_BASE_URL}/api/products/${productToDelete}`, {
       method: "DELETE",
@@ -83,16 +107,25 @@ function Products() {
       .catch((error) => console.error("Error al eliminar el producto:", error));
   };
 
+  // =======================
+  // Abrir modal para agregar producto
+  // =======================
   const handleOpenAddModal = () => {
     setSelectedProduct(null);
     setIsModalOpen(true);
   };
 
+  // =======================
+  // Cerrar modal de producto
+  // =======================
   const handleCloseModal = () => {
     setSelectedProduct(null);
     setIsModalOpen(false);
   };
 
+  // =======================
+  // Guardar cambios de producto editado
+  // =======================
   const handleSaveProduct = (updatedProduct) => {
     fetch(`${API_BASE_URL}/api/products/${selectedProduct.id}`, {
       method: "PUT",
@@ -112,15 +145,24 @@ function Products() {
       .catch((error) => console.error("Error al guardar el producto:", error));
   };
 
+  // =======================
+  // Cambiar cantidad de filas por página
+  // =======================
   const handleItemsPerPageChange = (e) => {
     setItemsPerPage(Number(e.target.value));
     setCurrentPage(1);
   };
 
+  // =======================
+  // Paginación
+  // =======================
   const handlePrevPage = () => setCurrentPage((p) => Math.max(p - 1, 1));
   const handleNextPage = () =>
     setCurrentPage((p) => Math.min(p + 1, totalPages));
 
+  // =======================
+  // Filtrado y paginación de productos
+  // =======================
   const filteredProducts = products.filter((product) => {
     const matchesSearch = product.name
       .toLowerCase()
@@ -135,8 +177,12 @@ function Products() {
     currentPage * itemsPerPage
   );
 
+  // =======================
+  // Renderizado principal
+  // =======================
   return (
     <div className="products-page">
+      {/* Encabezado */}
       <div className="products-header-card">
         <div className="products-header">
           <span className="products-icon">
@@ -149,6 +195,7 @@ function Products() {
             </span>
           </div>
         </div>
+        {/* Controles de búsqueda, filtro y agregar */}
         <div className="products-controls">
           <div className="search-bar-wrapper">
             <span className="search-icon">
@@ -209,6 +256,7 @@ function Products() {
           </div>
         </div>
       </div>
+      {/* Tabla de productos */}
       <div className="products-table-container">
         <table className="products-table">
           <thead>
@@ -218,13 +266,14 @@ function Products() {
               <th>Categoría</th>
               <th>Precio</th>
               <th>Stock</th>
+              <th>Stock Mínimo</th>
               <th style={{ textAlign: "center" }}>Acciones</th>
             </tr>
           </thead>
           <tbody>
             {paginatedProducts.length === 0 ? (
               <tr>
-                <td colSpan="6" style={{ textAlign: "center", color: "#888" }}>
+                <td colSpan="7" style={{ textAlign: "center", color: "#888" }}>
                   No hay productos
                 </td>
               </tr>
@@ -241,7 +290,10 @@ function Products() {
                   <td>{product.name}</td>
                   <td>{product.category || "Sin categoría"}</td>
                   <td>S/ {Number(product.price).toFixed(2)}</td>
-                  <td>{product.stock}</td>
+                  <td style={{ textAlign: "center" }}>{product.stock}</td>
+                  <td style={{ color: "#a6a6a6", textAlign: "center" }}>
+                    {product.minStock ?? "—"}
+                  </td>
                   <td style={{ textAlign: "center" }}>
                     <button
                       className="table-action edit"
@@ -266,13 +318,21 @@ function Products() {
       </div>
       {/* Paginación */}
       <div className="pagination-bar">
-        <button onClick={handlePrevPage} disabled={currentPage === 1}>
+        <button
+          onClick={handlePrevPage}
+          disabled={currentPage === 1 || totalPages === 0}
+        >
           <FiChevronLeft />
         </button>
         <span>
-          Página {currentPage} de {totalPages}
+          {totalPages === 0
+            ? "Sin páginas"
+            : `Página ${currentPage} de ${totalPages}`}
         </span>
-        <button onClick={handleNextPage} disabled={currentPage === totalPages}>
+        <button
+          onClick={handleNextPage}
+          disabled={currentPage === totalPages || totalPages === 0}
+        >
           <FiChevronRight />
         </button>
       </div>

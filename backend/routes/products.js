@@ -3,6 +3,32 @@ const db = require('../config/db');
 const router = express.Router();
 
 /**
+ * Obtener productos con stock menor o igual al mínimo
+ * ¡IMPORTANTE! Esta ruta debe ir antes de cualquier ruta con /:id
+ */
+router.get('/low-stock', (req, res) => {
+  const query = `
+    SELECT 
+      p.id, 
+      p.name, 
+      IFNULL(SUM(pb.stock), 0) AS stock,
+      IFNULL(p.minStock, 0) AS minStock
+    FROM products p
+    LEFT JOIN product_batches pb ON pb.productId = p.id
+    WHERE p.isActive = 1
+    GROUP BY p.id
+    HAVING stock <= minStock
+  `;
+  db.query(query, (err, results) => {
+    if (err) {
+      console.error('Error al obtener productos con bajo stock:', err);
+      return res.status(500).json({ error: 'Error al obtener productos con bajo stock' });
+    }
+    res.json(results);
+  });
+});
+
+/**
  * Obtener todos los productos con stock total y nombre de la categoría
  */
 router.get('/', (req, res) => {
@@ -316,6 +342,7 @@ router.get('/categories', (req, res) => {
 
 /**
  * Obtener un producto por ID
+ * ¡IMPORTANTE! Esta ruta debe ir después de todas las rutas específicas
  */
 router.get('/:id', (req, res) => {
   const { id } = req.params;

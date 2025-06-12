@@ -2,22 +2,39 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { API_BASE_URL } from '../Conexion';
 import '../styles/Register.css';
-import { HiOutlineShoppingCart } from 'react-icons/hi'; // <-- Importa el icono
+import { HiOutlineShoppingCart } from 'react-icons/hi';
 
+/**
+ * Register - Página de registro de nuevos usuarios.
+ * Permite crear una cuenta con nombre, correo, contraseña y rol.
+ *
+ * Props:
+ * - onRegister: función opcional que se ejecuta tras el registro exitoso.
+ */
 function Register({ onRegister }) {
+  // Estado del formulario
   const [form, setForm] = useState({
     name: '',
     email: '',
     password: '',
     role: 'employee'
   });
+  // Estado para mostrar errores
   const [error, setError] = useState('');
+  // Hook de navegación
   const navigate = useNavigate();
 
+  /**
+   * Actualiza el estado del formulario al escribir en los campos.
+   */
   const handleChange = e => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  /**
+   * Envía el formulario al backend para registrar el usuario.
+   * Si es exitoso, guarda el token y usuario en localStorage y redirige al home.
+   */
   const handleSubmit = async e => {
     e.preventDefault();
     setError('');
@@ -32,7 +49,7 @@ function Register({ onRegister }) {
         localStorage.setItem('token', data.token);
         localStorage.setItem('user', JSON.stringify(data.user));
         onRegister && onRegister();
-        navigate('/'); // <-- Redirige al home
+        navigate('/');
       } else {
         setError(data.message || 'Error al registrar');
       }
@@ -41,6 +58,7 @@ function Register({ onRegister }) {
     }
   };
 
+  // Renderizado del formulario de registro
   return (
     <div className="register-bg">
       <div className="register-card">

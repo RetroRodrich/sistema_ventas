@@ -13,7 +13,7 @@ import BoletaButton from "../components/BoletaButton";
 import ExportExcelButton from "../components/ExportExcelButton";
 
 /**
- * Página de historial de ventas/pedidos.
+ * SaleHistory - Página de historial de ventas/pedidos.
  * Permite consultar, ver detalles y cambiar el estado de cada venta.
  */
 function SaleHistory() {
@@ -150,8 +150,7 @@ function SaleHistory() {
               Historial de Pedidos/Ventas
             </span>
             <span className="sales-history-subtitle">
-              Consulta y gestiona el registro de todas tus ventas y pedidos
-              realizados.
+              Consulta y gestiona el registro de todas tus ventas y pedidos realizados.
             </span>
           </div>
         </div>
@@ -367,9 +366,7 @@ function SaleHistory() {
               <div className="sh-modal__igv-total">
                 <div className="sh-modal__sin-igv">
                   <b>Total Gravado:</b> S/{" "}
-                  {Number(selectedSale.total - (selectedSale.igv || 0)).toFixed(
-                    2
-                  )}
+                  {Number(selectedSale.total - (selectedSale.igv || 0)).toFixed(2)}
                 </div>
                 <div className="sh-modal__igv">
                   <b>IGV:</b> S/ {Number(selectedSale.igv || 0).toFixed(2)}
@@ -387,7 +384,7 @@ function SaleHistory() {
                     icon={<HiOutlinePrinter />}
                     className="btn-print"
                     title="Imprimir boleta"
-                  ></BoletaButton>
+                  />
                 )}
                 {selectedSale.status === "pendiente" && (
                   <>
