@@ -29,6 +29,10 @@ function App() {
           element={<Register onRegister={() => setIsLogged(true)} />}
         />
         <Route
+          path="/login"
+          element={<Login onLogin={() => setIsLogged(true)} />}
+        />
+        <Route
           path="*"
           element={<Login onLogin={() => setIsLogged(true)} />}
         />
