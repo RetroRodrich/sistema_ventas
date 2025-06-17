@@ -80,6 +80,7 @@
   justify-content: center;
   align-items: center;
   cursor: default;
+  border: 1px #009688 solid;
   transition: box-shadow 0.2s, transform 0.2s;
 }
 

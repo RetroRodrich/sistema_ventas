@@ -9,7 +9,6 @@ const dashboardRoutes = require('./routes/dashboard');
 
 const app = express();
 
-
 app.use(cors());
 app.use(express.json());
 
@@ -19,6 +18,10 @@ app.use('/api/auth', authRoutes);
 app.use('/api/sales', salesRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 
-app.listen(PORT, () => {
-  console.log(`Servidor corriendo en http://localhost:${PORT}`);
-});
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`Servidor corriendo en http://localhost:${PORT}`);
+  });
+}
+
+module.exports = app;

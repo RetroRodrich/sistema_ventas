@@ -10,3 +10,6 @@ logs/
 # Build
 build/
 dist/
+
+tests/
+coverage/
