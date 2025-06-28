@@ -1,17 +1,86 @@
 body {
-  font-family: Arial, sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   margin: 0;
   padding: 0;
+  overflow-x: hidden;
+  min-height: 100vh;
+  background: #f8fafc;
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 .content {
-  padding: 2rem;
-  height: auto;
-  background: #fafafa;
+  min-height: calc(100vh - 60px); /* Resta la altura del navbar */
+  background: transparent;
   margin-left: 0;
+  padding: 0;
+  position: relative;
+  display: flex;
+  flex-direction: column;
 }
+
+/* Ajustes para pantallas de escritorio */
 @media (min-width: 1024px) {
   .content {
     margin-left: 220px;
+    width: calc(100vw - 220px);
   }
+}
+
+/* Scroll suave para toda la aplicación */
+html {
+  scroll-behavior: smooth;
+  min-height: 100vh;
+}
+
+/* Para móviles y tablets - permitir scroll vertical */
+@media (max-width: 768px) {
+  body {
+    overflow-y: auto;
+    overflow-x: hidden;
+    height: auto;
+    min-height: 100vh;
+  }
+  
+  html {
+    overflow: auto;
+    height: auto;
+    min-height: 100vh;
+  }
+  
+  #root {
+    height: auto;
+    min-height: 100vh;
+  }
+  
+  .content {
+    height: auto;
+    min-height: calc(100vh - 60px);
+    overflow: visible;
+    margin-left: 0;
+  }
+}
+
+/* Personalizar scrollbar para elementos internos que lo necesiten */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(47, 202, 189, 0.1);
+  border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(47, 202, 189, 0.4);
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(47, 202, 189, 0.6);
 }

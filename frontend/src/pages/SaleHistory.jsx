@@ -250,21 +250,21 @@ function SaleHistory() {
             <tbody>
               {sales.map((sale) => (
                 <tr key={sale.id}>
-                  <td>{sale.id}</td>
-                  <td>{sale.customer_name}</td>
-                  <td>{sale.user_name}</td>
-                  <td>{new Date(sale.createdAt).toLocaleString()}</td>
-                  <td>
+                  <td data-label="ID">{sale.id}</td>
+                  <td data-label="Cliente">{sale.customer_name}</td>
+                  <td data-label="Vendedor">{sale.user_name}</td>
+                  <td data-label="Fecha">{new Date(sale.createdAt).toLocaleString()}</td>
+                  <td data-label="Total">
                     <span className="sh-table-total">
                       S/ {Number(sale.total).toFixed(2)}
                     </span>
                   </td>
-                  <td>
+                  <td data-label="Estado">
                     <span className={`status-${sale.status} sh-table-status`}>
                       {sale.status.charAt(0).toUpperCase() + sale.status.slice(1)}
                     </span>
                   </td>
-                  <td>
+                  <td data-label="Acciones">
                     <div className="sh-table-actions">
                       <button
                         className="btn-details"

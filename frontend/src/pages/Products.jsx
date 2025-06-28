@@ -28,7 +28,7 @@ function Products() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [productToDelete, setProductToDelete] = useState(null);
-  const [itemsPerPage, setItemsPerPage] = useState(5);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
 
   // =======================
@@ -239,10 +239,10 @@ function Products() {
                 className="filter-dropdown"
                 title="Filas por página"
               >
-                <option value="5">5</option>
                 <option value="10">10</option>
                 <option value="15">15</option>
                 <option value="30">30</option>
+                <option value="999999">Todos</option>
               </select>
             </div>
             <button
@@ -252,6 +252,26 @@ function Products() {
             >
               <HiPlus style={{ marginRight: 4 }} />
               Agregar
+            </button>
+          </div>
+          {/* Paginación integrada en controles */}
+          <div className="pagination-bar">
+            <button
+              onClick={handlePrevPage}
+              disabled={currentPage === 1 || totalPages === 0}
+            >
+              <FiChevronLeft />
+            </button>
+            <span>
+              {totalPages === 0
+                ? "Sin páginas"
+                : `Página ${currentPage} de ${totalPages}`}
+            </span>
+            <button
+              onClick={handleNextPage}
+              disabled={currentPage === totalPages || totalPages === 0}
+            >
+              <FiChevronRight />
             </button>
           </div>
         </div>
@@ -315,26 +335,6 @@ function Products() {
             )}
           </tbody>
         </table>
-      </div>
-      {/* Paginación */}
-      <div className="pagination-bar">
-        <button
-          onClick={handlePrevPage}
-          disabled={currentPage === 1 || totalPages === 0}
-        >
-          <FiChevronLeft />
-        </button>
-        <span>
-          {totalPages === 0
-            ? "Sin páginas"
-            : `Página ${currentPage} de ${totalPages}`}
-        </span>
-        <button
-          onClick={handleNextPage}
-          disabled={currentPage === totalPages || totalPages === 0}
-        >
-          <FiChevronRight />
-        </button>
       </div>
       {/* Modales */}
       {isModalOpen && (

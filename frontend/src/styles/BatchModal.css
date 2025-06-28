@@ -1,116 +1,263 @@
+/* BatchModal Optimizado */
 .batch-modal-overlay {
   position: fixed;
-  top: 0; left: 0; width: 100vw; height: 100vh;
-  background: rgba(0,0,0,0.2);
+  inset: 0;
+  background: rgba(31, 42, 55, 0.6);
+  backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
+  z-index: 1300;
+  animation: batchFadeIn 0.12s ease-out;
+  will-change: opacity;
+  transform: translateZ(0);
+}
+
+@keyframes batchFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 .batch-modal-content {
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 4px 24px #0002;
-  padding: 28px 28px 18px 28px;
-  min-width: 320px;
+  background: linear-gradient(135deg, #ffffff 0%, #f8fcfd 100%);
+  border-radius: 16px;
+  box-shadow: 
+    0 20px 60px rgba(31, 42, 55, 0.15),
+    0 10px 30px rgba(12, 177, 160, 0.08),
+    0 0 0 1px rgba(12, 177, 160, 0.1);
+  padding: 1.5rem;
+  min-width: 350px;
   max-width: 95vw;
-  width: 350px;
+  width: 400px;
   position: relative;
-  animation: fadeIn .2s;
+  animation: batchSlideIn 0.12s ease-out;
+  will-change: transform, opacity;
+  transform: translateZ(0);
+  contain: layout style;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: scale(0.97);}
-  to   { opacity: 1; transform: scale(1);}
+@keyframes batchSlideIn {
+  from { 
+    opacity: 0; 
+    transform: translateZ(0) translateY(-8px) scale(0.98); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateZ(0) translateY(0) scale(1); 
+  }
 }
 
 .batch-modal-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 18px;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid rgba(12, 177, 160, 0.1);
 }
 
 .batch-modal-header h3 {
   margin: 0;
-  font-size: 1.2rem;
-  font-weight: 600;
-  color: #222;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1f2a37;
+  display: flex;
+  align-items: center;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.batch-modal-header h3 svg {
+  color: #0cb1a0;
+  font-size: 1.3rem;
 }
 
 .batch-modal-close-btn {
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  color: #888;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  font-size: 1.2rem;
+  color: #ef4444;
   cursor: pointer;
-  transition: color 0.15s;
+  padding: 0.5rem;
+  border-radius: 8px;
+  transition: background 0.12s ease, border-color 0.12s ease, transform 0.12s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  will-change: background, border-color, transform;
+  transform: translateZ(0);
 }
-.batch-modal-close-btn:hover {
-  color: #2563eb;
+
+.batch-modal-close-btn:hover:not(:disabled) {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.3);
+  transform: translateZ(0) scale(1.05);
+}
+
+.batch-modal-close-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: translateZ(0);
 }
 
 .batch-modal-body {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 1rem;
 }
 
 .batch-input-group {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 0.4rem;
 }
 
-.batch-input-group label {
-  font-size: 0.97rem;
-  font-weight: 500;
-  color: #333;
+.batch-input-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #1f2a37;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.batch-input-label svg {
+  color: #0cb1a0;
+  font-size: 1.1rem;
+}
+
+.required-asterisk {
+  color: #ef4444;
+  font-weight: 700;
 }
 
 .batch-input-group input {
-  padding: 7px 10px;
-  border: 1px solid #cbd5e1;
-  border-radius: 5px;
-  font-size: 1rem;
-  outline: none;
-  transition: border 0.15s;
+  width: 100%;
+  font-size: 0.9rem;
+  padding: 0.6rem 0.8rem;
+  border: 2px solid rgba(12, 177, 160, 0.15);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.9);
+  color: #1f2a37;
+  box-sizing: border-box;
+  min-height: 42px;
+  transition: border-color 0.12s ease, box-shadow 0.12s ease, transform 0.12s ease;
+  backdrop-filter: blur(10px);
+  font-family: inherit;
+  will-change: border-color, box-shadow;
+  transform: translateZ(0);
 }
+
 .batch-input-group input:focus {
-  border: 1.5px solid #2563eb;
+  outline: none;
+  border-color: #0cb1a0;
+  background: rgba(255, 255, 255, 1);
+  box-shadow: 
+    0 0 0 3px rgba(12, 177, 160, 0.1),
+    0 4px 12px rgba(12, 177, 160, 0.15);
+  transform: translateZ(0) translateY(-1px);
+}
+
+.batch-input-group input:disabled {
+  background: rgba(240, 241, 244, 0.6);
+  color: #94a3b8;
+  border-color: rgba(12, 177, 160, 0.1);
+  cursor: not-allowed;
+}
+
+.batch-input-group input::placeholder {
+  color: #94a3b8;
+  opacity: 1;
+  font-style: italic;
 }
 
 .batch-modal-footer {
   display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  margin-top: 10px;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(12, 177, 160, 0.1);
 }
 
 .batch-cancel-button,
 .batch-add-button {
-  padding: 7px 18px;
-  border-radius: 5px;
+  min-width: 120px;
+  height: 44px;
+  font-size: 0.9rem;
+  border-radius: 12px;
   border: none;
   font-weight: 600;
-  font-size: 1rem;
   cursor: pointer;
-  transition: background 0.15s, color 0.15s;
+  transition: background 0.12s ease, transform 0.12s ease, box-shadow 0.12s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  will-change: background, transform, box-shadow;
+  transform: translateZ(0);
 }
 
 .batch-cancel-button {
-  background: #f3f4f6;
-  color: #222;
+  background: rgba(229, 231, 235, 0.8);
+  color: #1f2a37;
+  border: 2px solid rgba(12, 177, 160, 0.2);
+  backdrop-filter: blur(10px);
 }
-.batch-cancel-button:hover {
-  background: #e5e7eb;
+
+.batch-cancel-button:hover:not(:disabled) {
+  background: rgba(209, 213, 219, 0.9);
+  color: #0cb1a0;
+  border-color: #0cb1a0;
+  transform: translateZ(0) translateY(-2px);
+  box-shadow: 0 6px 20px rgba(12, 177, 160, 0.15);
+}
+
+.batch-cancel-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: translateZ(0);
 }
 
 .batch-add-button {
-  background: #2563eb;
-  color: #fff;
+  background: linear-gradient(135deg, #1f2a37 0%, #0d4c52 100%);
+  color: #ffffff;
+  border: 2px solid transparent;
+  box-shadow: 
+    0 4px 12px rgba(31, 42, 55, 0.25),
+    0 2px 6px rgba(12, 177, 160, 0.15);
 }
-.batch-add-button:hover {
-  background: #1d4ed8;
+
+.batch-add-button:hover:not(:disabled) {
+  background: linear-gradient(135deg, #0cb1a0 0%, #0d9d8f 100%);
+  transform: translateZ(0) translateY(-2px);
+  box-shadow: 
+    0 6px 20px rgba(12, 177, 160, 0.3),
+    0 4px 12px rgba(12, 177, 160, 0.2);
+}
+
+.batch-add-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: translateZ(0);
+}
+
+/* Responsive Design */
+@media (max-width: 480px) {
+  .batch-modal-content {
+    width: 95vw;
+    padding: 1rem;
+    border-radius: 12px;
+  }
+  
+  .batch-modal-footer {
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+  
+  .batch-cancel-button,
+  .batch-add-button {
+    width: 100%;
+    min-width: 0;
+  }
 }

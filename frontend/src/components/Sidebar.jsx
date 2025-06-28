@@ -36,7 +36,7 @@ const Sidebar = ({ isOpen, onClose }) => {
       {/* Logo y título */}
       <div className="sidebar-header sidebar-header-compact">
         <HiOutlineShoppingBag className="sidebar-header-icon" size={28} />
-        <span className="sidebar-header-title" style={{ marginLeft: '5px', color: '#2fcabd' }}>
+        <span className="sidebar-header-title">
           More Sales...
         </span>
       </div>
@@ -47,7 +47,7 @@ const Sidebar = ({ isOpen, onClose }) => {
         <div className="sidebar-user-info">
           <div className="sidebar-username">{username}</div>
           <div className="sidebar-role">{userRole}</div>
-          <div className="sidebar-status">● Online</div>
+          <div className="sidebar-status">Online</div>
         </div>
       </div>
 

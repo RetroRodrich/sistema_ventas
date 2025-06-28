@@ -1,60 +1,181 @@
-import React, { useState, useEffect } from 'react';
-import { MdClose } from 'react-icons/md';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { MdClose, MdSave, MdAdd } from 'react-icons/md';
+import { HiOutlineCube, HiOutlineAdjustments, HiOutlineCalendar } from 'react-icons/hi';
 import '../styles/BatchModal.css';
 
 function BatchModal({ open, onClose, onSave, initialData, mode = "add" }) {
-  const [batch, setBatch] = useState('');
-  const [stock, setStock] = useState('');
-  const [expirationDate, setExpirationDate] = useState('');
+  const [formData, setFormData] = useState({
+    batch: '',
+    stock: '',
+    expirationDate: ''
+  });
+  const [isLoading, setIsLoading] = useState(false);
 
+  // Memoizar título del modal
+  const modalTitle = useMemo(() => 
+    mode === "edit" ? "Editar lote" : "Agregar lote", 
+    [mode]
+  );
+
+  // Memoizar ícono del botón
+  const buttonIcon = useMemo(() => 
+    mode === "edit" ? <MdSave style={{ marginRight: 6 }} /> : <MdAdd style={{ marginRight: 6 }} />, 
+    [mode]
+  );
+
+  // Resetear formulario cuando se abre/cierra o cambian los datos iniciales
   useEffect(() => {
-    if (initialData) {
-      setBatch(initialData.batch || '');
-      setStock(initialData.stock || '');
-      setExpirationDate(initialData.expirationDate ? initialData.expirationDate.slice(0, 10) : '');
-    } else {
-      setBatch('');
-      setStock('');
-      setExpirationDate('');
+    if (open) {
+      if (initialData) {
+        setFormData({
+          batch: initialData.batch || '',
+          stock: String(initialData.stock || ''),
+          expirationDate: initialData.expirationDate ? initialData.expirationDate.slice(0, 10) : ''
+        });
+      } else {
+        setFormData({
+          batch: '',
+          stock: '',
+          expirationDate: ''
+        });
+      }
+      setIsLoading(false);
     }
   }, [initialData, open]);
 
-  if (!open) return null;
+  // Handler optimizado para cambios
+  const handleChange = useCallback((e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  }, []);
 
-  const handleSubmit = (e) => {
+  // Handler optimizado para submit
+  const handleSubmit = useCallback(async (e) => {
     e.preventDefault();
-    if (!batch || !stock) return;
-    onSave({
-      batch,
-      stock,
-      expirationDate: expirationDate || null
-    });
-  };
+    
+    if (isLoading) return;
+    
+    // Validaciones
+    if (!formData.batch?.trim()) {
+      alert("El código de lote es obligatorio");
+      return;
+    }
+    
+    const stockNum = Number(formData.stock);
+    if (!formData.stock || isNaN(stockNum) || stockNum < 0) {
+      alert("El stock debe ser un número válido mayor o igual a 0");
+      return;
+    }
+    
+    setIsLoading(true);
+    
+    try {
+      await onSave({
+        batch: formData.batch.trim(),
+        stock: stockNum,
+        expirationDate: formData.expirationDate || null
+      });
+    } catch (error) {
+      console.error("Error saving batch:", error);
+      alert("Error al guardar el lote");
+    } finally {
+      setIsLoading(false);
+    }
+  }, [formData, isLoading, onSave]);
+
+  // Handler para cerrar
+  const handleClose = useCallback(() => {
+    if (!isLoading) {
+      onClose();
+    }
+  }, [isLoading, onClose]);
+
+  if (!open) return null;
 
   return (
     <div className="batch-modal-overlay">
       <div className="batch-modal-content">
         <div className="batch-modal-header">
-          <h3>{mode === "edit" ? "Editar lote" : "Agregar lote"}</h3>
-          <button className="batch-modal-close-btn" onClick={onClose}><MdClose /></button>
+          <h3>
+            <HiOutlineCube style={{ marginRight: 8 }} />
+            {modalTitle}
+          </h3>
+          <button 
+            className="batch-modal-close-btn" 
+            onClick={handleClose}
+            disabled={isLoading}
+          >
+            <MdClose />
+          </button>
         </div>
         <form onSubmit={handleSubmit} className="batch-modal-body">
           <div className="batch-input-group">
-            <label>Código de lote *</label>
-            <input value={batch} onChange={e => setBatch(e.target.value)} required autoFocus />
+            <label htmlFor="batch" className="batch-input-label">
+              <HiOutlineCube /> Código de lote <span className="required-asterisk">*</span>
+            </label>
+            <input 
+              id="batch"
+              name="batch"
+              value={formData.batch} 
+              onChange={handleChange} 
+              required 
+              autoFocus
+              disabled={isLoading}
+              placeholder="Ej: LOTE-001"
+              autoComplete="off"
+            />
           </div>
           <div className="batch-input-group">
-            <label>Stock *</label>
-            <input type="number" value={stock} onChange={e => setStock(e.target.value)} min={0} required />
+            <label htmlFor="stock" className="batch-input-label">
+              <HiOutlineAdjustments /> Stock <span className="required-asterisk">*</span>
+            </label>
+            <input 
+              id="stock"
+              name="stock"
+              type="number" 
+              value={formData.stock} 
+              onChange={handleChange} 
+              min="0" 
+              step="1"
+              required
+              disabled={isLoading}
+              placeholder="Ej: 100"
+              autoComplete="off"
+            />
           </div>
           <div className="batch-input-group">
-            <label>Fecha de vencimiento</label>
-            <input type="date" value={expirationDate} onChange={e => setExpirationDate(e.target.value)} />
+            <label htmlFor="expirationDate" className="batch-input-label">
+              <HiOutlineCalendar /> Fecha de vencimiento
+            </label>
+            <input 
+              id="expirationDate"
+              name="expirationDate"
+              type="date" 
+              value={formData.expirationDate} 
+              onChange={handleChange}
+              disabled={isLoading}
+              autoComplete="off"
+            />
           </div>
           <div className="batch-modal-footer">
-            <button type="button" className="batch-cancel-button" onClick={onClose}>Cancelar</button>
-            <button type="submit" className="batch-add-button">
-              {mode === "edit" ? "Guardar" : "Agregar"}
+            <button 
+              type="button" 
+              className="batch-cancel-button" 
+              onClick={handleClose}
+              disabled={isLoading}
+            >
+              Cancelar
+            </button>
+            <button 
+              type="submit" 
+              className="batch-add-button"
+              disabled={isLoading}
+            >
+              {buttonIcon}
+              {isLoading ? "Guardando..." : (mode === "edit" ? "Guardar" : "Agregar")}
             </button>
           </div>
         </form>

@@ -1,186 +1,459 @@
-/* Overlay */
+/* Overlay - GPU Acceleration */
 .add-modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(34, 48, 71, 0.38);
-  backdrop-filter: blur(2px);
+  background: rgba(31, 42, 55, 0.65);
+  backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1200;
+  z-index: 9999;
+  animation: fadeIn 0.08s ease-out;
+  will-change: opacity;
+  transform: translateZ(0); /* GPU layer */
+  padding: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
-/* --- Modal principal --- */
+/* Asegurar que el modal esté centrado en móviles y cambiar a columna única */
+@media (max-width: 768px) {
+  .add-modal-overlay {
+    align-items: flex-start;
+    padding: 1rem 0;
+    overflow-x: hidden; /* Prevenir scroll horizontal */
+    width: 100vw;
+    max-width: 100vw;
+  }
+  
+  /* Forzar columna única para todas las resoluciones móviles */
+  .add-modal-body.add-modal-body-cols {
+    flex-direction: column !important;
+  }
+  
+  .add-modal-form-col:not(:last-child) {
+    border-right: none !important;
+    padding-right: 0 !important;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* --- Modal principal --- Optimizado para pantallas medianas (13-14 pulgadas) */
 .add-modal-content {
-  background: #f6fafb;
-  border-radius: 14px;
-  width: 820px;
-  max-width: 98vw;
-  box-shadow: 0 8px 32px rgba(34, 48, 71, 0.18);
+  background: linear-gradient(135deg, #ffffff 0%, #f8fcfd 100%);
+  border-radius: 12px;
+  width: 98vw;
+  max-width: 1100px;
+  height: 90vh; /* Aprovecha mejor el espacio vertical */
+  max-height: 650px; /* Ajustado para pantallas medianas */
+  min-height: 480px; /* Mínimo optimizado */
+  box-shadow: 
+    0 15px 45px rgba(31, 42, 55, 0.12),
+    0 8px 25px rgba(12, 177, 160, 0.06),
+    0 0 0 1px rgba(12, 177, 160, 0.08);
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  border: 1.5px solid #e6f2f1;
+  animation: modalSlideIn 0.08s ease-out;
+  position: relative;
+  will-change: transform, opacity;
+  transform: translateZ(0);
+  contain: layout style paint;
+  margin: auto;
 }
 
-@keyframes modalIn {
-  from { opacity: 0; transform: translateY(-15px); }
-  to   { opacity: 1; transform: translateY(0); }
+@keyframes modalSlideIn {
+  from { 
+    opacity: 0; 
+    transform: translateZ(0) translateY(-3px) scale(0.995); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateZ(0) translateY(0) scale(1); 
+  }
 }
 
-/* Cabecera */
+/* Cabecera ultra compacta */
 .add-modal-header {
-  background: #223047;
-  color: #fff;
-  padding: 0.8rem 1.5rem;
+  background: linear-gradient(135deg, #1f2a37 0%, #0d4c52 50%, #0cb1a0 100%);
+  color: #ffffff;
+  padding: 0.6rem 1.2rem; /* Más compacto */
   display: flex;
   align-items: center;
   justify-content: space-between;
+  position: relative;
+  border-bottom: 1px solid rgba(12, 177, 160, 0.2);
+  flex-shrink: 0; /* No se encoge */
 }
+
+.add-modal-header::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(12, 177, 160, 0.6) 20%, 
+    rgba(12, 177, 160, 0.8) 50%, 
+    rgba(12, 177, 160, 0.6) 80%, 
+    transparent 100%
+  );
+}
+
 .add-modal-header h2 {
-  font-size: 1.18rem;
-  font-weight: 600;
+  font-size: 1.1rem;
+  font-weight: 700;
   margin: 0;
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
+
+.add-modal-header h2 svg {
+  font-size: 1.2rem;
+  filter: drop-shadow(0 0 8px rgba(12, 177, 160, 0.4));
+}
+
 .modal-close-btn {
-  background: none;
-  border: none;
-  color: #fff;
+  background: linear-gradient(135deg, rgba(12, 177, 160, 0.1) 0%, rgba(12, 177, 160, 0.15) 100%);
+  border: 2px solid rgba(12, 177, 160, 0.3);
+  color: #ffffff;
   font-size: 1.2rem;
   cursor: pointer;
-  opacity: 0.8;
-  padding: 0;
-  transition: opacity 0.15s;
+  padding: 0.5rem;
+  border-radius: 10px;
+  width: 40px;
+  height: 40px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(15px);
+  will-change: background, border-color, transform, box-shadow;
+  transform: translateZ(0);
+  box-shadow: 
+    0 4px 12px rgba(12, 177, 160, 0.15),
+    0 2px 6px rgba(0, 0, 0, 0.1);
 }
-.modal-close-btn:hover { opacity: 1; }
 
-/* --- Cuerpo en columnas --- */
+.modal-close-btn:hover { 
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(239, 68, 68, 0.2) 100%);
+  color: #ffffff;
+  transform: translateZ(0) scale(1.08) rotate(90deg);
+  box-shadow: 
+    0 4px 10px #1f2a37,
+    0 4px 5px #00000026;
+}
+
+.modal-close-btn:active {
+  transform: translateZ(0) scale(0.95) rotate(90deg);
+  transition: all 0.1s ease;
+}
+
+/* --- Cuerpo principal --- Ultra compacto para pantallas medianas */
 .add-modal-body.add-modal-body-cols {
   display: flex;
   flex-direction: row;
-  gap: 1.2rem;
-  background: #f6fafb;
-  padding: 1.5rem 1.2rem 1rem 1.2rem;
+  gap: 0.8rem; /* Gap aún más pequeño */
+  background: transparent;
+  padding: 0.8rem; /* Padding ultra compacto */
+  overflow-y: auto;
+  overflow-x: hidden;
+  flex: 1; /* Toma todo el espacio disponible */
+  min-height: 0; /* Permite que se encoja */
+  contain: layout style;
+  transform: translateZ(0);
+  position: relative;
+  
+  /* Scrollbar minimalista */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(12, 177, 160, 0.3) transparent;
 }
+
+/* Scrollbars webkit */
+.add-modal-body.add-modal-body-cols::-webkit-scrollbar {
+  width: 6px;
+}
+
+.add-modal-body.add-modal-body-cols::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.add-modal-body.add-modal-body-cols::-webkit-scrollbar-thumb {
+  background: rgba(12, 177, 160, 0.3);
+  border-radius: 3px;
+}
+
+/* Columnas ultra compactas */
 .add-modal-form-col {
   flex: 1 1 0;
   display: flex;
   flex-direction: column;
-  gap: 0.45rem;
+  gap: 0.4rem; /* Gap ultra reducido */
   min-width: 0;
-  max-width: 420px; /* Más ancho para aprovechar el espacio */
-}
-.add-modal-form-col:not(:last-child) {
-  border-right: 1px solid #e6f2f1;
-  padding-right: 1.1rem;
+  max-width: 100%;
+  overflow-x: hidden;
+  contain: layout style;
 }
 
-/* --- Inputs --- */
-.input-label {
-  font-size: 0.91rem !important;
-  color: #223047;
-  font-weight: 500;
-  margin-bottom: 0.08rem;
-  display: flex;
-  align-items: center;
-  gap: 0.3rem;
+.add-modal-form-col:not(:last-child) {
+  border-right: 1px solid rgba(12, 177, 160, 0.15);
+  padding-right: 0.8rem; /* Padding ultra pequeño */
+  margin-right: 0.8rem;
 }
+
+/* Inputs ultra compactos */
 .input-group {
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 0.05rem;
-  margin-bottom: 0.1rem;
+  margin-bottom: 0.3rem; /* Aún menos margen */
 }
+
 .input-group input,
 .input-group textarea,
 .input-group select {
   width: 100%;
-  font-size: 0.92rem;
-  padding: 0.28rem 0.5rem;
-  border: 1px solid #d3dae6;
-  border-radius: 6px;
-  background: #fff;
-  color: #223047;
+  font-size: 0.82rem; /* Texto aún más pequeño */
+  padding: 0.4rem 0.6rem; /* Padding ultra compacto */
+  border: 2px solid rgba(12, 177, 160, 0.15);
+  border-radius: 6px; /* Bordes aún más pequeños */
+  background: rgba(255, 255, 255, 0.9);
+  color: #1f2a37;
   box-sizing: border-box;
-  height: 30px;
-  margin-top: 0.5rem;
+  height: auto;
+  min-height: 32px; /* Altura mínima aún más pequeña */
+  transition: border-color 0.12s ease, box-shadow 0.12s ease, transform 0.12s ease;
+  backdrop-filter: blur(10px);
+  font-family: inherit;
+  will-change: border-color, box-shadow;
+  transform: translateZ(0);
 }
+
+.input-group input:focus,
+.input-group textarea:focus,
+.input-group select:focus {
+  outline: none;
+  border-color: #0cb1a0;
+  background: rgba(255, 255, 255, 1);
+  box-shadow: 
+    0 0 0 3px rgba(12, 177, 160, 0.1),
+    0 4px 12px rgba(12, 177, 160, 0.15);
+  transform: translateZ(0) translateY(-1px);
+}
+
+.input-group input::placeholder,
+.input-group textarea::placeholder {
+  color: #94a3b8;
+  opacity: 1;
+  font-style: italic;
+}
+
 .input-group.image-input-group input {
   width: 100%;
   min-width: 0;
   max-width: 100%;
 }
+
 .input-group textarea {
-  min-height: 38px;
-  max-height: 80px;
-  height: 38px;
+  min-height: 50px;
+  max-height: 100px;
+  height: 50px;
   resize: vertical;
+  line-height: 1.4;
 }
-.input-icon {
-  position: absolute;
-  top: 50%;
-  left: 8px;
-  transform: translateY(-50%);
-  color: #0cb1a0;
-  opacity: 0.8;
-  font-size: 1rem;
-  pointer-events: none;
-}
+
 .input-date {
-  min-width: 120px;
-  max-width: 150px;
-  padding-left: 0.5rem;
-  height: 34px;
+  min-width: 140px;
+  max-width: 180px;
+  padding-left: 0.8rem;
 }
+
+/* Input date dentro del contenedor de vencimiento */
+.input-group-vencimiento-row .input-date {
+  min-width: 0 !important;
+  max-width: 100% !important;
+  width: 100% !important;
+  padding-left: 0.8rem;
+  box-sizing: border-box;
+}
+
 .input-date:disabled {
-  background: #f0f1f4 !important;
-  color: #aaa !important;
-  border-color: #e0e0e0 !important;
+  background: rgba(240, 241, 244, 0.6) !important;
+  color: #94a3b8 !important;
+  border-color: rgba(12, 177, 160, 0.1) !important;
   cursor: not-allowed;
 }
 
-/* --- Tabla de lotes compacta --- */
+/* --- Tabla de lotes moderna --- GPU Optimized */
 .viewbatches-modal-table {
   width: 100%;
   border-collapse: collapse;
-  margin-bottom: 0.7rem;
-  background: #fff;
-  border-radius: 8px;
-  font-size: 0.96rem;
+  margin-bottom: 1rem;
+  contain: layout style; /* CSS containment */
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 12px;
+  font-size: 0.9rem;
   table-layout: fixed;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(12, 177, 160, 0.08);
 }
+
+/* --- Contenedor scrolleable para la tabla de lotes --- Diseño elegante */
+.batches-table-container {
+  width: 100%;
+  max-height: 300px;
+  overflow: auto;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(12, 177, 160, 0.08);
+  background: rgba(255, 255, 255, 0.9);
+  margin-bottom: 1rem;
+  
+  /* Scrollbar elegante - invisible por defecto */
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+}
+
+/* Aparecer al hover */
+.batches-table-container:hover {
+  scrollbar-color: rgba(12, 177, 160, 0.3) rgba(248, 252, 253, 0.1);
+}
+
+/* Scrollbars webkit minimalistas */
+.batches-table-container::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.batches-table-container::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 3px;
+}
+
+.batches-table-container::-webkit-scrollbar-thumb {
+  background: transparent;
+  border-radius: 3px;
+  transition: background 0.3s ease;
+}
+
+/* Efecto hover elegante */
+.batches-table-container:hover::-webkit-scrollbar-track {
+  background: rgba(248, 252, 253, 0.1);
+}
+
+.batches-table-container:hover::-webkit-scrollbar-thumb {
+  background: rgba(12, 177, 160, 0.3);
+}
+
+.batches-table-container:hover::-webkit-scrollbar-thumb:hover {
+  background: rgba(12, 177, 160, 0.5);
+}
+
+/* Ajustes para la tabla dentro del contenedor scrolleable */
+.batches-table-container .viewbatches-modal-table {
+  margin-bottom: 0;
+  box-shadow: none;
+  border-radius: 0;
+}
+
+/* Hacer el header sticky para mejor UX */
+.batches-table-container .viewbatches-modal-table th {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: #1f2a37; /* Color azul oscuro sólido */
+}
+
+/* Responsive: Ajustar altura máxima en móviles */
+@media (max-width: 768px) {
+  .batches-table-container {
+    max-height: 250px;
+  }
+}
+
+@media (max-width: 480px) {
+  .batches-table-container {
+    max-height: 200px;
+  }
+}
+
 .viewbatches-modal-table th,
 .viewbatches-modal-table td {
-  padding: 0.38rem 0.2rem;
+  padding: 0.8rem 0.5rem;
   text-align: center;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.viewbatches-modal-table th {
-  background: #e6f2f1;
-  color: #223047;
-  font-weight: 600;
-  border-bottom: 1px solid #d3dae6;
-  font-size: 0.97rem;
+
+/* Definir anchos mínimos para cada columna */
+.viewbatches-modal-table th:first-child,
+.viewbatches-modal-table td:first-child {
+  min-width: 120px; /* Código de lote */
 }
-.viewbatches-modal-table td {
-  color: #223047;
-  font-size: 0.96rem;
+
+.viewbatches-modal-table th:nth-child(2),
+.viewbatches-modal-table td:nth-child(2) {
+  min-width: 80px; /* Stock */
 }
+
+.viewbatches-modal-table th:nth-child(3),
+.viewbatches-modal-table td:nth-child(3) {
+  min-width: 110px; /* Fecha de vencimiento */
+}
+
+.viewbatches-modal-table th:last-child,
 .viewbatches-modal-table td:last-child {
-  width: 38px;
-  padding: 0.2rem 0.2rem;
+  min-width: 100px; /* Acciones */
+  width: 100px;
 }
+
+.viewbatches-modal-table th {
+  background: #1f2a37; /* Color azul oscuro sólido */
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.viewbatches-modal-table td {
+  color: #1f2a37;
+  font-size: 0.9rem;
+  border-bottom: 1px solid rgba(12, 177, 160, 0.1);
+}
+
+.viewbatches-modal-table tbody tr:hover {
+  background: rgba(12, 177, 160, 0.05);
+}
+
+.viewbatches-modal-table tbody tr:nth-child(even) {
+  background: rgba(248, 252, 253, 0.8);
+}
+
+.viewbatches-modal-table tbody tr:nth-child(even):hover {
+  background: rgba(12, 177, 160, 0.08);
+}
+
+.viewbatches-modal-table td:last-child {
+  min-width: 100px; /* Acciones */
+  width: 100px;
+  padding: 0.5rem;
+}
+
 .viewbatches-modal-empty {
-  color: #888;
+  color: #94a3b8;
   text-align: center;
   font-style: italic;
+  padding: 2rem;
 }
 
 /* --- Botones de acción compactos --- */
@@ -222,127 +495,133 @@
 }
 .lote-add-btn:hover { background: #223047; }
 
-/* --- Títulos --- */
+/* --- Títulos de sección ultra compactos --- */
 .modal-section-title {
-  font-size: 1rem !important;
+  font-size: 1rem !important; /* Más pequeño */
   font-weight: 700;
-  color: #223047;
-  margin-bottom: 0.3rem;
-  margin-top: 0.2rem;
+  color: #1f2a37 !important;
+  margin-bottom: 0.6rem; /* Menos margen */
+  margin-top: 0;
   letter-spacing: 0.01em;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  position: relative;
+  padding-bottom: 0.3rem; /* Menos padding */
+  opacity: 1 !important;
+  z-index: 1;
 }
 
-/* --- Footer --- */
+.modal-section-title::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 30px; /* Más pequeño */
+  height: 2px; /* Más fino */
+  background: linear-gradient(90deg, #0cb1a0 0%, #1f2a37 100%);
+  border-radius: 1px;
+}
+
+/* --- Footer ultra compacto --- */
 .add-modal-footer {
   width: 100%;
   display: flex;
   justify-content: center;
-  gap: 24px;
-  padding: 28px 0 10px 0;
+  gap: 1rem;
+  padding: 1rem 0 0.8rem 0; /* Padding ultra compacto */
   background: transparent;
   border-top: none;
-  margin-top: 0;
+  margin-top: auto;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .add-modal-footer .cancel-button,
 .add-modal-footer .add-button {
-  min-width: 150px;
-  height: 35px;
-  font-size: 1rem;
-  border-radius: 7px;
+  min-width: 120px; /* Más pequeño */
+  height: 38px; /* Más compacto */
+  font-size: 0.9rem;
+  border-radius: 8px; /* Bordes más pequeños */
   border: none;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.18s, color 0.18s, border 0.18s, transform 0.13s;
-  box-shadow: 0 2px 8px #2230470a;
+  transition: background 0.12s ease, transform 0.12s ease, box-shadow 0.12s ease;
   display: flex;
   align-items: center;
   justify-content: center;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  will-change: background, transform, box-shadow;
+  transform: translateZ(0);
+}
+
+.add-modal-footer .cancel-button:disabled,
+.add-modal-footer .add-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: translateZ(0);
 }
 
 .add-modal-footer .cancel-button {
-  background: #e5e7eb;
-  color: #223047;
-  border: 1px solid #d3dae6;
+  background: rgba(229, 231, 235, 0.8);
+  color: #1f2a37;
+  border: 2px solid rgba(12, 177, 160, 0.2);
+  backdrop-filter: blur(10px);
 }
-.add-modal-footer .cancel-button:hover {
-  background: #d1d5db;
+
+.add-modal-footer .cancel-button:hover:not(:disabled) {
+  background: rgba(209, 213, 219, 0.9);
   color: #0cb1a0;
   border-color: #0cb1a0;
+  transform: translateZ(0) translateY(-2px);
+  box-shadow: 0 6px 20px rgba(12, 177, 160, 0.15);
 }
 
 .add-modal-footer .add-button {
-  background: #223047;
-  color: #fff;
-  border: 1px solid #223047;
-}
-.add-modal-footer .add-button:hover {
-  background: #0cb1a0;
-  border-color: #0cb1a0;
-  color: #fff;
+  background: linear-gradient(135deg, #1f2a37 0%, #0d4c52 100%);
+  color: #ffffff;
+  border: 2px solid transparent;
+  box-shadow: 
+    0 4px 12px rgba(31, 42, 55, 0.25),
+    0 2px 6px rgba(12, 177, 160, 0.15);
 }
 
-.add-modal-footer-inline {
-  display: flex;
-  gap: 0.7rem;
-  justify-content: flex-end;
-  align-items: center;
-  margin-top: 1.2rem;
-  background: none;
-  border-top: none;
-  padding: 0;
-}
-.add-modal-footer-inline.right {
-  display: flex;
-  justify-content: flex-end;
-  gap: 18px;
+.add-modal-footer .add-button:hover:not(:disabled) {
+  background: linear-gradient(135deg, #0cb1a0 0%, #0d9d8f 100%);
+  transform: translateZ(0) translateY(-2px);
+  box-shadow: 
+    0 6px 20px rgba(12, 177, 160, 0.3),
+    0 4px 12px rgba(12, 177, 160, 0.2);
 }
 
-/* Vencimiento: checkbox, texto y fecha en una sola fila */
-.input-group-vencimiento-row {
-  display: flex !important;
-  flex-direction: row !important;
-  align-items: center !important;
-  gap: 0.7rem !important;
-  margin-top: 0.1rem;
-  margin-bottom: 0.1rem;
-  width: 100%;
-}
-.input-group-vencimiento-row label {
-  margin-bottom: 0;
-  font-size: 0.95rem;
-  white-space: nowrap;
-  display: flex;
-  align-items: center;
-  gap: 0.3rem;
-}
-
-/* Tres columnas internas */
-.product-fields-cols.product-fields-cols-3 {
-  display: flex;
-  gap: 1.5rem;
-  width: 100%;
-}
-
-.product-fields-col {
-  flex: 1 1 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  min-width: 0;
-  align-items: flex-start;
-}
-
-/* Nueva cuadrícula para campos de producto */
+/* Nueva cuadrícula para campos de producto - GPU Optimized */
 .product-fields-grid {
   display: grid;
-  grid-template-columns: 1fr 120px 120px;
-  gap: 0.7rem 1.1rem;
+  grid-template-columns: 1fr;
+  gap: 1rem;
   width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+  contain: layout style; /* CSS containment */
 }
 
 .input-group.grid-span-2 {
-  grid-column: span 3;
+  grid-column: span 1;
+}
+
+/* Grid de dos columnas para campos numéricos */
+.product-numeric-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  width: 100%;
+}
+
+/* Grid de tres columnas para campos pequeños */
+.product-small-fields-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 1rem;
+  width: 100%;
 }
 
 .input-group input[type="number"],
@@ -351,146 +630,671 @@
   min-width: 0;
 }
 
-.input-group input[type="number"] {
-  width: 100px;
+/* Vencimiento: Ultra compacto y siempre visible */
+.input-group-vencimiento-row {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  gap: 0.4rem !important; /* Gap ultra pequeño */
+  margin-top: 0.2rem;
+  margin-bottom: 0.2rem;
+  width: 100%;
+  max-width: 100%;
+  padding: 0.5rem; /* Padding ultra compacto */
+  background: linear-gradient(135deg, rgba(12, 177, 160, 0.02) 0%, rgba(12, 177, 160, 0.06) 100%);
+  border-radius: 6px; /* Bordes aún más pequeños */
+  border: 1px solid rgba(12, 177, 160, 0.08); /* Borde más fino */
+  overflow: hidden;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease;
 }
 
-.input-group input,
-.input-group select,
-.input-group textarea {
-  font-size: 0.91rem;
-  padding: 0.22rem 0.45rem;
-  height: 28px;
+.input-group-vencimiento-row:hover {
+  border-color: rgba(12, 177, 160, 0.12);
 }
 
-.input-group textarea {
-  min-height: 34px;
-  max-height: 70px;
-  height: 34px;
+.input-group-vencimiento-row label {
+  margin-bottom: 0;
+  font-size: 0.75rem; /* Aún más pequeño */
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-weight: 600;
+  color: #1f2a37;
+  width: 100%;
+  flex-shrink: 0;
 }
 
-.input-label {
-  font-size: 0.89rem !important;
-  margin-bottom: 0.07rem;
+.input-group-vencimiento-row input[type="checkbox"] {
+  width: 14px !important; /* Aún más pequeño */
+  height: 14px !important;
+  min-height: 14px !important;
+  margin: 0 !important;
+  transform: scale(1);
+  accent-color: #0cb1a0;
+  cursor: pointer;
+  flex-shrink: 0;
 }
 
-.add-modal-content,
-.add-modal-content input,
-.add-modal-content select,
-.add-modal-content textarea,
-.add-modal-content label,
-.add-modal-content th,
-.add-modal-content td {
-  font-size: 0.91rem !important;
-}
-
-/* Título más compacto */
-.modal-section-title {
-  font-size: 1rem !important;
-  margin-bottom: 0.3rem;
+.input-group-vencimiento-row .input-date {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  flex: 1;
+  box-sizing: border-box;
+  min-height: 30px !important; /* Ultra compacto */
+  padding: 0.35rem 0.5rem !important; /* Padding ultra pequeño */
+  font-size: 0.75rem !important; /* Texto ultra pequeño */
 }
 
 .input-group input::placeholder,
 .input-group textarea::placeholder,
 .input-group select::placeholder {
-  color: #b0b8c9 !important; /* Gris claro, puedes ajustar el tono */
+  color: #94a3b8 !important;
   opacity: 1;
   font-style: italic;
 }
 
-/* Botones de acciones de lotes */
+/* --- Botones de acción modernos --- */
 .batch-action-btn {
-  background: none;
-  border: none;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(12, 177, 160, 0.2);
   font-size: 1rem;
   cursor: pointer;
   vertical-align: middle;
-  padding: 4px;
-  margin: 0 2px;
-  transition: background 0.15s, color 0.15s;
-  border-radius: 4px;
+  padding: 0.4rem;
+  margin: 0 0.2rem;
+  transition: all 0.25s ease;
+  border-radius: 8px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  backdrop-filter: blur(10px);
 }
 
 .batch-edit-btn {
-  color: #2563eb; /* Azul principal */
+  color: #0ea5e9;
+  border-color: rgba(14, 165, 233, 0.2);
 }
+
 .batch-edit-btn:hover {
-  background: #e0e7ff;
-  color: #1d4ed8;
+  background: rgba(14, 165, 233, 0.1);
+  color: #0284c7;
+  border-color: rgba(14, 165, 233, 0.3);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(14, 165, 233, 0.2);
 }
 
 .batch-delete-btn {
-  color: #b91c1c; /* Rojo principal */
+  color: #ef4444;
+  border-color: rgba(239, 68, 68, 0.2);
 }
+
 .batch-delete-btn:hover {
-  background: #fee2e2;
+  background: rgba(239, 68, 68, 0.1);
   color: #dc2626;
+  border-color: rgba(239, 68, 68, 0.3);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
 }
 
 .batch-add-btn {
-  background: #0cb188;
-  color: #fff;
+  background: linear-gradient(135deg, #0cb1a0 0%, #0d9d8f 100%);
+  color: #ffffff;
   border: none;
-  border-radius: 20px ;
-  padding: 0.5rem 0.7rem;
+  border-radius: 12px;
+  padding: 0.7rem 1.2rem;
   font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.18s, color 0.18s;
-  box-shadow: 0 2px 8px #0cb1a01a;
-}
-.batch-add-btn:hover {
-  background: #223047;
-  color: #fff;
+  transition: background 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+  box-shadow: 
+    0 4px 12px rgba(12, 177, 160, 0.25),
+    0 2px 6px rgba(12, 177, 160, 0.15);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  will-change: background, transform, box-shadow;
 }
 
-/* Centrar el botón de agregar lote y hacerlo ancho */
+.batch-add-btn:hover {
+  background: linear-gradient(135deg, #1f2a37 0%, #0d4c52 100%);
+  transform: translateY(-2px);
+  box-shadow: 
+    0 6px 20px rgba(31, 42, 55, 0.3),
+    0 4px 12px rgba(12, 177, 160, 0.2);
+}
+
+/* Centrar el botón de agregar lote */
 .batches-add-btn-row {
-  margin-top: 18px;
+  margin-top: 1.5rem;
   display: flex;
   justify-content: center;
 }
 
-@media (max-width: 600px) {
+/* --- Responsive Design --- */
+
+/* Tablets y pantallas medianas */
+@media (max-width: 1024px) {
   .add-modal-content {
-    width: 98vw;
-    max-width: 340px;
-    min-width: 0;
-    border-radius: 7px;
-    margin: 1vh auto;
-    max-height: 96vh;
-    overflow-y: auto;
+    width: 90vw;
+    max-height: 85vh;
   }
+  
   .add-modal-body.add-modal-body-cols {
-    flex-direction: column !important;
-    gap: 0.3rem;
-    padding: 0.5rem 0.2rem 0.2rem 0.2rem;
+    gap: 1rem;
+    padding: 1rem;
   }
-  .add-modal-form-col {
-    max-width: 100%;
-    padding: 0 1rem;
-    border-right: none !important;
+  
+  .product-small-fields-row {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.8rem;
   }
-  .product-fields-grid {
-    grid-template-columns: 1fr !important;
-    gap: 0.4rem 0;
-  }
-  .input-group.grid-span-2 {
-    grid-column: span 1 !important;
-  }
-  .add-modal-footer-inline {
-    flex-direction: column;
-    gap: 0.4rem;
-    align-items: stretch;
-  }
-  .add-button,
-  .cancel-button {
-    width: 100%;
-    min-width: 0;
-    height: 36px;
-    font-size: 0.95rem;
+  
+  .product-small-fields-row .input-group:last-child {
+    grid-column: span 2;
   }
 }
+
+/* Tablets pequeñas y móviles grandes - Columna única */
+@media (max-width: 768px) and (min-width: 481px) {
+  .add-modal-content {
+    width: 95vw;
+    max-width: 95vw;
+    max-height: 95vh;
+    margin: 2.5vh auto;
+    border-radius: 12px;
+  }
+  
+  .add-modal-header {
+    padding: 0.8rem 1rem;
+  }
+  
+  .add-modal-header h2 {
+    font-size: 1.1rem;
+  }
+  
+  /* Cambiar a columna única scrolleable */
+  .add-modal-body.add-modal-body-cols {
+    flex-direction: column !important;
+    gap: 1.5rem;
+    padding: 1rem;
+    overflow-y: auto;
+    overflow-x: hidden;
+    max-height: calc(95vh - 140px);
+    min-height: 300px;
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+  }
+  
+  .add-modal-form-col {
+    max-width: 100%;
+    padding: 0 !important;
+    border-right: none !important;
+    overflow-x: hidden;
+    flex: none; /* Permitir que el contenido dicte la altura */
+  }
+  
+  /* Todos los grids en una columna */
+  .product-numeric-row {
+    grid-template-columns: 1fr;
+    gap: 0.8rem;
+  }
+  
+  .product-small-fields-row {
+    grid-template-columns: 1fr !important;
+    gap: 0.8rem;
+  }
+  
+  .product-small-fields-row .input-group:last-child {
+    grid-column: span 1;
+  }
+  
+  .input-group-vencimiento-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.8rem;
+    padding: 0.8rem;
+    overflow: hidden;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+  
+  .input-group-vencimiento-row .input-date {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    box-sizing: border-box;
+  }
+}
+
+/* Móviles - Columna única completamente scrolleable */
+@media (max-width: 480px) {
+  .add-modal-overlay {
+    padding: 0.5rem;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: max(1rem, env(safe-area-inset-top, 1rem));
+    min-height: 100vh;
+    min-height: 100dvh; /* Altura dinámica del viewport para móviles */
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+  
+  .add-modal-content {
+    width: calc(100vw - 1rem);
+    max-width: calc(100vw - 1rem);
+    margin: 0 auto;
+    max-height: calc(100vh - 2rem - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+    border-radius: 12px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-sizing: border-box;
+  }
+  
+  .add-modal-header {
+    padding: 0.8rem 1rem;
+    flex-shrink: 0;
+  }
+  
+  .add-modal-header h2 {
+    font-size: 1rem;
+  }
+  
+  /* Cuerpo en columna única completamente scrolleable */
+  .add-modal-body.add-modal-body-cols {
+    flex-direction: column !important;
+    gap: 1.5rem;
+    padding: 1rem;
+    overflow-y: auto;
+    overflow-x: hidden;
+    flex: 1;
+    max-height: none;
+    min-height: 200px;
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+  }
+  
+  .add-modal-form-col {
+    width: 100%;
+    max-width: 100%;
+    padding: 0 !important;
+    border-right: none !important;
+    overflow-x: hidden;
+    flex: none; /* Permitir que el contenido dicte la altura */
+    margin-bottom: 1rem; /* Separación entre secciones */
+  }
+  
+  .modal-section-title {
+    font-size: 1.05rem !important;
+    margin-bottom: 1rem;
+  }
+  
+  /* Todos los campos en columna única */
+  .product-numeric-row {
+    grid-template-columns: 1fr !important;
+    gap: 1rem;
+  }
+  
+  .product-small-fields-row {
+    grid-template-columns: 1fr !important;
+    gap: 1rem;
+  }
+  
+  .product-small-fields-row .input-group:last-child {
+    grid-column: span 1 !important;
+  }
+  
+  .input-group input,
+  .input-group textarea,
+  .input-group select {
+    font-size: 16px; /* Evita zoom en iOS */
+    padding: 0.75rem;
+    min-height: 48px;
+  }
+  
+  .input-group-vencimiento-row {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 0.8rem !important;
+    padding: 1rem;
+    overflow: hidden;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+  
+  .input-group-vencimiento-row .input-date {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    box-sizing: border-box;
+  }
+  
+  .viewbatches-modal-table th,
+  .viewbatches-modal-table td {
+    padding: 0.6rem 0.4rem;
+    font-size: 0.85rem;
+  }
+  
+  .batch-action-btn {
+    padding: 0.4rem;
+    font-size: 0.9rem;
+  }
+  
+  /* Ajustar tabla de lotes para móviles */
+  .batches-table-container {
+    max-height: 180px;
+  }
+  
+  .viewbatches-modal-table th:first-child,
+  .viewbatches-modal-table td:first-child {
+    min-width: 80px; /* Ancho mínimo para código de lote */
+  }
+  
+  .viewbatches-modal-table th:nth-child(2),
+  .viewbatches-modal-table td:nth-child(2) {
+    min-width: 60px; /* Ancho mínimo para stock */
+  }
+  
+  .viewbatches-modal-table th:nth-child(3),
+  .viewbatches-modal-table td:nth-child(3) {
+    min-width: 90px; /* Ancho mínimo para fecha */
+  }
+  
+  .viewbatches-modal-table th:last-child,
+  .viewbatches-modal-table td:last-child {
+    min-width: 70px; /* Ancho mínimo para acciones */
+  }
+  
+  /* Footer correctamente contenido para móviles */
+  .add-modal-footer {
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem;
+    border-top: 1px solid rgba(12, 177, 160, 0.1);
+    background: rgba(248, 252, 253, 0.8);
+    flex-shrink: 0;
+    width: 100%;
+    box-sizing: border-box;
+    margin: 0;
+    overflow: hidden;
+  }
+  
+  .add-modal-footer .cancel-button,
+  .add-modal-footer .add-button {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    height: 48px;
+    font-size: 1rem;
+    box-sizing: border-box;
+    margin: 0;
+    flex-shrink: 0;
+  }
+}
+
+/* Móviles muy pequeños */
+@media (max-width: 360px) {
+  .add-modal-overlay {
+    padding: 0.25rem;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: max(0.5rem, env(safe-area-inset-top, 0.5rem));
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+  
+  .add-modal-content {
+    width: calc(100vw - 0.5rem);
+    max-width: calc(100vw - 0.5rem);
+    max-height: calc(100vh - 1rem - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+    border-radius: 8px;
+    margin: 0 auto;
+    overflow: hidden;
+    box-sizing: border-box;
+  }
+  
+  .add-modal-header {
+    padding: 0.5rem 0.6rem;
+  }
+  
+  .add-modal-header h2 {
+    font-size: 0.95rem;
+  }
+  
+  .add-modal-body.add-modal-body-cols {
+    padding: 0.6rem;
+    max-height: calc(100vh - 10rem - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+  
+  .input-group input,
+  .input-group textarea,
+  .input-group select {
+    padding: 0.6rem;
+    font-size: 16px;
+  }
+  
+  .viewbatches-modal-table {
+    font-size: 0.75rem;
+  }
+  
+  .batch-add-btn {
+    padding: 0.6rem 1rem;
+    font-size: 0.85rem;
+  }
+  
+  .input-group-vencimiento-row {
+    padding: 0.6rem !important;
+  }
+  
+  /* Footer para móviles muy pequeños */
+  .add-modal-footer {
+    flex-direction: column;
+    gap: 0.8rem;
+    padding: 0.8rem 0.6rem;
+    border-top: 1px solid rgba(12, 177, 160, 0.1);
+    background: rgba(248, 252, 253, 0.8);
+    flex-shrink: 0;
+    width: 100%;
+    box-sizing: border-box;
+    margin: 0;
+    overflow: hidden;
+  }
+  
+  .add-modal-footer .cancel-button,
+  .add-modal-footer .add-button {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    height: 44px;
+    font-size: 0.95rem;
+    box-sizing: border-box;
+    margin: 0;
+    flex-shrink: 0;
+  }
+}
+
+/* Dispositivos con altura muy pequeña (landscape móviles) */
+@media (max-height: 500px) {
+  .add-modal-overlay {
+    align-items: flex-start;
+    padding: 0.25rem;
+    padding-top: 0.5rem;
+  }
+  
+  .add-modal-content {
+    max-height: calc(100vh - 1rem);
+  }
+  
+  .add-modal-body.add-modal-body-cols {
+    max-height: calc(100vh - 8rem);
+    padding: 0.5rem;
+  }
+  
+  .add-modal-footer {
+    padding: 0.5rem 0.8rem;
+  }
+}
+
+/* Labels ultra compactos */
+.input-label {
+  font-size: 0.8rem !important;
+  color: #1f2a37;
+  font-weight: 600;
+  margin-bottom: 0.2rem; /* Ultra compacto */
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.input-label svg {
+  color: #0cb1a0;
+  font-size: 0.9rem; /* Aún más pequeño */
+}
+
+.required-asterisk {
+  color: #ef4444;
+  font-weight: 700;
+}
+
+/* --- Optimizaciones específicas para pantallas medianas (13-14 pulgadas) --- */
+@media (min-width: 1024px) and (max-width: 1440px) and (min-height: 768px) and (max-height: 900px) {
+  .add-modal-content {
+    width: 96vw;
+    max-width: 1000px;
+    height: 88vh;
+    max-height: 600px;
+    min-height: 450px;
+  }
+  
+  .add-modal-header {
+    padding: 0.5rem 1rem;
+  }
+  
+  .add-modal-header h2 {
+    font-size: 1rem;
+  }
+  
+  .add-modal-body.add-modal-body-cols {
+    padding: 0.7rem;
+    gap: 0.7rem;
+  }
+  
+  .add-modal-form-col {
+    gap: 0.35rem;
+  }
+  
+  .add-modal-form-col:not(:last-child) {
+    padding-right: 0.7rem;
+    margin-right: 0.7rem;
+  }
+  
+  .input-group {
+    margin-bottom: 0.25rem;
+  }
+  
+  .input-group input,
+  .input-group textarea,
+  .input-group select {
+    font-size: 0.8rem;
+    padding: 0.35rem 0.55rem;
+    min-height: 30px;
+  }
+  
+  .input-group textarea {
+    min-height: 45px;
+    height: 45px;
+  }
+  
+  .input-label {
+    font-size: 0.78rem !important;
+    margin-bottom: 0.15rem;
+  }
+  
+  .modal-section-title {
+    font-size: 0.95rem !important;
+    margin-bottom: 0.5rem;
+    padding-bottom: 0.25rem;
+  }
+  
+  /* Vencimiento ultra optimizado para pantallas medianas */
+  .input-group-vencimiento-row {
+    padding: 0.4rem;
+    gap: 0.3rem !important;
+    margin: 0.15rem 0;
+  }
+  
+  .input-group-vencimiento-row label {
+    font-size: 0.72rem;
+  }
+  
+  .input-group-vencimiento-row input[type="checkbox"] {
+    width: 12px !important;
+    height: 12px !important;
+  }
+  
+  .input-group-vencimiento-row .input-date {
+    min-height: 28px !important;
+    padding: 0.3rem 0.4rem !important;
+    font-size: 0.72rem !important;
+  }
+  
+  .add-modal-footer {
+    padding: 0.8rem 0 0.6rem 0;
+  }
+  
+  .add-modal-footer .cancel-button,
+  .add-modal-footer .add-button {
+    min-width: 110px;
+    height: 36px;
+    font-size: 0.85rem;
+  }
+}
+
+/* --- Optimizaciones para laptops de 13 pulgadas específicamente --- */
+@media (min-width: 1280px) and (max-width: 1366px) and (min-height: 720px) and (max-height: 768px) {
+  .add-modal-content {
+    height: 92vh;
+    max-height: 550px;
+  }
+  
+  .add-modal-body.add-modal-body-cols {
+    padding: 0.6rem;
+  }
+  
+  .input-group {
+    margin-bottom: 0.2rem;
+  }
+  
+  /* Asegurar que el vencimiento siempre sea visible en 13" */
+  .input-group-vencimiento-row {
+    padding: 0.35rem;
+    margin: 0.1rem 0;
+    border: 2px solid rgba(12, 177, 160, 0.12);
+    background: linear-gradient(135deg, rgba(12, 177, 160, 0.04) 0%, rgba(12, 177, 160, 0.08) 100%);
+  }
+  
+  .input-group-vencimiento-row:hover {
+    border-color: rgba(12, 177, 160, 0.2);
+    background: linear-gradient(135deg, rgba(12, 177, 160, 0.06) 0%, rgba(12, 177, 160, 0.12) 100%);
+  }
+}
+
+/* Tabla de lotes optimizada para pantallas medianas */
+.batches-table-container {
+    max-height: 200px;
+  }
+  
+  .viewbatches-modal-table {
+    font-size: 0.78rem;
+  }
+  
+  .viewbatches-modal-table th,
+  .viewbatches-modal-table td {
+    padding: 0.5rem 0.3rem;
+  }
