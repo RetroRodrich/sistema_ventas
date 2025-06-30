@@ -29,6 +29,7 @@ import {
 } from "react-icons/md";
 import "../styles/AddProductModal.css";
 import { API_BASE_URL } from "../Conexion";
+import { authenticatedFetch, isAuthenticated, isAdmin } from "../utils/auth";
 import BatchModal from "./BatchModal";
 
 function AddProductModal({ onClose, onAddProduct, onSaveProduct, product }) {
@@ -389,12 +390,18 @@ function AddProductModal({ onClose, onAddProduct, onSaveProduct, product }) {
   const handleDeleteBatch = useCallback(async (batchId) => {
     if (!window.confirm("¿Eliminar este lote?")) return;
     
+    // Verificar autenticación
+    if (!isAuthenticated()) {
+      alert("Debes iniciar sesión para eliminar lotes");
+      return;
+    }
+    
     // Actualización optimista - actualizar UI primero
     const previousBatches = batches;
     setBatches(prev => prev.filter(b => b.id !== batchId));
     
     try {
-      await fetch(`${API_BASE_URL}/api/products/batches/${batchId}`, {
+      await authenticatedFetch(`/api/products/batches/${batchId}`, {
         method: "DELETE",
         signal: abortControllerRef.current.signal
       });
@@ -402,7 +409,7 @@ function AddProductModal({ onClose, onAddProduct, onSaveProduct, product }) {
       // Revertir cambios en caso de error
       setBatches(previousBatches);
       console.error("Error deleting batch:", error);
-      alert("Error al eliminar el lote");
+      alert(`Error al eliminar el lote: ${error.message}`);
     }
   }, [batches]);
 
@@ -440,7 +447,7 @@ function AddProductModal({ onClose, onAddProduct, onSaveProduct, product }) {
     try {
       if (batchModalMode === "add") {
         // Agregar nuevo lote
-        const response = await fetch(`${API_BASE_URL}/api/products/${product.id}/batches`, {
+        const response = await authenticatedFetch(`/api/products/${product.id}/batches`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(batchData),
@@ -454,7 +461,7 @@ function AddProductModal({ onClose, onAddProduct, onSaveProduct, product }) {
         
       } else if (batchModalMode === "edit" && batchEditData) {
         // Editar lote existente
-        const response = await fetch(`${API_BASE_URL}/api/products/batches/${batchEditData.id}`, {
+        const response = await authenticatedFetch(`/api/products/batches/${batchEditData.id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(batchData),

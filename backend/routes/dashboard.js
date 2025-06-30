@@ -1,9 +1,15 @@
 const express = require('express');
 const db = require('../config/db');
 const router = express.Router();
+const { 
+  authRequired, 
+  readOnlyRateLimit,
+  asyncHandler 
+} = require('../middleware');
 
 // Endpoint de resumen para dashboard (agrupación flexible)
-router.get('/summary', (req, res) => {
+// TEMPORALMENTE PÚBLICO para compatibilidad
+router.get('/summary', readOnlyRateLimit, asyncHandler(async (req, res) => {
   const { group = 'mes', start, end } = req.query;
 
   let where = "WHERE status = 'pagada'";
@@ -57,37 +63,38 @@ router.get('/summary', (req, res) => {
     ORDER BY ${orderBy}
   `;
 
-  db.query(query, params, (err, results) => {
-    if (err) {
-      console.error('Error al obtener resumen:', err);
-      return res.status(500).json({ error: 'Error al obtener resumen', detalle: err });
-    }
-
-    const meses = [
-      '', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
-      'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
-    ];
-    const data = results.map(row => {
-      let label = row.periodo;
-      if (group === 'mes') {
-        const [mes, anio] = row.periodo.split('-');
-        label = `${meses[parseInt(mes, 10)]} ${anio}`;
-      }
-      return {
-        mes: label,
-        total: Number(row.total)
-      };
+  const results = await new Promise((resolve, reject) => {
+    db.query(query, params, (err, results) => {
+      if (err) reject(err);
+      else resolve(results);
     });
-    res.json(data);
   });
-});
+
+  const meses = [
+    '', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+    'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+  ];
+  const data = results.map(row => {
+    let label = row.periodo;
+    if (group === 'mes') {
+      const [mes, anio] = row.periodo.split('-');
+      label = `${meses[parseInt(mes, 10)]} ${anio}`;
+    }
+    return {
+      mes: label,
+      total: Number(row.total)
+    };
+  });
+  res.json(data);
+}));
 
 /**
  * Endpoint: Categorías más vendidas (para gráfico de torta)
  * Devuelve [{ nombre: 'Categoria', cantidad: 123 }, ...]
  * Permite filtrar por fecha con ?start=YYYY-MM-DD&end=YYYY-MM-DD
+ * TEMPORALMENTE PÚBLICO para compatibilidad
  */
-router.get('/top-categorias', (req, res) => {
+router.get('/top-categorias', readOnlyRateLimit, asyncHandler(async (req, res) => {
   const { start, end } = req.query;
   let where = "WHERE s.status = 'pagada'";
   const params = [];
@@ -112,18 +119,19 @@ router.get('/top-categorias', (req, res) => {
     ORDER BY cantidad DESC
   `;
 
-  db.query(query, params, (err, results) => {
-    if (err) {
-      console.error('Error al obtener categorías más vendidas:', err);
-      return res.status(500).json({ error: 'Error al obtener categorías más vendidas' });
-    }
-    // Forzar cantidad como número
-    const data = results.map(row => ({
-      nombre: row.nombre,
-      cantidad: Number(row.cantidad)
-    }));
-    res.json(data);
+  const results = await new Promise((resolve, reject) => {
+    db.query(query, params, (err, results) => {
+      if (err) reject(err);
+      else resolve(results);
+    });
   });
-});
+
+  // Forzar cantidad como número
+  const data = results.map(row => ({
+    nombre: row.nombre,
+    cantidad: Number(row.cantidad)
+  }));
+  res.json(data);
+}));
 
 module.exports = router;

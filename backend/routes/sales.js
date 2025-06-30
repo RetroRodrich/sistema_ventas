@@ -1,8 +1,16 @@
 const express = require('express');
 const db = require('../config/db');
 const router = express.Router();
+const { 
+  authRequired, 
+  adminRequired,
+  validateSaleData,
+  validateIdParam,
+  readOnlyRateLimit,
+  asyncHandler 
+} = require('../middleware');
 
-router.post('/', async (req, res) => {
+router.post('/', authRequired, validateSaleData, asyncHandler(async (req, res) => {
   const { userId, customer_name, customer_dni, total, igv, items, status } = req.body;
   if (!items || !Array.isArray(items) || items.length === 0) {
     return res.status(400).json({ error: 'No sale items provided' });
@@ -69,10 +77,11 @@ router.post('/', async (req, res) => {
       res.status(500).json({ error: e.message || 'Error procesando venta' });
     }
   });
-});
+}));
 
 // Obtener todas las ventas
-router.get('/', (req, res) => {
+// TEMPORALMENTE PÚBLICO para compatibilidad con frontend
+router.get('/', readOnlyRateLimit, asyncHandler(async (req, res) => {
   const { filter, from, to } = req.query;
   let query = `
     SELECT s.id, s.userId, u.name AS user_name, s.createdAt, s.status, s.customer_name, s.customer_dni, s.total, s.igv
@@ -94,17 +103,19 @@ router.get('/', (req, res) => {
 
   query += " ORDER BY s.createdAt DESC";
 
-  db.query(query, params, (err, results) => {
-    if (err) {
-      console.error('Error al obtener las ventas:', err);
-      return res.status(500).json({ error: 'Error al obtener las ventas' });
-    }
-    res.json(results);
+  const results = await new Promise((resolve, reject) => {
+    db.query(query, params, (err, results) => {
+      if (err) reject(err);
+      else resolve(results);
+    });
   });
-});
+
+  res.json(results);
+}));
 
 // Obtener una venta y sus detalles
-router.get('/:id', (req, res) => {
+// TEMPORALMENTE PÚBLICO para compatibilidad
+router.get('/:id', validateIdParam, asyncHandler(async (req, res) => {
   const saleId = req.params.id;
   const saleQuery = `
     SELECT id, userId, createdAt, status, customer_name, customer_dni, total, igv
@@ -117,23 +128,33 @@ router.get('/:id', (req, res) => {
     JOIN products p ON sd.productId = p.id
     WHERE sd.saleId = ?
   `;
-  db.query(saleQuery, [saleId], (err, sales) => {
-    if (err || sales.length === 0) {
-      return res.status(404).json({ error: 'Venta no encontrada' });
-    }
-    db.query(detailsQuery, [saleId], (err2, details) => {
-      if (err2) {
-        return res.status(500).json({ error: 'Error al obtener detalles' });
-      }
-      res.json({ ...sales[0], details });
+
+  const sales = await new Promise((resolve, reject) => {
+    db.query(saleQuery, [saleId], (err, sales) => {
+      if (err) reject(err);
+      else resolve(sales);
     });
   });
-});
 
-router.put('/:id/status', (req, res) => {
+  if (sales.length === 0) {
+    return res.status(404).json({ error: 'Venta no encontrada' });
+  }
+
+  const details = await new Promise((resolve, reject) => {
+    db.query(detailsQuery, [saleId], (err, details) => {
+      if (err) reject(err);
+      else resolve(details);
+    });
+  });
+
+  res.json({ ...sales[0], details });
+}));
+
+router.put('/:id/status', authRequired, validateIdParam, asyncHandler(async (req, res) => {
   const saleId = req.params.id;
   const { status } = req.body;
   const validStatuses = ['pendiente', 'pagada', 'anulada'];
+  
   if (!validStatuses.includes(status)) {
     return res.status(400).json({ error: 'Estado inválido' });
   }
@@ -143,47 +164,63 @@ router.put('/:id/status', (req, res) => {
     const detailsQuery = `
       SELECT productId, batchId, quantity FROM saledetails WHERE saleId = ?
     `;
-    db.query(detailsQuery, [saleId], (err, details) => {
-      if (err) return res.status(500).json({ error: 'Error al obtener detalles' });
-
-      // 2. Retornar stock al lote correspondiente
-      const updates = details.map(item =>
-        new Promise((resolve, reject) => {
-          db.query(
-            'UPDATE product_batches SET stock = stock + ? WHERE id = ?',
-            [item.quantity, item.batchId],
-            (err2) => (err2 ? reject(err2) : resolve())
-          );
-        })
-      );
-
-      Promise.all(updates)
-        .then(() => {
-          // 3. Cambiar estado de la venta
-          db.query(
-            'UPDATE sales SET status = ? WHERE id = ?',
-            [status, saleId],
-            (err3, result) => {
-              if (err3) return res.status(500).json({ error: 'Error al actualizar estado' });
-              if (result.affectedRows === 0) return res.status(404).json({ error: 'Venta no encontrada' });
-              res.json({ success: true });
-            }
-          );
-        })
-        .catch(() => res.status(500).json({ error: 'Error al actualizar stock' }));
+    
+    const details = await new Promise((resolve, reject) => {
+      db.query(detailsQuery, [saleId], (err, details) => {
+        if (err) reject(err);
+        else resolve(details);
+      });
     });
+
+    // 2. Retornar stock al lote correspondiente
+    const updates = details.map(item =>
+      new Promise((resolve, reject) => {
+        db.query(
+          'UPDATE product_batches SET stock = stock + ? WHERE id = ?',
+          [item.quantity, item.batchId],
+          (err) => (err ? reject(err) : resolve())
+        );
+      })
+    );
+
+    await Promise.all(updates);
+
+    // 3. Cambiar estado de la venta  
+    const result = await new Promise((resolve, reject) => {
+      db.query(
+        'UPDATE sales SET status = ? WHERE id = ?',
+        [status, saleId],
+        (err, result) => {
+          if (err) reject(err);
+          else resolve(result);
+        }
+      );
+    });
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'Venta no encontrada' });
+    }
+
+    res.json({ success: true });
   } else {
     // Solo cambiar estado normalmente
-    db.query(
-      'UPDATE sales SET status = ? WHERE id = ?',
-      [status, saleId],
-      (err, result) => {
-        if (err) return res.status(500).json({ error: 'Error al actualizar estado' });
-        if (result.affectedRows === 0) return res.status(404).json({ error: 'Venta no encontrada' });
-        res.json({ success: true });
-      }
-    );
+    const result = await new Promise((resolve, reject) => {
+      db.query(
+        'UPDATE sales SET status = ? WHERE id = ?',
+        [status, saleId],
+        (err, result) => {
+          if (err) reject(err);
+          else resolve(result);
+        }
+      );
+    });
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'Venta no encontrada' });
+    }
+
+    res.json({ success: true });
   }
-});
+}));
 
 module.exports = router;

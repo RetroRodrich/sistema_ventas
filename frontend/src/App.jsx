@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Sidebar from './components/Sidebar';
@@ -17,42 +17,79 @@ function App() {
 
   const handleLogout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('user');
     setIsLogged(false);
     navigate('/login');
   };
 
-  if (!isLogged) {
-    return (
-      <Routes>
-        <Route
-          path="/register"
-          element={<Register onRegister={() => setIsLogged(true)} />}
-        />
-        <Route
-          path="/login"
-          element={<Login onLogin={() => setIsLogged(true)} />}
-        />
-        <Route
-          path="*"
-          element={<Login onLogin={() => setIsLogged(true)} />}
-        />
-      </Routes>
-    );
-  }
+  const handleLogin = () => {
+    setIsLogged(true);
+    navigate('/');
+  };
+
+  const handleRegister = () => {
+    setIsLogged(true);
+    navigate('/');
+  };
+
+  // Escuchar cambios en el localStorage para manejar logout desde otros componentes
+  useEffect(() => {
+    const checkAuthStatus = () => {
+      const token = localStorage.getItem('token');
+      const currentLoggedState = !!token;
+      
+      if (currentLoggedState !== isLogged) {
+        setIsLogged(currentLoggedState);
+        if (!currentLoggedState) {
+          navigate('/login');
+        }
+      }
+    };
+
+    // Verificar al montar
+    checkAuthStatus();
+
+    // Escuchar cambios en storage (para logout desde otros tabs)
+    window.addEventListener('storage', checkAuthStatus);
+    
+    // Verificar periódicamente (para logout desde mismo tab)
+    const interval = setInterval(checkAuthStatus, 1000);
+
+    return () => {
+      window.removeEventListener('storage', checkAuthStatus);
+      clearInterval(interval);
+    };
+  }, [isLogged, navigate]);
 
   return (
     <>
-      <Navbar onLogout={handleLogout} onOpenSidebar={() => setIsSidebarOpen(true)} />
-      <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
-      {isSidebarOpen && (
-        <div className="sidebar-overlay" onClick={() => setIsSidebarOpen(false)} />
+      {isLogged && (
+        <>
+          <Navbar onLogout={handleLogout} onOpenSidebar={() => setIsSidebarOpen(true)} />
+          <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
+          {isSidebarOpen && (
+            <div className="sidebar-overlay" onClick={() => setIsSidebarOpen(false)} />
+          )}
+        </>
       )}
-      <div className="content">
+      
+      <div className={isLogged ? "content" : ""}>
         <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/products" element={<Products />} />
-          <Route path="/sales" element={<Sales />} />
-          <Route path="/salehistory" element={<SaleHistory />} />
+          {/* Rutas públicas - siempre disponibles */}
+          <Route path="/login" element={<Login onLogin={handleLogin} />} />
+          <Route path="/register" element={<Register onRegister={handleRegister} />} />
+          
+          {/* Rutas protegidas - solo si está logueado */}
+          {isLogged ? (
+            <>
+              <Route path="/" element={<Home />} />
+              <Route path="/products" element={<Products />} />
+              <Route path="/sales" element={<Sales />} />
+              <Route path="/salehistory" element={<SaleHistory />} />
+            </>
+          ) : (
+            <Route path="*" element={<Login onLogin={handleLogin} />} />
+          )}
         </Routes>
       </div>
     </>

@@ -2,6 +2,7 @@
 // Importaciones y dependencias
 // =======================
 import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   HiOutlinePlus,
   HiOutlineTrash,
@@ -13,12 +14,15 @@ import {
 } from 'react-icons/hi';
 import '../styles/Sales.css';
 import { API_BASE_URL } from '../Conexion';
+import { authenticatedFetch, getAuthToken } from '../utils/auth';
 
 /**
  * Sales - Página principal para registrar ventas.
  * Permite buscar productos, agregarlos al carrito, registrar ventas y marcar como pagadas.
  */
 function Sales() {
+  const navigate = useNavigate();
+  
   // =======================
   // Estados principales
   // =======================
@@ -38,6 +42,25 @@ function Sales() {
   const qtyInputRef = useRef(null);
   const [suggestionIndex, setSuggestionIndex] = useState(-1);
   const [horaActual, setHoraActual] = useState(new Date());
+
+  // Verificación de autenticación
+  useEffect(() => {
+    const token = getAuthToken();
+    if (!token) {
+      navigate('/login');
+    }
+  }, [navigate]);
+
+  // =======================
+  // Verificar autenticación al cargar componente
+  // =======================
+  useEffect(() => {
+    const token = getAuthToken();
+    if (!token || !user.id) {
+      alert('Debes iniciar sesión para acceder a esta página');
+      navigate('/login');
+    }
+  }, [navigate, user.id]);
 
   // =======================
   // Búsqueda de productos al escribir
@@ -134,9 +157,8 @@ function Sales() {
   // =======================
   const handleConfirmSale = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/sales`, {
+      const response = await authenticatedFetch('/sales', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           userId: user.id,
           customer_name: clienteNombre.trim() || 'General public',
@@ -151,8 +173,12 @@ function Sales() {
           }))
         })
       });
-      if (!response.ok) throw new Error('Error al registrar la venta');
-      // Limpiar todo y mostrar modal de éxito
+      
+      if (!response.ok) {
+        throw new Error(`Error ${response.status}: ${response.statusText}`);
+      }
+      
+      // Éxito: limpiar carrito y mostrar modal
       setCart([]);
       setSearch('');
       setSelectedProduct(null);
@@ -161,7 +187,13 @@ function Sales() {
       setClienteDni('');
       setShowSaleModal(true);
     } catch (err) {
-      alert('Ocurrió un error al registrar la venta');
+      console.error('Error al registrar la venta:', err);
+      if (err.message.includes('Sesión expirada')) {
+        alert('Tu sesión ha expirado. Serás redirigido al login.');
+        navigate('/login');
+      } else {
+        alert(`Error al registrar la venta: ${err.message}`);
+      }
     }
   };
 
@@ -445,9 +477,8 @@ function Sales() {
                 onClick={async () => {
                   setSaleModalMessage("Venta Realizada Exitosamente");
                   try {
-                    const response = await fetch(`${API_BASE_URL}/api/sales`, {
+                    const response = await authenticatedFetch('/sales', {
                       method: 'POST',
-                      headers: { 'Content-Type': 'application/json' },
                       body: JSON.stringify({
                         userId: user.id,
                         customer_name: clienteNombre.trim() || 'General public',
@@ -462,7 +493,11 @@ function Sales() {
                         }))
                       })
                     });
-                    if (!response.ok) throw new Error('Error al registrar la venta');
+                    
+                    if (!response.ok) {
+                      throw new Error(`Error ${response.status}: ${response.statusText}`);
+                    }
+                    
                     setCart([]);
                     setSearch('');
                     setSelectedProduct(null);
@@ -471,7 +506,13 @@ function Sales() {
                     setClienteDni('');
                     setShowSaleModal(true);
                   } catch (err) {
-                    alert('Ocurrió un error al registrar la venta');
+                    console.error('Error al registrar la venta:', err);
+                    if (err.message.includes('Sesión expirada')) {
+                      alert('Tu sesión ha expirado. Serás redirigido al login.');
+                      navigate('/login');
+                    } else {
+                      alert(`Error al registrar la venta: ${err.message}`);
+                    }
                   }
                 }}
                 title="Registrar y marcar como pagada"

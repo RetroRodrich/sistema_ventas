@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { API_BASE_URL } from "../Conexion";
+import { authenticatedFetch, isAuthenticated, isAdmin } from "../utils/auth";
 import AddProductModal from "../components/AddProductModal";
 import DeleteConfirmationModal from "../components/DeleteConfirmationModal";
 import { HiOutlineShoppingBag, HiPlus } from "react-icons/hi2";
@@ -58,21 +59,28 @@ function Products() {
   // =======================
   // Agregar producto
   // =======================
-  const handleAddProduct = (productData) => {
-    fetch(`${API_BASE_URL}/api/products`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(productData),
-    })
-      .then((response) => {
-        if (!response.ok) throw new Error("Error al agregar el producto");
-        return response.json();
-      })
-      .then((newProduct) => {
-        setProducts((prevProducts) => [...prevProducts, newProduct]);
-        setIsModalOpen(false);
-      })
-      .catch((error) => console.error("Error al agregar el producto:", error));
+  const handleAddProduct = async (productData) => {
+    if (!isAuthenticated()) {
+      alert("Debes iniciar sesión para agregar productos");
+      return;
+    }
+
+    try {
+      const response = await authenticatedFetch("/api/products", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(productData),
+      });
+
+      if (!response.ok) throw new Error("Error al agregar el producto");
+      
+      const newProduct = await response.json();
+      setProducts((prevProducts) => [...prevProducts, newProduct]);
+      setIsModalOpen(false);
+    } catch (error) {
+      console.error("Error al agregar el producto:", error);
+      alert(`Error al agregar el producto: ${error.message}`);
+    }
   };
 
   // =======================
@@ -94,17 +102,25 @@ function Products() {
   // =======================
   // Confirmar eliminación
   // =======================
-  const confirmDelete = () => {
-    fetch(`${API_BASE_URL}/api/products/${productToDelete}`, {
-      method: "DELETE",
-    })
-      .then(() => {
-        setProducts(
-          products.filter((product) => product.id !== productToDelete)
-        );
-        setIsDeleteModalOpen(false);
-      })
-      .catch((error) => console.error("Error al eliminar el producto:", error));
+  const confirmDelete = async () => {
+    if (!isAuthenticated()) {
+      alert("Debes iniciar sesión para eliminar productos");
+      return;
+    }
+
+    try {
+      await authenticatedFetch(`/api/products/${productToDelete}`, {
+        method: "DELETE",
+      });
+      
+      setProducts(
+        products.filter((product) => product.id !== productToDelete)
+      );
+      setIsDeleteModalOpen(false);
+    } catch (error) {
+      console.error("Error al eliminar el producto:", error);
+      alert(`Error al eliminar el producto: ${error.message}`);
+    }
   };
 
   // =======================
@@ -126,23 +142,30 @@ function Products() {
   // =======================
   // Guardar cambios de producto editado
   // =======================
-  const handleSaveProduct = (updatedProduct) => {
-    fetch(`${API_BASE_URL}/api/products/${selectedProduct.id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(updatedProduct),
-    })
-      .then((response) => {
-        if (!response.ok) throw new Error("Error al guardar el producto");
-        return response.json();
-      })
-      .then((savedProduct) => {
-        setProducts((prevProducts) =>
-          prevProducts.map((p) => (p.id === savedProduct.id ? savedProduct : p))
-        );
-        setIsModalOpen(false);
-      })
-      .catch((error) => console.error("Error al guardar el producto:", error));
+  const handleSaveProduct = async (updatedProduct) => {
+    if (!isAuthenticated()) {
+      alert("Debes iniciar sesión para editar productos");
+      return;
+    }
+
+    try {
+      const response = await authenticatedFetch(`/api/products/${selectedProduct.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updatedProduct),
+      });
+
+      if (!response.ok) throw new Error("Error al guardar el producto");
+      
+      const savedProduct = await response.json();
+      setProducts((prevProducts) =>
+        prevProducts.map((p) => (p.id === savedProduct.id ? savedProduct : p))
+      );
+      setIsModalOpen(false);
+    } catch (error) {
+      console.error("Error al guardar el producto:", error);
+      alert(`Error al guardar el producto: ${error.message}`);
+    }
   };
 
   // =======================
@@ -245,14 +268,27 @@ function Products() {
                 <option value="999999">Todos</option>
               </select>
             </div>
-            <button
-              onClick={handleOpenAddModal}
-              className="add-product-button"
-              title="Agregar producto"
-            >
-              <HiPlus style={{ marginRight: 4 }} />
-              Agregar
-            </button>
+            {isAuthenticated() && (
+              <button
+                onClick={handleOpenAddModal}
+                className="add-product-button"
+                title="Agregar producto"
+              >
+                <HiPlus style={{ marginRight: 4 }} />
+                Agregar
+              </button>
+            )}
+            {!isAuthenticated() && (
+              <button
+                onClick={() => alert("Debes iniciar sesión para agregar productos")}
+                className="add-product-button disabled"
+                title="Inicia sesión para agregar productos"
+                style={{ opacity: 0.6, cursor: "not-allowed" }}
+              >
+                <HiPlus style={{ marginRight: 4 }} />
+                Agregar (Inicia sesión)
+              </button>
+            )}
           </div>
           {/* Paginación integrada en controles */}
           <div className="pagination-bar">
@@ -315,20 +351,29 @@ function Products() {
                     {product.minStock ?? "—"}
                   </td>
                   <td style={{ textAlign: "center" }}>
-                    <button
-                      className="table-action edit"
-                      title="Editar"
-                      onClick={() => handleEdit(product)}
-                    >
-                      <FiEdit2 size={17} />
-                    </button>
-                    <button
-                      className="table-action delete"
-                      title="Eliminar"
-                      onClick={() => handleDelete(product.id)}
-                    >
-                      <FiTrash2 size={17} />
-                    </button>
+                    {isAuthenticated() && (
+                      <>
+                        <button
+                          className="table-action edit"
+                          title="Editar"
+                          onClick={() => handleEdit(product)}
+                        >
+                          <FiEdit2 size={17} />
+                        </button>
+                        <button
+                          className="table-action delete"
+                          title="Eliminar"
+                          onClick={() => handleDelete(product.id)}
+                        >
+                          <FiTrash2 size={17} />
+                        </button>
+                      </>
+                    )}
+                    {!isAuthenticated() && (
+                      <span style={{ color: "#999", fontSize: "0.85em" }}>
+                        Inicia sesión para editar
+                      </span>
+                    )}
                   </td>
                 </tr>
               ))

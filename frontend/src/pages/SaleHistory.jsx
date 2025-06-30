@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   HiOutlineSearch,
   HiOutlineX,
@@ -8,6 +9,7 @@ import {
 } from "react-icons/hi";
 import { HiOutlineShoppingBag } from "react-icons/hi2";
 import { API_BASE_URL } from "../Conexion";
+import { authenticatedFetch, getAuthToken } from "../utils/auth";
 import "../styles/SaleHistory.css";
 import BoletaButton from "../components/BoletaButton";
 import ExportExcelButton from "../components/ExportExcelButton";
@@ -17,6 +19,8 @@ import ExportExcelButton from "../components/ExportExcelButton";
  * Permite consultar, ver detalles y cambiar el estado de cada venta.
  */
 function SaleHistory() {
+  const navigate = useNavigate();
+  
   // --- Estados principales ---
   const [sales, setSales] = useState([]); // Lista de ventas
   const [loading, setLoading] = useState(true); // Estado de carga de la tabla principal
@@ -27,6 +31,16 @@ function SaleHistory() {
   const [filterType, setFilterType] = useState("hoy"); // Filtro de fecha seleccionado
   const [customFrom, setCustomFrom] = useState(""); // Fecha inicio personalizada
   const [customTo, setCustomTo] = useState(""); // Fecha fin personalizada
+
+  // --- Verificar autenticación ---
+  useEffect(() => {
+    const token = getAuthToken();
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    if (!token || !user.id) {
+      alert('Debes iniciar sesión para acceder a esta página');
+      navigate('/login');
+    }
+  }, [navigate]);
 
   // --- Efecto: cargar ventas al montar el componente ---
   useEffect(() => {
@@ -83,23 +97,34 @@ function SaleHistory() {
    * @param {number} saleId - ID de la venta
    * @param {string} newStatus - Nuevo estado
    */
-  const updateStatus = (saleId, newStatus) => {
+  const updateStatus = async (saleId, newStatus) => {
     setUpdating(true);
-    fetch(`${API_BASE_URL}/api/sales/${saleId}/status`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status: newStatus }),
-    })
-      .then((res) => res.json())
-      .then(() => {
-        // Actualiza el estado local de las ventas y del modal
-        setSales((prev) =>
-          prev.map((s) => (s.id === saleId ? { ...s, status: newStatus } : s))
-        );
-        setSelectedSale((sel) => (sel ? { ...sel, status: newStatus } : sel));
-        setUpdating(false);
-      })
-      .catch(() => setUpdating(false));
+    try {
+      const response = await authenticatedFetch(`/sales/${saleId}/status`, {
+        method: "PUT",
+        body: JSON.stringify({ status: newStatus }),
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Error ${response.status}: ${response.statusText}`);
+      }
+      
+      // Actualiza el estado local de las ventas y del modal
+      setSales((prev) =>
+        prev.map((s) => (s.id === saleId ? { ...s, status: newStatus } : s))
+      );
+      setSelectedSale((sel) => (sel ? { ...sel, status: newStatus } : sel));
+      setUpdating(false);
+    } catch (err) {
+      console.error('Error al actualizar estado de venta:', err);
+      if (err.message.includes('Sesión expirada')) {
+        alert('Tu sesión ha expirado. Serás redirigido al login.');
+        navigate('/login');
+      } else {
+        alert(`Error al actualizar estado: ${err.message}`);
+      }
+      setUpdating(false);
+    }
   };
 
   /**
