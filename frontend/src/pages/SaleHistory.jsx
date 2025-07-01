@@ -1,4 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
+import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
+import socket from '../components/socket';
 import { useNavigate } from "react-router-dom";
 import {
   HiOutlineSearch,
@@ -14,25 +16,45 @@ import "../styles/SaleHistory.css";
 import BoletaButton from "../components/BoletaButton";
 import ExportExcelButton from "../components/ExportExcelButton";
 
+
 /**
  * SaleHistory - Página de historial de ventas/pedidos.
  * Permite consultar, ver detalles y cambiar el estado de cada venta.
  */
 function SaleHistory() {
   const navigate = useNavigate();
-  
-  // --- Estados principales ---
-  const [sales, setSales] = useState([]); // Lista de ventas
-  const [loading, setLoading] = useState(true); // Estado de carga de la tabla principal
-  const [selectedSale, setSelectedSale] = useState(null); // Venta seleccionada para el modal
-  const [details, setDetails] = useState([]); // Detalles de productos de la venta seleccionada
-  const [detailsLoading, setDetailsLoading] = useState(false); // Estado de carga de detalles
-  const [updating, setUpdating] = useState(false); // Estado de actualización de estado de venta
-  const [filterType, setFilterType] = useState("hoy"); // Filtro de fecha seleccionado
-  const [customFrom, setCustomFrom] = useState(""); // Fecha inicio personalizada
-  const [customTo, setCustomTo] = useState(""); // Fecha fin personalizada
+  const queryClient = useQueryClient();
 
-  // --- Verificar autenticación ---
+  // =======================
+  // Efecto: Escuchar eventos de venta_actualizada por WebSocket y refrescar queries
+  // =======================
+  useEffect(() => {
+    const handleVentaActualizada = () => {
+      // Invalida la query de ventas y detalles para refrescar el historial
+      queryClient.invalidateQueries({ queryKey: ['sales'] });
+      queryClient.invalidateQueries({ queryKey: ['saleDetails'] });
+    };
+    socket.on('venta_actualizada', handleVentaActualizada);
+    return () => {
+      socket.off('venta_actualizada', handleVentaActualizada);
+    };
+  }, [queryClient]);
+
+  // =======================
+  // Estados principales
+  // =======================
+  // Filtros y estado de UI
+  const [filterType, setFilterType] = useState("hoy");
+  const [customFrom, setCustomFrom] = useState("");
+  const [customTo, setCustomTo] = useState("");
+  const [selectedSale, setSelectedSale] = useState(null); // Venta seleccionada para el modal
+  const [errorMsg, setErrorMsg] = useState("");
+  const [updating, setUpdating] = useState(false); // Estado de actualización de estado de venta
+
+
+  // =======================
+  // Verificar autenticación al cargar componente
+  // =======================
   useEffect(() => {
     const token = getAuthToken();
     const user = JSON.parse(localStorage.getItem('user') || '{}');
@@ -42,20 +64,15 @@ function SaleHistory() {
     }
   }, [navigate]);
 
-  // --- Efecto: cargar ventas al montar el componente ---
-  useEffect(() => {
-    fetchSales();
-    // eslint-disable-next-line
-  }, []);
 
-  /**
-   * Obtiene las ventas desde el backend según el filtro seleccionado.
-   */
-  const fetchSales = async () => {
-    setLoading(true);
+  // =======================
+  // Fetch de ventas con React Query (cacheo y sincronización)
+  // =======================
+  // =======================
+  // React Query: obtener ventas según filtro
+  // =======================
+  const getSalesUrl = useCallback(() => {
     let url = `${API_BASE_URL}/api/sales?`;
-
-    // Agrega el filtro correspondiente a la URL
     if (filterType === "hoy") {
       url += "filter=hoy";
     } else if (filterType === "mes") {
@@ -64,59 +81,108 @@ function SaleHistory() {
       url += "filter=anio";
     } else if (filterType === "personalizado" && customFrom && customTo) {
       url += `filter=personalizado&from=${customFrom}&to=${customTo}`;
+    } else if (filterType === "todo") {
+      url += "filter=todo";
     }
+    return url;
+  }, [filterType, customFrom, customTo]);
 
-    fetch(url)
-      .then((res) => res.json())
-      .then((data) => {
-        setSales(data);
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
-  };
+  const {
+    data: sales = [],
+    isLoading: loading,
+    isError,
+    error,
+    refetch: refetchSales,
+  } = useQuery({
+    queryKey: [
+      "sales",
+      filterType,
+      customFrom,
+      customTo
+    ],
+    queryFn: async () => {
+      const url = getSalesUrl();
+      const res = await fetch(url);
+      if (!res.ok) {
+        let msg = `Error al cargar ventas (${res.status})`;
+        if (res.status === 429) msg = 'Demasiadas solicitudes. Espera unos minutos antes de volver a intentar.';
+        throw new Error(msg);
+      }
+      const data = await res.json();
+      if (!Array.isArray(data)) throw new Error('Respuesta inesperada del servidor.');
+      return data;
+    },
+    staleTime: 1000 * 60 * 2, // 2 minutos
+    cacheTime: 1000 * 60 * 10, // 10 minutos
+    onError: (err) => setErrorMsg(err.message),
+    onSuccess: () => setErrorMsg("")
+  });
+
+
+  // =======================
+  // React Query: detalles de venta (por ID)
+  // =======================
+  const {
+    data: details = [],
+    isLoading: detailsLoading,
+    refetch: refetchDetails,
+  } = useQuery({
+    queryKey: [
+      "saleDetails",
+      selectedSale?.id
+    ],
+    queryFn: async () => {
+      if (!selectedSale?.id) return [];
+      const res = await fetch(`${API_BASE_URL}/api/sales/${selectedSale.id}`);
+      if (!res.ok) throw new Error("Error al cargar detalles de la venta");
+      const data = await res.json();
+      return data.details || [];
+    },
+    enabled: !!selectedSale,
+    staleTime: 1000 * 60 * 5, // 5 minutos
+    cacheTime: 1000 * 60 * 20, // 20 minutos
+  });
 
   /**
-   * Abre el modal de detalles de una venta.
-   * @param {Object} sale - Venta seleccionada
+   * Abre el modal de detalles de una venta y dispara la carga de detalles (cacheados por React Query)
    */
   const openDetails = (sale) => {
     setSelectedSale(sale);
-    setDetails([]);
-    setDetailsLoading(true);
-    fetch(`${API_BASE_URL}/api/sales/${sale.id}`)
-      .then((res) => res.json())
-      .then((data) => {
-        setDetails(data.details || []);
-        setDetailsLoading(false);
-      })
-      .catch(() => setDetailsLoading(false));
+    // React Query se encarga de cargar detalles automáticamente
   };
 
+
+
   /**
-   * Cambia el estado de una venta (pagada, anulada, pendiente).
-   * @param {number} saleId - ID de la venta
-   * @param {string} newStatus - Nuevo estado
+   * Cambia el estado de una venta (pagada, anulada, pendiente) usando React Query Mutation
    */
-  const updateStatus = async (saleId, newStatus) => {
-    setUpdating(true);
-    try {
+  const mutation = useMutation({
+    mutationFn: async ({ saleId, newStatus }) => {
+      setUpdating(true);
       const response = await authenticatedFetch(`/sales/${saleId}/status`, {
         method: "PUT",
         body: JSON.stringify({ status: newStatus }),
       });
-      
       if (!response.ok) {
         throw new Error(`Error ${response.status}: ${response.statusText}`);
       }
-      
-      // Actualiza el estado local de las ventas y del modal
-      setSales((prev) =>
-        prev.map((s) => (s.id === saleId ? { ...s, status: newStatus } : s))
-      );
+      return { saleId, newStatus };
+    },
+    onSuccess: ({ saleId, newStatus }) => {
+      // Invalidar queries relevantes
+      queryClient.invalidateQueries(["sales"]);
+      queryClient.invalidateQueries(["saleDetails", saleId]);
+      // Invalida queries del dashboard para refrescar KPIs y gráficos
+      queryClient.invalidateQueries({ queryKey: ["ventasPorMes"] });
+      queryClient.invalidateQueries({ queryKey: ["categoriasTorta"] });
+      if (newStatus === 'anulada' || newStatus === 'pagada') {
+        queryClient.invalidateQueries(['products']);
+      }
+      // Actualizar modal si está abierto
       setSelectedSale((sel) => (sel ? { ...sel, status: newStatus } : sel));
       setUpdating(false);
-    } catch (err) {
-      console.error('Error al actualizar estado de venta:', err);
+    },
+    onError: (err) => {
       if (err.message.includes('Sesión expirada')) {
         alert('Tu sesión ha expirado. Serás redirigido al login.');
         navigate('/login');
@@ -125,7 +191,12 @@ function SaleHistory() {
       }
       setUpdating(false);
     }
+  });
+
+  const updateStatus = (saleId, newStatus) => {
+    mutation.mutate({ saleId, newStatus });
   };
+
 
   /**
    * Devuelve la fecha de hoy en formato local YYYY-MM-DD.
@@ -136,6 +207,7 @@ function SaleHistory() {
     today.setMinutes(today.getMinutes() - today.getTimezoneOffset());
     return today.toISOString().split("T")[0];
   }
+
 
   /**
    * Agrupa los detalles por producto (usando productId o product_name).
@@ -228,7 +300,7 @@ function SaleHistory() {
         <button
           className="sh-btn sh-btn--search"
           style={{ marginLeft: 8 }}
-          onClick={fetchSales}
+          onClick={refetchSales}
         >
           <HiOutlineSearch /> Buscar
         </button>
@@ -254,7 +326,9 @@ function SaleHistory() {
       {/* Tabla de historial o mensajes de estado */}
       {loading ? (
         <p className="sales-history-loading">Cargando...</p>
-      ) : sales.length === 0 ? (
+      ) : errorMsg || isError ? (
+        <div className="sales-history-error">{errorMsg || (error && error.message)}</div>
+      ) : !Array.isArray(sales) || sales.length === 0 ? (
         <div className="sales-history-empty">
           No hay pedidos registrados aún.
         </div>
@@ -273,7 +347,7 @@ function SaleHistory() {
               </tr>
             </thead>
             <tbody>
-              {sales.map((sale) => (
+              {Array.isArray(sales) && sales.map((sale) => (
                 <tr key={sale.id}>
                   <td data-label="ID">{sale.id}</td>
                   <td data-label="Cliente">{sale.customer_name}</td>

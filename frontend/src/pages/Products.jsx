@@ -1,211 +1,313 @@
+
+// =======================
+// Imports principales
+// =======================
 import React, { useState, useEffect } from "react";
+import { useProductsFilterAndPagination } from "../hooks/useProductsFilterAndPagination";
+import { useProductsPagination } from "../hooks/useProductsPagination";
+import { useProductsDebouncedSearch } from "../hooks/useProductsDebouncedSearch";
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import axios from 'axios';
 import { API_BASE_URL } from "../Conexion";
-import { authenticatedFetch, isAuthenticated, isAdmin } from "../utils/auth";
+import { authenticatedFetch, isAuthenticated } from "../utils/auth";
 import AddProductModal from "../components/AddProductModal";
 import DeleteConfirmationModal from "../components/DeleteConfirmationModal";
 import { HiOutlineShoppingBag, HiPlus } from "react-icons/hi2";
-import {
-  FiEdit2,
-  FiTrash2,
-  FiChevronLeft,
-  FiChevronRight,
-} from "react-icons/fi";
+import ProductsPaginationBar from "../components/ProductsPaginationBar";
+import { FiEdit2, FiTrash2 } from "react-icons/fi";
 import { HiOutlineSearch, HiOutlineX } from "react-icons/hi";
 import "../styles/Products.css";
+import socket from '../components/socket';
+
 
 /**
- * Products - Página principal de productos.
+ * Página principal de productos para el sistema de minimarket.
  * Permite listar, buscar, filtrar, agregar, editar y eliminar productos.
+ * Optimizada para rendimiento, accesibilidad y mantenibilidad.
  */
 function Products() {
   // =======================
-  // Estados principales
+  // React Query: acceso al cliente para invalidar caché
   // =======================
-  const [products, setProducts] = useState([]);
-  const [categories, setCategories] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [filter, setFilter] = useState("all");
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState(null);
-  const [productToDelete, setProductToDelete] = useState(null);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [currentPage, setCurrentPage] = useState(1);
+  const queryClient = useQueryClient();
 
   // =======================
-  // Efectos: cargar productos y categorías al montar
+  // Estados locales (solo para UI y handlers)
+  // =======================
+
+  // =======================
+  // Obtener productos con React Query (cache optimizada)
+  // =======================
+  const {
+    data: productsData = [],
+    isLoading: productsLoading,
+    isFetching: productsFetching,
+    error: productsError,
+  } = useQuery({
+    queryKey: ['products'],
+    queryFn: async () => {
+      const res = await axios.get(`${API_BASE_URL}/api/products`);
+      return res.data;
+    },
+    staleTime: 1000 * 60 * 5, // 5 minutos
+    cacheTime: 1000 * 60 * 30, // 30 minutos en caché
+  });
+  // =======================
+  // Efecto: escuchar evento stockChanged por socket.io (actualiza productos en tiempo real)
   // =======================
   useEffect(() => {
-    fetch(`${API_BASE_URL}/api/products`)
-      .then((response) => response.json())
-      .then((data) => setProducts(data))
-      .catch((error) =>
-        console.error("Error al obtener los productos:", error)
-      );
-    fetch(`${API_BASE_URL}/api/products/categories`)
-      .then((response) => response.json())
-      .then((data) => setCategories(data))
-      .catch((error) =>
-        console.error("Error al obtener las categorías:", error)
-      );
-  }, []);
+    const handleStockChanged = () => {
+      queryClient.invalidateQueries(['products']);
+    };
+    socket.on('stockChanged', handleStockChanged);
+    return () => {
+      socket.off('stockChanged', handleStockChanged);
+    };
+  }, [queryClient]);
+
+  // =======================
+  // Obtener categorías con React Query (cache optimizada)
+  // =======================
+  const {
+    data: categoriesData = [],
+    isLoading: categoriesLoading,
+    error: categoriesError,
+  } = useQuery({
+    queryKey: ['categories'],
+    queryFn: async () => {
+      const res = await axios.get(`${API_BASE_URL}/api/products/categories`);
+      return res.data;
+    },
+    staleTime: 1000 * 60 * 10, // 10 minutos
+    cacheTime: 1000 * 60 * 30, // 30 minutos en caché
+  });
+  // =======================
+  // Prefetch de productos y categorías para mejorar experiencia de usuario
+  // =======================
+  useEffect(() => {
+    queryClient.prefetchQuery({
+      queryKey: ['products'],
+      queryFn: async () => {
+        const res = await axios.get(`${API_BASE_URL}/api/products`);
+        return res.data;
+      },
+      staleTime: 1000 * 60 * 5,
+      cacheTime: 1000 * 60 * 30,
+    });
+    queryClient.prefetchQuery({
+      queryKey: ['categories'],
+      queryFn: async () => {
+        const res = await axios.get(`${API_BASE_URL}/api/products/categories`);
+        return res.data;
+      },
+      staleTime: 1000 * 60 * 10,
+      cacheTime: 1000 * 60 * 30,
+    });
+  }, [queryClient]);
+  // =======================
+  // Estados para búsqueda, filtro, paginación y modales
+  // =======================
+  const [searchTerm, setSearchTerm] = useState(""); // Término de búsqueda
+  const debouncedSearch = useProductsDebouncedSearch(searchTerm, 350); // Valor debounced
+  const [filter, setFilter] = useState("all"); // Filtro de categoría
+  const [isModalOpen, setIsModalOpen] = useState(false); // Modal de agregar/editar
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false); // Modal de eliminar
+  const [selectedProduct, setSelectedProduct] = useState(null); // Producto seleccionado para editar
+  const [productToDelete, setProductToDelete] = useState(null); // ID de producto a eliminar
+  const [itemsPerPage, setItemsPerPage] = useState(10); // Filas por página
+  const [currentPage, setCurrentPage] = useState(1); // Página actual
+  const [loadingAction, setLoadingAction] = useState(false); // Feedback visual para acciones
+
+
+  // =======================
+  // Efectos de carga inicial eliminados: React Query gestiona la obtención y caché
+  // =======================
+
 
   // =======================
   // Handlers de búsqueda y filtrado
   // =======================
+  /** Cambia el término de búsqueda (debounce automático con hook) */
   const handleSearchChange = (e) => setSearchTerm(e.target.value);
+  /** Cambia el filtro de categoría */
   const handleFilterChange = (e) => setFilter(e.target.value);
 
   // =======================
-  // Agregar producto
+  // Handler: Agregar producto
   // =======================
+  /**
+   * Agrega un nuevo producto
+   * @param {Object} productData
+   */
   const handleAddProduct = async (productData) => {
     if (!isAuthenticated()) {
       alert("Debes iniciar sesión para agregar productos");
       return;
     }
-
+    setLoadingAction(true);
     try {
       const response = await authenticatedFetch("/api/products", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(productData),
       });
-
       if (!response.ok) throw new Error("Error al agregar el producto");
-      
-      const newProduct = await response.json();
-      setProducts((prevProducts) => [...prevProducts, newProduct]);
       setIsModalOpen(false);
+      queryClient.invalidateQueries(['products']);
     } catch (error) {
-      console.error("Error al agregar el producto:", error);
       alert(`Error al agregar el producto: ${error.message}`);
+    } finally {
+      setLoadingAction(false);
     }
   };
 
   // =======================
-  // Editar producto
+  // Handler: Editar producto
   // =======================
+  /**
+   * Abre el modal para editar un producto
+   * @param {Object} product
+   */
   const handleEdit = (product) => {
     setSelectedProduct(product);
     setIsModalOpen(true);
   };
 
   // =======================
-  // Eliminar producto
+  // Handler: Eliminar producto
   // =======================
+  /**
+   * Abre el modal de confirmación para eliminar un producto
+   * @param {number} id
+   */
   const handleDelete = (id) => {
     setProductToDelete(id);
     setIsDeleteModalOpen(true);
   };
 
   // =======================
-  // Confirmar eliminación
+  // Handler: Confirmar eliminación
   // =======================
+  /**
+   * Elimina el producto seleccionado
+   */
   const confirmDelete = async () => {
     if (!isAuthenticated()) {
       alert("Debes iniciar sesión para eliminar productos");
       return;
     }
-
+    setLoadingAction(true);
     try {
       await authenticatedFetch(`/api/products/${productToDelete}`, {
         method: "DELETE",
       });
-      
-      setProducts(
-        products.filter((product) => product.id !== productToDelete)
-      );
       setIsDeleteModalOpen(false);
+      queryClient.invalidateQueries(['products']);
     } catch (error) {
-      console.error("Error al eliminar el producto:", error);
       alert(`Error al eliminar el producto: ${error.message}`);
+    } finally {
+      setLoadingAction(false);
     }
   };
 
   // =======================
-  // Abrir modal para agregar producto
+  // Handler: Abrir modal para agregar producto
   // =======================
+  /**
+   * Abre el modal para agregar un nuevo producto
+   */
   const handleOpenAddModal = () => {
     setSelectedProduct(null);
     setIsModalOpen(true);
   };
 
   // =======================
-  // Cerrar modal de producto
+  // Handler: Cerrar modal de producto
   // =======================
+  /**
+   * Cierra el modal de agregar/editar producto
+   */
   const handleCloseModal = () => {
     setSelectedProduct(null);
     setIsModalOpen(false);
   };
 
   // =======================
-  // Guardar cambios de producto editado
+  // Handler: Guardar cambios de producto editado
   // =======================
+  /**
+   * Guarda los cambios de un producto editado
+   * @param {Object} updatedProduct
+   */
   const handleSaveProduct = async (updatedProduct) => {
     if (!isAuthenticated()) {
       alert("Debes iniciar sesión para editar productos");
       return;
     }
-
+    setLoadingAction(true);
     try {
       const response = await authenticatedFetch(`/api/products/${selectedProduct.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updatedProduct),
       });
-
       if (!response.ok) throw new Error("Error al guardar el producto");
-      
-      const savedProduct = await response.json();
-      setProducts((prevProducts) =>
-        prevProducts.map((p) => (p.id === savedProduct.id ? savedProduct : p))
-      );
       setIsModalOpen(false);
+      queryClient.invalidateQueries(['products']);
     } catch (error) {
-      console.error("Error al guardar el producto:", error);
       alert(`Error al guardar el producto: ${error.message}`);
+    } finally {
+      setLoadingAction(false);
     }
   };
 
   // =======================
-  // Cambiar cantidad de filas por página
+  // Handler: Cambiar cantidad de filas por página
   // =======================
+  /**
+   * Cambia la cantidad de filas por página
+   */
   const handleItemsPerPageChange = (e) => {
     setItemsPerPage(Number(e.target.value));
     setCurrentPage(1);
   };
 
   // =======================
-  // Paginación
+  // Filtrado y paginación de productos (hook personalizado)
   // =======================
-  const handlePrevPage = () => setCurrentPage((p) => Math.max(p - 1, 1));
-  const handleNextPage = () =>
-    setCurrentPage((p) => Math.min(p + 1, totalPages));
-
-  // =======================
-  // Filtrado y paginación de productos
-  // =======================
-  const filteredProducts = products.filter((product) => {
-    const matchesSearch = product.name
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase());
-    const matchesFilter = filter === "all" || product.category === filter;
-    return matchesSearch && matchesFilter;
-  });
-
-  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
-  const paginatedProducts = filteredProducts.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
+  const {
+    filteredProducts,
+    paginatedProducts,
+    totalPages
+  } = useProductsFilterAndPagination(
+    productsData,
+    debouncedSearch,
+    filter,
+    itemsPerPage,
+    currentPage
   );
+
+  // =======================
+  // Hook de paginación reutilizable
+  // =======================
+  const { handlePrevPage, handleNextPage } = useProductsPagination(currentPage, totalPages, setCurrentPage);
+
+  // =======================
+  // Mostrar loading y errores de React Query
+  // =======================
+  if (productsLoading || categoriesLoading) {
+    return <div>Cargando productos y categorías...</div>;
+  }
+  if (productsError || categoriesError) {
+    return <div>Error al cargar datos: {productsError?.message || categoriesError?.message}</div>;
+  }
 
   // =======================
   // Renderizado principal
   // =======================
   return (
     <div className="products-page">
-      {/* Encabezado */}
+      {/* Encabezado de la página */}
       <div className="products-header-card">
         <div className="products-header">
           <span className="products-icon">
@@ -220,6 +322,7 @@ function Products() {
         </div>
         {/* Controles de búsqueda, filtro y agregar */}
         <div className="products-controls">
+          {/* Barra de búsqueda */}
           <div className="search-bar-wrapper">
             <span className="search-icon">
               <HiOutlineSearch />
@@ -230,6 +333,7 @@ function Products() {
               value={searchTerm}
               onChange={handleSearchChange}
               className="search-bar"
+              aria-label="Buscar productos"
             />
             {searchTerm && (
               <button
@@ -237,19 +341,22 @@ function Products() {
                 onClick={() => setSearchTerm("")}
                 title="Limpiar búsqueda"
                 type="button"
+                aria-label="Limpiar búsqueda"
               >
                 <HiOutlineX />
               </button>
             )}
           </div>
+          {/* Filtros y controles de paginación */}
           <div className="products-controls-row">
             <select
               value={filter}
               onChange={handleFilterChange}
               className="filter-dropdown"
+              aria-label="Filtrar por categoría"
             >
               <option value="all">Todas las categorías</option>
-              {categories.map((cat) => (
+              {categoriesData.map((cat) => (
                 <option key={cat.id} value={cat.name}>
                   {cat.name}
                 </option>
@@ -261,6 +368,7 @@ function Products() {
                 onChange={handleItemsPerPageChange}
                 className="filter-dropdown"
                 title="Filas por página"
+                aria-label="Filas por página"
               >
                 <option value="10">10</option>
                 <option value="15">15</option>
@@ -268,13 +376,21 @@ function Products() {
                 <option value="999999">Todos</option>
               </select>
             </div>
+            {/* Botón agregar producto */}
             {isAuthenticated() && (
               <button
                 onClick={handleOpenAddModal}
                 className="add-product-button"
                 title="Agregar producto"
+                disabled={loadingAction}
+                style={loadingAction ? { opacity: 0.6, cursor: "not-allowed" } : {}}
+                aria-label="Agregar producto"
               >
-                <HiPlus style={{ marginRight: 4 }} />
+                {loadingAction ? (
+                  <span className="spinner" style={{ marginRight: 6 }} />
+                ) : (
+                  <HiPlus style={{ marginRight: 4 }} />
+                )}
                 Agregar
               </button>
             )}
@@ -284,6 +400,8 @@ function Products() {
                 className="add-product-button disabled"
                 title="Inicia sesión para agregar productos"
                 style={{ opacity: 0.6, cursor: "not-allowed" }}
+                disabled
+                aria-label="Agregar producto (requiere iniciar sesión)"
               >
                 <HiPlus style={{ marginRight: 4 }} />
                 Agregar (Inicia sesión)
@@ -291,39 +409,31 @@ function Products() {
             )}
           </div>
           {/* Paginación integrada en controles */}
-          <div className="pagination-bar">
-            <button
-              onClick={handlePrevPage}
-              disabled={currentPage === 1 || totalPages === 0}
-            >
-              <FiChevronLeft />
-            </button>
-            <span>
-              {totalPages === 0
-                ? "Sin páginas"
-                : `Página ${currentPage} de ${totalPages}`}
-            </span>
-            <button
-              onClick={handleNextPage}
-              disabled={currentPage === totalPages || totalPages === 0}
-            >
-              <FiChevronRight />
-            </button>
-          </div>
+          <ProductsPaginationBar
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPrev={handlePrevPage}
+            onNext={handleNextPage}
+          />
         </div>
       </div>
       {/* Tabla de productos */}
       <div className="products-table-container">
-        <table className="products-table">
+        {productsFetching && (
+          <div className="products-table-loading" style={{ textAlign: 'center', margin: '10px 0', color: '#888' }}>
+            Actualizando productos...
+          </div>
+        )}
+        <table className="products-table" role="table" aria-label="Lista de productos">
           <thead>
             <tr>
-              <th></th>
-              <th>Nombre</th>
-              <th>Categoría</th>
-              <th>Precio</th>
-              <th>Stock</th>
-              <th>Stock Mínimo</th>
-              <th style={{ textAlign: "center" }}>Acciones</th>
+              <th scope="col"></th>
+              <th scope="col">Nombre</th>
+              <th scope="col">Categoría</th>
+              <th scope="col">Precio</th>
+              <th scope="col">Stock</th>
+              <th scope="col">Stock Mínimo</th>
+              <th scope="col" style={{ textAlign: "center" }}>Acciones</th>
             </tr>
           </thead>
           <tbody>
@@ -353,16 +463,20 @@ function Products() {
                   <td style={{ textAlign: "center" }}>
                     {isAuthenticated() && (
                       <>
+                        {/* Botón editar */}
                         <button
                           className="table-action edit"
                           title="Editar"
+                          aria-label={`Editar producto ${product.name}`}
                           onClick={() => handleEdit(product)}
                         >
                           <FiEdit2 size={17} />
                         </button>
+                        {/* Botón eliminar */}
                         <button
                           className="table-action delete"
                           title="Eliminar"
+                          aria-label={`Eliminar producto ${product.name}`}
                           onClick={() => handleDelete(product.id)}
                         >
                           <FiTrash2 size={17} />
@@ -381,7 +495,7 @@ function Products() {
           </tbody>
         </table>
       </div>
-      {/* Modales */}
+      {/* Modales de agregar/editar y eliminar */}
       {isModalOpen && (
         <AddProductModal
           onClose={handleCloseModal}

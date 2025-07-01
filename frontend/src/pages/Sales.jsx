@@ -1,7 +1,9 @@
+
 // =======================
 // Importaciones y dependencias
 // =======================
 import React, { useState, useEffect, useRef } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import {
   HiOutlinePlus,
@@ -16,43 +18,38 @@ import '../styles/Sales.css';
 import { API_BASE_URL } from '../Conexion';
 import { authenticatedFetch, getAuthToken } from '../utils/auth';
 
+
 /**
- * Sales - Página principal para registrar ventas.
+ * Componente principal de ventas para minimarket.
  * Permite buscar productos, agregarlos al carrito, registrar ventas y marcar como pagadas.
  */
 function Sales() {
   const navigate = useNavigate();
-  
+  const queryClient = useQueryClient();
+
   // =======================
   // Estados principales
   // =======================
   const user = JSON.parse(localStorage.getItem('user') || '{}'); // Usuario autenticado
   const [search, setSearch] = useState(''); // Texto de búsqueda
-  const [showSuggestions, setShowSuggestions] = useState(false); // Mostrar sugerencias
+  const [showSuggestions, setShowSuggestions] = useState(false); // Mostrar sugerencias de productos
   const [selectedProduct, setSelectedProduct] = useState(null); // Producto seleccionado
   const [quantity, setQuantity] = useState(1); // Cantidad a agregar
   const [cart, setCart] = useState([]); // Carrito de compras
   const [clienteNombre, setClienteNombre] = useState(''); // Nombre del cliente
   const [clienteDni, setClienteDni] = useState(''); // DNI del cliente
-  const [products, setProducts] = useState([]); // Productos encontrados
+  const [products, setProducts] = useState([]); // Productos encontrados por búsqueda
   const [loadingProducts, setLoadingProducts] = useState(false); // Estado de carga de productos
   const [showSaleModal, setShowSaleModal] = useState(false); // Mostrar modal de éxito
-  const [saleModalMessage, setSaleModalMessage] = useState("Pedido registrado exitosamente!");
-  const searchInputRef = useRef(null);
-  const qtyInputRef = useRef(null);
-  const [suggestionIndex, setSuggestionIndex] = useState(-1);
-  const [horaActual, setHoraActual] = useState(new Date());
+  const [saleModalMessage, setSaleModalMessage] = useState("Pedido registrado exitosamente!"); // Mensaje del modal
+  const searchInputRef = useRef(null); // Referencia al input de búsqueda
+  const qtyInputRef = useRef(null); // Referencia al input de cantidad
+  const [suggestionIndex, setSuggestionIndex] = useState(-1); // Índice de sugerencia activa
+  const [horaActual, setHoraActual] = useState(new Date()); // Hora actual
 
-  // Verificación de autenticación
-  useEffect(() => {
-    const token = getAuthToken();
-    if (!token) {
-      navigate('/login');
-    }
-  }, [navigate]);
 
   // =======================
-  // Verificar autenticación al cargar componente
+  // Verificación de autenticación al cargar componente
   // =======================
   useEffect(() => {
     const token = getAuthToken();
@@ -62,10 +59,12 @@ function Sales() {
     }
   }, [navigate, user.id]);
 
+
   // =======================
   // Búsqueda de productos al escribir
   // =======================
   useEffect(() => {
+    // Si el campo de búsqueda está vacío, limpiar resultados
     if (search.trim() === '') {
       setProducts([]);
       return;
@@ -77,6 +76,7 @@ function Sales() {
       .finally(() => setLoadingProducts(false));
   }, [search]);
 
+
   // =======================
   // Actualizar la hora cada segundo
   // =======================
@@ -85,14 +85,20 @@ function Sales() {
     return () => clearInterval(timer);
   }, []);
 
+
   // =======================
   // Lista filtrada de productos (ya viene filtrada del backend)
   // =======================
   const filtered = products;
 
+
   // =======================
   // Selección de producto de la lista de sugerencias
   // =======================
+  /**
+   * Selecciona un producto de la lista de sugerencias
+   * @param {Object} p Producto seleccionado
+   */
   const selectProduct = p => {
     setSelectedProduct(p);
     setSearch(p.name);
@@ -101,9 +107,13 @@ function Sales() {
     setTimeout(() => qtyInputRef.current && qtyInputRef.current.focus(), 0);
   };
 
+
   // =======================
   // Agregar producto al carrito
   // =======================
+  /**
+   * Agrega el producto seleccionado al carrito
+   */
   const addToCart = () => {
     if (
       !selectedProduct ||
@@ -128,15 +138,24 @@ function Sales() {
     setTimeout(() => searchInputRef.current && searchInputRef.current.focus(), 0);
   };
 
+
   // =======================
   // Eliminar producto del carrito
   // =======================
+  /**
+   * Elimina un producto del carrito
+   * @param {number} id ID del producto a eliminar
+   */
   const removeFromCart = id =>
     setCart(prev => prev.filter(x => x.id !== id));
+
 
   // =======================
   // Cancelar venta y limpiar campos
   // =======================
+  /**
+   * Cancela la venta y limpia todos los campos
+   */
   const cancelSale = () => {
     setCart([]);
     setSearch('');
@@ -144,17 +163,25 @@ function Sales() {
     setQuantity(1);
   };
 
+
   // =======================
   // Cálculo de totales
   // =======================
+  /**
+   * Calcula los totales de la venta
+   */
   const subtotal = cart.reduce((sum, x) => sum + x.price * x.quantity, 0); // Suma de productos
   const igv = subtotal / 1.18 * 0.18; // IGV incluido en el subtotal
   const baseImponible = subtotal - igv; // Subtotal sin IGV
   const total = subtotal; // El total ya incluye IGV
 
+
   // =======================
   // Confirmar venta (envío al backend)
   // =======================
+  /**
+   * Envía la venta al backend como pendiente
+   */
   const handleConfirmSale = async () => {
     try {
       const response = await authenticatedFetch('/sales', {
@@ -173,11 +200,10 @@ function Sales() {
           }))
         })
       });
-      
+
       if (!response.ok) {
         throw new Error(`Error ${response.status}: ${response.statusText}`);
       }
-      
       // Éxito: limpiar carrito y mostrar modal
       setCart([]);
       setSearch('');
@@ -186,6 +212,8 @@ function Sales() {
       setClienteNombre('');
       setClienteDni('');
       setShowSaleModal(true);
+      // Invalidar caché de productos para refrescar stock
+      queryClient.invalidateQueries(['products']);
     } catch (err) {
       console.error('Error al registrar la venta:', err);
       if (err.message.includes('Sesión expirada')) {
@@ -505,6 +533,8 @@ function Sales() {
                     setClienteNombre('');
                     setClienteDni('');
                     setShowSaleModal(true);
+                    // Refrescar productos en caché tras venta pagada
+                    queryClient.invalidateQueries(['products']);
                   } catch (err) {
                     console.error('Error al registrar la venta:', err);
                     if (err.message.includes('Sesión expirada')) {

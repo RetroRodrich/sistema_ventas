@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react'
 import { MdMenu, MdLogout, MdNotifications } from 'react-icons/md'
 import '../styles/Navbar.css'
 import { API_BASE_URL } from "../Conexion"
+import socket from './socket'
 
 /**
  * Navbar - Barra de navegación principal de la aplicación.
@@ -31,10 +32,14 @@ const Navbar = ({ onLogout, onOpenSidebar }) => {
         .catch(() => setLowStockProducts([]))
     }
 
-    fetchLowStock() // Llamada inicial
+    fetchLowStock(); // Llamada inicial
 
-    const interval = setInterval(fetchLowStock, 20000) // Actualiza cada 20s
-    return () => clearInterval(interval)
+    // Escuchar evento de stockChanged por WebSocket
+    socket.on('stockChanged', fetchLowStock);
+
+    return () => {
+      socket.off('stockChanged', fetchLowStock);
+    }
   }, [])
 
   /**

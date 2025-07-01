@@ -583,17 +583,28 @@ BatchRow.displayName = 'BatchRow';
   // RENDERIZADO DEL COMPONENTE
   // ============================================================================
 
+  // =======================
+  // Referencia para enfoque inicial
+  // =======================
+  const firstInputRef = useRef(null);
+
+  useEffect(() => {
+    if (firstInputRef.current) {
+      firstInputRef.current.focus();
+    }
+  }, []);
+
   return (
-    <div className="add-modal-overlay">
+    <div className="add-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="add-modal-title">
       <div className="add-modal-content">
         {/* ============================================================================ */}
         {/* HEADER DEL MODAL */}
         {/* ============================================================================ */}
         <div className="add-modal-header">
-          <h2>
+          <h2 id="add-modal-title">
             <HiOutlineShoppingBag /> {modalTitle}
           </h2>
-          <button className="modal-close-btn" onClick={onClose}>
+          <button className="modal-close-btn" onClick={onClose} aria-label="Cerrar modal">
             <MdClose />
           </button>
         </div>
@@ -625,6 +636,7 @@ BatchRow.displayName = 'BatchRow';
                   required
                   autoComplete="off"
                   placeholder="Ej: Leche Gloria 1L"
+                  ref={firstInputRef}
                 />
               </div>
               
