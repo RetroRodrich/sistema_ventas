@@ -1,8 +1,11 @@
-/* Paginación eliminada: ahora solo se encuentra en Products.css */
-/* =========================
-   SALE HISTORY PAGE - Sistema de Historial Moderno
-   Diseño elegante, atractivo y funcional
-   ========================= */
+/* Variables globales para colores y sombras */
+:root {
+  --primary-color: #2fcabd;
+  --secondary-color: #1f2a37;
+  --background-gradient: linear-gradient(135deg, #fafcff 0%, #f0f9ff 100%);
+  --box-shadow-light: 0 1px 6px rgba(31, 42, 55, 0.04);
+  --box-shadow-heavy: 0 4px 20px rgba(31, 42, 55, 0.15);
+}
 
 /* Reset y configuración base */
 * {
@@ -13,11 +16,11 @@
    PÁGINA PRINCIPAL
    ========================= */
 .sales-history-page {
-  background: linear-gradient(135deg, #fafcff 0%, #f0f9ff 100%);
+  background: var(--background-gradient);
   border-radius: 20px;
   padding: 1rem;
-  color: #1f2a37;
-  box-shadow: 0 4px 20px rgba(31, 42, 55, 0.04), 0 2px 8px rgba(47, 202, 189, 0.05);
+  color: var(--secondary-color);
+  box-shadow: var(--box-shadow-light);
   border: 1px solid rgba(47, 202, 189, 0.06);
   position: relative;
 }
@@ -52,7 +55,7 @@
   background: linear-gradient(135deg, #1f2a37 0%, #2d3748 50%, #26a69a 100%);
   border-radius: 8px 0px;
   margin: 0;
-  box-shadow: 0 2px 12px rgba(31, 42, 55, 0.15), 0 4px 20px rgba(47, 202, 189, 0.1);
+  box-shadow: var(--box-shadow-heavy);
   position: relative;
   overflow: hidden;
   width: 100%;
@@ -79,6 +82,9 @@
   position: relative;
   width: 100%;
   margin-bottom: 0;
+  background: rgba(255, 255, 255, 0.7); /* Mantener fondo sin blur */
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.03), 0 1px 6px rgba(31, 42, 55, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.4);
 }
 
 .sales-history-search-input {
@@ -88,19 +94,14 @@
   border: 1px solid rgba(47, 202, 189, 0.15);
   border-radius: 24px;
   background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(5px);
-  box-sizing: border-box;
-  outline: none;
-  font-weight: 400;
-  box-shadow: 0 1px 6px rgba(31, 42, 55, 0.04);
+  box-shadow: var(--box-shadow-light);
   height: 2.4rem;
-  transition: all 0.3s ease;
+  transition: border-color 0.3s ease;
 }
 
 .sales-history-search-input:focus {
-  border-color: #2fcabd;
-  background: rgba(255, 255, 255, 0.95);
-  box-shadow: 0 0 0 2px rgba(47, 202, 189, 0.1), 0 2px 12px rgba(47, 202, 189, 0.08);
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(47, 202, 189, 0.1);
 }
 
 .sales-history-search-icon {
@@ -162,18 +163,13 @@
   border: 1px solid rgba(47, 202, 189, 0.15);
   border-radius: 12px;
   background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(5px);
-  outline: none;
-  font-weight: 400;
-  color: #1f2a37;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  min-width: 120px;
+  box-shadow: var(--box-shadow-light);
   height: 2.4rem;
+  transition: border-color 0.3s ease;
 }
 
 .sales-history-filter-select:focus {
-  border-color: #2fcabd;
+  border-color: var(--primary-color);
   box-shadow: 0 0 0 2px rgba(47, 202, 189, 0.1);
 }
 
@@ -183,18 +179,13 @@
   border: 1px solid rgba(47, 202, 189, 0.15);
   border-radius: 12px;
   background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(5px);
-  outline: none;
-  font-weight: 400;
-  color: #1f2a37;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  min-width: 110px;
+  box-shadow: var(--box-shadow-light);
   height: 2.4rem;
+  transition: border-color 0.3s ease;
 }
 
 .sales-history-filter-date:focus {
-  border-color: #2fcabd;
+  border-color: var(--primary-color);
   box-shadow: 0 0 0 2px rgba(47, 202, 189, 0.1);
 }
 
@@ -535,12 +526,28 @@
   right: 0;
   bottom: 0;
   z-index: 2000;
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(4px);
+  background: rgba(0, 0, 0, 0.664);
   display: flex;
   align-items: center;
   justify-content: center;
-  animation: fadeIn 0.3s ease;
+  animation: fadeIn 0.15s ease;
+}
+
+/* Animación optimizada para el modal similar a AddProductModal */
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-3px) scale(0.995); /* Inicio con posición ajustada */
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1); /* Estado final */
+  }
+}
+
+/* Aplicar la animación al modal */
+.modal {
+  animation: modalSlideIn 0.2s ease-out; /* Animación rápida y fluida */
 }
 
 @keyframes fadeIn {
@@ -549,17 +556,12 @@
 }
 
 .sh-modal__content {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(20px);
   border-radius: 20px;
   padding: 0;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3), 0 8px 32px rgba(47, 202, 189, 0.1);
   min-width: 400px;
   max-width: 500px;
-  width: 100%;
   position: relative;
-  animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  border: 1px solid rgba(255, 255, 255, 0.4);
+  animation: slideUp 0.15s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
 }
 
@@ -620,7 +622,7 @@
    ========================= */
 .sh-modal__body {
   padding: 1.5rem;
-  background: rgba(248, 250, 252, 0.8);
+  background: rgb(243, 243, 243);
   backdrop-filter: blur(10px);
 }
 

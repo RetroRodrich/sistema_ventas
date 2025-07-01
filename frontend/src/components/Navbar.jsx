@@ -1,30 +1,37 @@
+/**
+ * Navbar - Barra de navegación principal con diseño moderno y elegante.
+ * 
+ * Características:
+ * - Diseño glass-morphism con gradiente moderno
+ * - Notificaciones de stock bajo en tiempo real
+ * - Responsive design optimizado
+ * - Animaciones suaves y transiciones elegantes
+ * - Integración con WebSocket para actualizaciones en tiempo real
+ *
+ * Props:
+ * - onLogout: función para cerrar sesión del usuario
+ * - onOpenSidebar: función para abrir/cerrar el sidebar lateral
+ */
 import React, { useState, useRef, useEffect } from 'react'
 import { MdMenu, MdLogout, MdNotifications } from 'react-icons/md'
 import '../styles/Navbar.css'
 import { API_BASE_URL } from "../Conexion"
 import socket from './socket'
 
-/**
- * Navbar - Barra de navegación principal de la aplicación.
- * Muestra el nombre de la sucursal, botón de menú lateral, notificaciones de stock bajo y botón de cierre de sesión.
- *
- * Props:
- * - onLogout: función para cerrar sesión.
- * - onOpenSidebar: función para abrir el sidebar.
- */
 const Navbar = ({ onLogout, onOpenSidebar }) => {
-  // Estado para mostrar/ocultar burbuja de notificaciones
+  // Estado para controlar la visibilidad del panel de notificaciones
   const [showNotifications, setShowNotifications] = useState(false)
-  // Estado para almacenar productos con bajo stock
+  // Estado para almacenar la lista de productos con stock bajo
   const [lowStockProducts, setLowStockProducts] = useState([])
-  // Referencia al contenedor de notificaciones para detectar clics fuera
+  // Referencia al contenedor de notificaciones para detectar clics externos
   const notifRef = useRef(null)
 
   /**
-   * useEffect para cargar productos con bajo stock al montar el componente
-   * y actualizar cada 20 segundos.
+   * useEffect para cargar productos con stock bajo al montar el componente
+   * y configurar la escucha de eventos WebSocket para actualizaciones en tiempo real.
    */
   useEffect(() => {
+    // Función para obtener productos con stock bajo desde la API
     const fetchLowStock = () => {
       fetch(`${API_BASE_URL}/api/products/low-stock`)
         .then(res => res.json())
@@ -32,18 +39,20 @@ const Navbar = ({ onLogout, onOpenSidebar }) => {
         .catch(() => setLowStockProducts([]))
     }
 
-    fetchLowStock(); // Llamada inicial
+    fetchLowStock(); // Carga inicial
 
-    // Escuchar evento de stockChanged por WebSocket
+    // Configurar escucha de eventos WebSocket para cambios de stock
     socket.on('stockChanged', fetchLowStock);
 
+    // Cleanup: remover event listener al desmontar
     return () => {
       socket.off('stockChanged', fetchLowStock);
     }
   }, [])
 
   /**
-   * useEffect para cerrar la burbuja de notificaciones al hacer clic fuera de ella.
+   * useEffect para manejar clics fuera del panel de notificaciones
+   * y cerrarlo automáticamente para mejorar la UX.
    */
   useEffect(() => {
     if (!showNotifications) return
@@ -58,38 +67,44 @@ const Navbar = ({ onLogout, onOpenSidebar }) => {
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [showNotifications])
 
-  // Alterna la visibilidad de la burbuja de notificaciones
+  /**
+   * Alterna la visibilidad del panel de notificaciones
+   */
   const handleNotificationsClick = () => {
     setShowNotifications((prev) => !prev)
   }
 
   return (
     <nav className="navbar">
+      {/* Sección izquierda: Menú hamburguesa y logo */}
       <div className="navbar-left">
-        <button className="navbar-hamburger" onClick={onOpenSidebar}>
+        <button 
+          className="navbar-hamburger" 
+          onClick={onOpenSidebar}
+          aria-label="Abrir menú lateral"
+        >
           <MdMenu size={24} />
         </button>
         <span className="navbar-sucursal">MiniSales</span>
       </div>
-      <div className="navbar-right" style={{ position: "relative", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+
+      {/* Sección derecha: Notificaciones y botón de salir */}
+      <div className="navbar-right" style={{ position: "relative", display: "flex", alignItems: "center", gap: "1rem" }}>
+        {/* Panel de notificaciones */}
         <div ref={notifRef} style={{ position: "relative" }}>
           <button
             className={`navbar-notifications${showNotifications ? " active" : ""}`}
-            style={{
-              background: "none",
-              border: "none",
-              cursor: "pointer",
-              marginRight: 0,
-              display: "inline-flex",
-              alignItems: "center",
-              position: "relative"
-            }}
-            title="Notificaciones"
+            title="Notificaciones de stock bajo"
             onClick={handleNotificationsClick}
+            aria-label={`Notificaciones ${lowStockProducts.length > 0 ? `(${lowStockProducts.length})` : ''}`}
           >
-            <MdNotifications size={30} color="#2fcabd" />
-            <span className="navbar-notifications-badge">{lowStockProducts.length}</span>
+            <MdNotifications size={25} />
+            {lowStockProducts.length > 0 && (
+              <span className="navbar-notifications-badge">{lowStockProducts.length}</span>
+            )}
           </button>
+          
+          {/* Burbuja de notificaciones con posicionamiento preservado */}
           {showNotifications && (
             <div className="navbar-notifications-bubble elegant left">
               <ul className="navbar-notifications-list">
@@ -106,8 +121,14 @@ const Navbar = ({ onLogout, onOpenSidebar }) => {
             </div>
           )}
         </div>
-        <button className="navbar-logout" onClick={onLogout}>
-          <MdLogout className="navbar-logout-icon" size={15} />
+
+        {/* Botón de cerrar sesión */}
+        <button 
+          className="navbar-logout" 
+          onClick={onLogout}
+          aria-label="Cerrar sesión"
+        >
+          <MdLogout className="navbar-logout-icon" size={16} />
           <span className="navbar-logout-text">Salir</span>
         </button>
       </div>

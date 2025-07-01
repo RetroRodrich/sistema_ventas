@@ -1,18 +1,19 @@
 /* =========================
-   Navbar Principal
+   Navbar Principal - Fondo Blanco
    ========================= */
 .navbar {
   background: #fff;
   color: #263544;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-  height: 60px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  height: 65px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 1rem;
+  padding: 0 1.5rem;
   position: sticky;
   top: 0;
   z-index: 1100;
+  border-bottom: 1px solid #e6e6e6;
 }
 
 /* =========================
@@ -21,28 +22,31 @@
 .navbar-left {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 1.2rem;
 }
 
-/* Botón hamburguesa para abrir el sidebar */
+/* Botón hamburguesa con efectos elegantes */
 .navbar-hamburger {
   background: none;
   border: none;
-  color: #263544;
+  color: #168b80;
   cursor: pointer;
   display: block;
-  padding: 0.2rem;
-  transition: color 0.18s;
+  padding: 0.6rem;
+  border-radius: 12px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .navbar-hamburger:hover {
-  color: #2fcabd;
+  background: rgba(22, 139, 128, 0.1);
+  transform: translateY(-2px);
 }
 
-/* Nombre de la sucursal */
+/* Logo/nombre de la sucursal con estilo premium */
 .navbar-sucursal {
-  font-size: 1.1rem;
-  font-weight: 600;
+  font-size: 1.4rem;
+  font-weight: 700;
   white-space: nowrap;
+  color: #168b80;
 }
 
 /* =========================
@@ -51,46 +55,52 @@
 .navbar-right {
   display: flex;
   align-items: center;
-  gap: 0.7rem;
+  gap: 1rem;
 }
 
-/* Usuario (si aplica) */
+/* Información del usuario con diseño glass-morphism */
 .navbar-user {
   display: flex;
   align-items: center;
-  gap: 0.3rem;
+  gap: 0.5rem;
   font-weight: 500;
-  font-size: 0.97rem;
+  font-size: 0.95rem;
   white-space: nowrap;
-  padding: 0.2rem 0.5rem;
-  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
   background: #f4f7fa;
+  border: 1px solid #e6e6e6;
+  transition: all 0.3s ease;
+}
+.navbar-user:hover {
+  background: #e6fcfa;
 }
 .navbar-user-icon {
-  color: #2fcabd;
+  color: #168b80;
   font-size: 1.1rem;
 }
 .navbar-user-text {
-  font-size: 0.97rem;
+  font-size: 0.95rem;
   color: #263544;
 }
 
-/* Botón de cierre de sesión */
+/* Botón de cierre de sesión con diseño moderno */
 .navbar-logout {
-  background: #2fcabd;
+  background: #168b80;
   color: #fff;
   border: none;
-  padding: 0.3rem 0.7rem;
-  border-radius: 5px;
+  padding: 0.5rem 1.2rem;
+  border-radius: 20px;
   cursor: pointer;
   font-size: 0.9rem;
-  transition: background 0.2s;
+  font-weight: 600;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   align-items: center;
-  gap: 0.3rem;
+  gap: 0.5rem;
 }
 .navbar-logout:hover {
-  background: #168b80;
+  background: #1e9a8a;
 }
 .navbar-logout-icon {
   font-size: 1.1rem;
@@ -100,45 +110,54 @@
    Notificaciones de Stock Bajo
    ========================= */
 
-/* Botón de notificaciones */
+/* Botón de notificaciones con estilo elegante */
 .navbar-notifications {
   border-radius: 50%;
-  transition: background 0.18s, color 0.18s;
-  padding: 0.25rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 0.6rem; /* Aumentar el tamaño del padding */
   display: flex;
   align-items: center;
   justify-content: center;
-  background: none;
+  background: #168b80; /* Color verde fuerte para contraste */
+  color: #fff;
+  border: 2px solid #fff; /* Borde blanco para mayor visibilidad */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombra para resaltar */
 }
-.navbar-notifications:hover,
-.navbar-notifications:focus {
-  background: #e6fcfa !important;
+.navbar-notifications:hover {
+  background: #1e9a8a;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); /* Sombra más pronunciada al hover */
 }
 .navbar-notifications.active {
-  background: #2fcabd22 !important;
+  background: #1e9a8a;
 }
-.navbar-notifications.active svg,
+.navbar-notifications svg {
+  color: #263544; /* Color oscuro para mejor contraste */
+  font-size: 1rem; /* Incrementar tamaño del ícono */
+}
 .navbar-notifications:hover svg,
-.navbar-notifications:focus svg {
-  color: #168b80 !important;
+.navbar-notifications.active svg {
+  color: #fff; /* Mantener blanco al hover o activo */
 }
 
-/* Burbuja elegante alineada a la izquierda del botón de notificaciones */
+/* Burbuja de notificaciones con diseño elegante y tamaño reducido */
 .navbar-notifications-bubble.elegant.left {
-  position: absolute; /* Colocar la burbuja respecto al botón */
+  position: absolute;
   top: 0;
-  right: calc(100% + 10px); /* A la izquierda del botón */
-  min-width: 220px;
+  right: calc(100% + 10px);
+  min-width: 220px; /* Reducir el ancho mínimo */
   background: #263544;
-  border-radius: 8px;
-  padding: 0.7rem 1rem;
+  color: #e6fcfa;
+  border-radius: 12px; /* Bordes redondeados para diseño elegante */
+  padding: 0.8rem; /* Reducir el padding */
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   animation: notifBubbleIn 0.25s cubic-bezier(0.4, 1.3, 0.6, 1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2); /* Sombra más suave */
 }
 
-/* Lista de notificaciones */
+/* Lista de notificaciones con diseño compacto */
 .navbar-notifications-list {
   list-style: none;
   margin: 0;
@@ -146,79 +165,114 @@
   width: 100%;
 }
 .navbar-notifications-list li {
-  font-size: 0.8rem;
-  color: #e6fcfa;
+  font-size: 0.8rem; /* Reducir tamaño de fuente */
+  color: #e8f4f3;
   font-weight: 400;
-  padding: 0.5rem 0.2rem;
-  border-bottom: 1px solid #35546a;
+  padding: 0.5rem; /* Reducir padding de cada elemento */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   display: flex;
   align-items: center;
-  gap: 0.6rem;
+  gap: 0.5rem; /* Reducir espacio entre ícono y texto */
   letter-spacing: 0.02em;
-  line-height: 1.4;
+  line-height: 1.4; /* Ajustar altura de línea */
+  transition: background 0.2s ease;
+}
+.navbar-notifications-list li:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
 }
 .navbar-notifications-list li:last-child {
   border-bottom: none;
 }
 
-/* Badge de cantidad de notificaciones */
+/* Badge de notificaciones con diseño premium */
 .navbar-notifications-badge {
   position: absolute;
-  top: 2px;
-  right: 2px;
-  min-width: 16px;
-  height: 16px;
-  background: #e53935;
+  top: -2px;
+  right: -2px;
+  min-width: 20px;
+  height: 20px;
+  background: linear-gradient(135deg, #ff4757, #ff3742);
   color: #fff;
-  font-size: 0.55rem;
+  font-size: 0.65rem;
+  font-weight: 600;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+  box-shadow: 0 2px 8px rgba(255, 71, 87, 0.4);
   pointer-events: none;
   z-index: 2;
   line-height: 1;
   padding: 0;
+  border: 2px solid rgba(255, 255, 255, 0.3);
 }
 
 /* =========================
-   Responsive
+   Responsive Design - Adaptación Móvil y Desktop
    ========================= */
 
-/* Desktop: ocultar hamburguesa y agregar padding para sidebar */
+/* Desktop: ocultar hamburguesa y ajustar padding para sidebar */
 @media (min-width: 1024px) {
   .navbar {
-    padding-left: 240px;
+    padding-left: 250px; /* Ajuste para sidebar más ancho */
   }
   .navbar-hamburger {
     display: none;
   }
 }
 
-/* Móvil: solo iconos en navbar-right */
+/* Tablet: ajustes intermedios */
+@media (max-width: 1023px) and (min-width: 601px) {
+  .navbar {
+    padding: 0 1.2rem;
+  }
+  .navbar-left {
+    gap: 1rem;
+  }
+  .navbar-right {
+    gap: 0.8rem;
+  }
+}
+
+/* Móvil: optimización para pantallas pequeñas */
 @media (max-width: 600px) {
+  .navbar {
+    height: 60px;
+    padding: 0 1rem;
+  }
+  .navbar-left {
+    gap: 0.8rem;
+  }
+  .navbar-sucursal {
+    font-size: 1.2rem;
+  }
   .navbar-right {
     gap: 0.5rem;
   }
   .navbar-user-text,
   .navbar-logout-text {
-    display: none;
+    display: none; /* Ocultar texto en móvil */
   }
   .navbar-user,
   .navbar-logout {
-    padding: 0.3rem 0.5rem;
-    font-size: 0;
+    padding: 0.4rem 0.6rem;
+    min-width: auto;
   }
   .navbar-user-icon,
   .navbar-logout-icon {
-    display: inline;
-    font-size: 1.3rem;
+    font-size: 1.2rem;
+  }
+  /* Ajustar burbuja de notificaciones en móvil */
+  .navbar-notifications-bubble.elegant.left {
+    right: calc(100% + 5px);
+    min-width: 240px;
+    padding: 0.8rem 1rem;
   }
 }
 
 /* =========================
-   Animaciones
+   Animaciones Suaves y Modernas
    ========================= */
 @keyframes notifBubbleIn {
   from {
@@ -229,4 +283,57 @@
     opacity: 1;
     transform: translateX(0) scale(1);
   }
+}
+
+/* Animación de hover para elementos interactivos */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Efecto de glassmorphism para elementos hover */
+.navbar-hamburger:active,
+.navbar-logout:active,
+.navbar-notifications:active {
+  transform: translateY(1px);
+}
+
+/* Estilos para el botón de notificaciones */
+.navbar-notifications {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  position: relative;
+}
+
+/* Estilos para el badge de notificaciones */
+.navbar-notifications-badge {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  min-width: 20px;
+  height: 20px;
+  background: linear-gradient(135deg, #ff4757, #ff3742);
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 600;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(255, 71, 87, 0.4);
+  pointer-events: none;
+  z-index: 2;
+  line-height: 1;
+  padding: 0;
+  border: 2px solid rgba(255, 255, 255, 0.3);
 }

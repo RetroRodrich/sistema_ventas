@@ -1,3 +1,17 @@
+/**
+ * SaleHistory - Página de historial de ventas/pedidos.
+ * Permite consultar, ver detalles y cambiar el estado de cada venta.
+ * 
+ * Funcionalidades principales:
+ * - Filtrado y búsqueda de ventas.
+ * - Paginación de resultados.
+ * - Visualización de detalles de ventas en un modal.
+ * - Exportación de datos a Excel.
+ * - Actualización del estado de ventas (pagada, anulada, pendiente).
+ * - Sincronización en tiempo real con WebSockets.
+ */
+
+// Importaciones necesarias
 import React, { useEffect, useState, useCallback, useMemo } from "react";
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import socket from '../components/socket';
@@ -34,6 +48,16 @@ function SaleHistory() {
   const SALES_PER_PAGE = 10;
 
   // =======================
+  // Estados principales
+  // =======================
+  const [filterType, setFilterType] = useState("hoy"); // Estado inicial para el filtro de ventas
+  const [customFrom, setCustomFrom] = useState("");
+  const [customTo, setCustomTo] = useState("");
+  const [selectedSale, setSelectedSale] = useState(null); // Venta seleccionada para el modal
+  const [errorMsg, setErrorMsg] = useState("");
+  const [updating, setUpdating] = useState(false); // Estado de actualización de estado de venta
+
+  // =======================
   // Efecto: Escuchar eventos de venta_actualizada por WebSocket y refrescar queries
   // =======================
   useEffect(() => {
@@ -49,18 +73,6 @@ function SaleHistory() {
   }, [queryClient]);
 
   // =======================
-  // Estados principales
-  // =======================
-  // Filtros y estado de UI
-  const [filterType, setFilterType] = useState("hoy");
-  const [customFrom, setCustomFrom] = useState("");
-  const [customTo, setCustomTo] = useState("");
-  const [selectedSale, setSelectedSale] = useState(null); // Venta seleccionada para el modal
-  const [errorMsg, setErrorMsg] = useState("");
-  const [updating, setUpdating] = useState(false); // Estado de actualización de estado de venta
-
-
-  // =======================
   // Verificar autenticación al cargar componente
   // =======================
   useEffect(() => {
@@ -72,12 +84,8 @@ function SaleHistory() {
     }
   }, [navigate]);
 
-
   // =======================
-  // Fetch de ventas con React Query (cacheo y sincronización)
-  // =======================
-  // =======================
-  // React Query: obtener ventas según filtro
+  // Función: Generar URL de ventas según filtro
   // =======================
   const getSalesUrl = useCallback(() => {
     let url = `${API_BASE_URL}/api/sales?`;
@@ -95,6 +103,9 @@ function SaleHistory() {
     return url;
   }, [filterType, customFrom, customTo]);
 
+  // =======================
+  // React Query: obtener ventas según filtro
+  // =======================
   const {
     data: sales = [],
     isLoading: loading,
@@ -135,10 +146,7 @@ function SaleHistory() {
     isLoading: detailsLoading,
     refetch: refetchDetails,
   } = useQuery({
-    queryKey: [
-      "saleDetails",
-      selectedSale?.id
-    ],
+    queryKey: ["saleDetails", selectedSale?.id],
     queryFn: async () => {
       if (!selectedSale?.id) return [];
       const res = await fetch(`${API_BASE_URL}/api/sales/${selectedSale.id}`);
@@ -156,7 +164,7 @@ function SaleHistory() {
    */
   const openDetails = (sale) => {
     setSelectedSale(sale);
-    // React Query se encarga de cargar detalles automáticamente
+    refetchDetails(); // Cargar detalles de forma diferida
   };
 
 
@@ -256,15 +264,14 @@ function SaleHistory() {
 
   // Paginación
   const paginatedSales = useMemo(() => {
-    return filteredSales.slice(
-      (currentPage - 1) * SALES_PER_PAGE,
-      currentPage * SALES_PER_PAGE
-    );
-  }, [filteredSales, currentPage, SALES_PER_PAGE]);
+    const startIndex = (currentPage - 1) * SALES_PER_PAGE;
+    const endIndex = currentPage * SALES_PER_PAGE;
+    return sales.slice(startIndex, endIndex);
+  }, [sales, currentPage, SALES_PER_PAGE]);
 
   const totalPages = useMemo(() => {
-    return Math.ceil(filteredSales.length / SALES_PER_PAGE) || 1;
-  }, [filteredSales, SALES_PER_PAGE]);
+    return Math.ceil(sales.length / SALES_PER_PAGE) || 1;
+  }, [sales, SALES_PER_PAGE]);
 
   // Cambiar de página
   const goToPage = (page) => {
@@ -276,6 +283,18 @@ function SaleHistory() {
   useEffect(() => {
     setCurrentPage(1);
   }, [search, filterType, customFrom, customTo]);
+
+  // Datos exportables para Excel
+  const exportableData = useMemo(() => {
+    return filteredSales.map(sale => ({
+      id: sale.id,
+      customer_name: sale.customer_name,
+      user_name: sale.user_name,
+      createdAt: new Date(sale.createdAt).toLocaleString(),
+      total: `S/ ${Number(sale.total).toFixed(2)}`,
+      status: sale.status.charAt(0).toUpperCase() + sale.status.slice(1),
+    }));
+  }, [filteredSales]);
 
   return (
     <div className="sales-history-page">
@@ -362,13 +381,13 @@ function SaleHistory() {
           {/* Botón de exportar */}
           <div className="sales-history-export-wrapper">
             <ExportExcelButton
-              data={filteredSales}
+              data={exportableData}
               columns={[
                 { label: "ID", value: "id" },
                 { label: "Cliente", value: "customer_name" },
                 { label: "Vendedor", value: "user_name" },
-                { label: "Fecha", value: row => new Date(row.createdAt).toLocaleString() },
-                { label: "Total", value: row => `S/ ${Number(row.total).toFixed(2)}` },
+                { label: "Fecha", value: "createdAt" },
+                { label: "Total", value: "total" },
                 { label: "Estado", value: "status" },
               ]}
               filterType={filterType}
