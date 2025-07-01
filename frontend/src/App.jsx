@@ -1,3 +1,4 @@
+import socket from './components/socket';
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
@@ -14,6 +15,19 @@ function App() {
   const [isLogged, setIsLogged] = useState(!!localStorage.getItem('token'));
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const navigate = useNavigate();
+
+  // Conectar/desconectar socket según autenticación
+  useEffect(() => {
+    if (isLogged) {
+      if (!socket.connected) socket.connect();
+    } else {
+      if (socket.connected) socket.disconnect();
+    }
+    // Limpieza opcional al desmontar
+    return () => {
+      if (socket.connected) socket.disconnect();
+    };
+  }, [isLogged]);
 
   const handleLogout = () => {
     localStorage.removeItem('token');

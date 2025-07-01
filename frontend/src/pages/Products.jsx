@@ -1,4 +1,3 @@
-
 // =======================
 // Imports principales
 // =======================
@@ -408,22 +407,22 @@ function Products() {
               </button>
             )}
           </div>
-          {/* Paginación integrada en controles */}
-          <ProductsPaginationBar
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPrev={handlePrevPage}
-            onNext={handleNextPage}
-          />
         </div>
       </div>
-      {/* Tabla de productos */}
+      {/* Tabla de productos y paginación */}
       <div className="products-table-container">
         {productsFetching && (
           <div className="products-table-loading" style={{ textAlign: 'center', margin: '10px 0', color: '#888' }}>
             Actualizando productos...
           </div>
         )}
+        {/* Paginación integrada en controles */}
+        <ProductsPaginationBar
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPrev={handlePrevPage}
+          onNext={handleNextPage}
+        />
         <table className="products-table" role="table" aria-label="Lista de productos">
           <thead>
             <tr>

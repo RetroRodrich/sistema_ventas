@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useMemo } from "react";
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import socket from '../components/socket';
 import { useNavigate } from "react-router-dom";
@@ -15,6 +15,7 @@ import { authenticatedFetch, getAuthToken } from "../utils/auth";
 import "../styles/SaleHistory.css";
 import BoletaButton from "../components/BoletaButton";
 import ExportExcelButton from "../components/ExportExcelButton";
+import SaleHistoryPaginationBar from "../components/SaleHistoryPaginationBar";
 
 
 /**
@@ -24,6 +25,13 @@ import ExportExcelButton from "../components/ExportExcelButton";
 function SaleHistory() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+
+  // =======================
+  // Estados para búsqueda y paginación
+  // =======================
+  const [search, setSearch] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const SALES_PER_PAGE = 10;
 
   // =======================
   // Efecto: Escuchar eventos de venta_actualizada por WebSocket y refrescar queries
@@ -234,6 +242,41 @@ function SaleHistory() {
   }
 
   // --- Renderizado de la interfaz ---
+  // --- Búsqueda y paginación ---
+  // Filtrado por búsqueda (ID, cliente, vendedor)
+  const filteredSales = useMemo(() => {
+    if (!Array.isArray(sales)) return [];
+    const searchLower = search.toLowerCase();
+    return sales.filter(sale =>
+      sale.id.toString().includes(searchLower) ||
+      (sale.customer_name && sale.customer_name.toLowerCase().includes(searchLower)) ||
+      (sale.user_name && sale.user_name.toLowerCase().includes(searchLower))
+    );
+  }, [sales, search]);
+
+  // Paginación
+  const paginatedSales = useMemo(() => {
+    return filteredSales.slice(
+      (currentPage - 1) * SALES_PER_PAGE,
+      currentPage * SALES_PER_PAGE
+    );
+  }, [filteredSales, currentPage, SALES_PER_PAGE]);
+
+  const totalPages = useMemo(() => {
+    return Math.ceil(filteredSales.length / SALES_PER_PAGE) || 1;
+  }, [filteredSales, SALES_PER_PAGE]);
+
+  // Cambiar de página
+  const goToPage = (page) => {
+    if (page < 1 || page > totalPages) return;
+    setCurrentPage(page);
+  };
+
+  // Resetear página al cambiar búsqueda o filtro
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [search, filterType, customFrom, customTo]);
+
   return (
     <div className="sales-history-page">
       {/* Header principal */}
@@ -253,74 +296,87 @@ function SaleHistory() {
         </div>
       </div>
 
-      {/* Barra de filtros de fecha */}
-      <div className="sh-filters-bar">
-        <select
-          className="sh-filter-select"
-          value={filterType}
-          onChange={(e) => setFilterType(e.target.value)}
-        >
-          <option value="hoy">Hoy</option>
-          <option value="mes">Este mes</option>
-          <option value="anio">Este año</option>
-          <option value="todo">Todo</option>
-          <option value="personalizado">Personalizado</option>
-        </select>
-        {filterType === "personalizado" && (
-          <div className="sh-filter-custom">
-            <input
-              type="date"
-              className="sh-filter-date"
-              value={customFrom}
-              onChange={(e) => setCustomFrom(e.target.value)}
-              placeholder="Desde"
-              max={getTodayLocal()}
-            />
-            <span style={{ margin: "0 0.5rem" }}>a</span>
-            <input
-              type="date"
-              className="sh-filter-date"
-              value={customTo}
-              onChange={(e) => setCustomTo(e.target.value)}
-              placeholder="Hasta"
-              max={getTodayLocal()}
-            />
-            {/* Botón para poner la fecha final como hoy */}
+      {/* Controles de filtros y búsqueda */}
+      <div className="sales-history-controls">
+        {/* Barra de búsqueda */}
+        <div className="sales-history-search-wrapper">
+          <input
+            className="sales-history-search-input"
+            type="text"
+            placeholder="Buscar por N° venta, cliente o vendedor..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+          />
+          <span className="sales-history-search-icon">
+            <HiOutlineSearch />
+          </span>
+          {search && (
             <button
-              type="button"
-              className="sh-btn sh-btn--hoy"
-              onClick={() => setCustomTo(getTodayLocal())}
-              title="Usar fecha de hoy"
+              className="sales-history-clear-button"
+              aria-label="Limpiar búsqueda"
+              onClick={() => setSearch("")}
             >
-              Hoy
+              <HiOutlineX />
             </button>
+          )}
+        </div>
+
+        {/* Fila de controles */}
+        <div className="sales-history-controls-row">
+          {/* Grupo de filtros */}
+          <div className="sales-history-filters-group">
+            <select
+              className="sales-history-filter-select"
+              value={filterType}
+              onChange={e => setFilterType(e.target.value)}
+            >
+              <option value="hoy">Hoy</option>
+              <option value="mes">Este mes</option>
+              <option value="anio">Este año</option>
+              <option value="todo">Todo</option>
+              <option value="personalizado">Personalizado</option>
+            </select>
+            
+            {filterType === 'personalizado' && (
+              <>
+                <input
+                  type="date"
+                  className="sales-history-filter-date"
+                  value={customFrom}
+                  max={customTo || getTodayLocal()}
+                  onChange={e => setCustomFrom(e.target.value)}
+                />
+                <span className="sales-history-date-separator">a</span>
+                <input
+                  type="date"
+                  className="sales-history-filter-date"
+                  value={customTo}
+                  min={customFrom}
+                  max={getTodayLocal()}
+                  onChange={e => setCustomTo(e.target.value)}
+                />
+              </>
+            )}
           </div>
-        )}
-        {/* Botón para buscar ventas según el filtro */}
-        <button
-          className="sh-btn sh-btn--search"
-          style={{ marginLeft: 8 }}
-          onClick={refetchSales}
-        >
-          <HiOutlineSearch /> Buscar
-        </button>
-        <ExportExcelButton
-          data={sales}
-          filename="historial_ventas.xlsx"
-          columns={[
-            { label: "ID", value: "id" },
-            { label: "Cliente", value: "customer_name" },
-            { label: "Vendedor", value: "user_name" },
-            { label: "Fecha", value: (row) => new Date(row.createdAt).toLocaleString() },
-            { label: "Total", value: (row) => Number(row.total).toFixed(2) },
-            { label: "Estado", value: (row) => row.status.charAt(0).toUpperCase() + row.status.slice(1) }
-          ]}
-          filterType={filterType}
-          customFrom={customFrom}
-          customTo={customTo}
-        >
-          Exportar a Excel
-        </ExportExcelButton>
+
+          {/* Botón de exportar */}
+          <div className="sales-history-export-wrapper">
+            <ExportExcelButton
+              data={filteredSales}
+              columns={[
+                { label: "ID", value: "id" },
+                { label: "Cliente", value: "customer_name" },
+                { label: "Vendedor", value: "user_name" },
+                { label: "Fecha", value: row => new Date(row.createdAt).toLocaleString() },
+                { label: "Total", value: row => `S/ ${Number(row.total).toFixed(2)}` },
+                { label: "Estado", value: "status" },
+              ]}
+              filterType={filterType}
+              customFrom={customFrom}
+              customTo={customTo}
+            />
+          </div>
+        </div>
       </div>
 
       {/* Tabla de historial o mensajes de estado */}
@@ -328,12 +384,20 @@ function SaleHistory() {
         <p className="sales-history-loading">Cargando...</p>
       ) : errorMsg || isError ? (
         <div className="sales-history-error">{errorMsg || (error && error.message)}</div>
-      ) : !Array.isArray(sales) || sales.length === 0 ? (
+      ) : !Array.isArray(filteredSales) || filteredSales.length === 0 ? (
         <div className="sales-history-empty">
           No hay pedidos registrados aún.
         </div>
       ) : (
         <div className="sales-history-table-wrapper">
+          <div className="pagination-bar-wrapper" style={{display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: '0.5rem'}}>
+            <SaleHistoryPaginationBar
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPrev={() => goToPage(currentPage - 1)}
+              onNext={() => goToPage(currentPage + 1)}
+            />
+          </div>
           <table className="sales-history-table">
             <thead>
               <tr>
@@ -347,7 +411,7 @@ function SaleHistory() {
               </tr>
             </thead>
             <tbody>
-              {Array.isArray(sales) && sales.map((sale) => (
+              {paginatedSales.map((sale) => (
                 <tr key={sale.id}>
                   <td data-label="ID">{sale.id}</td>
                   <td data-label="Cliente">{sale.customer_name}</td>
