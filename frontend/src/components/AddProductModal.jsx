@@ -29,8 +29,73 @@ import {
 } from "react-icons/md";
 import "../styles/AddProductModal.css";
 import { API_BASE_URL } from "../Conexion";
-import { authenticatedFetch, isAuthenticated, isAdmin } from "../utils/auth";
+import { authenticatedFetch, isAuthenticated, isAdmin, getCurrentUser } from "../utils/auth";
 import BatchModal from "./BatchModal";
+
+// ============================================================================
+// COMPONENTES MEMOIZADOS PARA OPTIMIZACIÓN
+// ============================================================================
+
+/**
+ * Componente memoizado para renderizar las opciones de categorías
+ * Evita re-renders innecesarios cuando las categorías no cambian
+ */
+const CategoryOptions = memo(({ categories }) => {
+  if (!Array.isArray(categories) || categories.length === 0) {
+    return null;
+  }
+  
+  return categories.map((c) => (
+    <option key={c.id} value={c.id}>
+      {c.name}
+    </option>
+  ));
+});
+CategoryOptions.displayName = 'CategoryOptions';
+
+/**
+ * Componente memoizado para renderizar una fila de lote en la tabla
+ * Optimiza el rendimiento al memoizar las filas individuales
+ */
+const BatchRow = memo(({ batch, onEdit, onDelete, isLoading }) => {
+  const handleEdit = useCallback(() => onEdit(batch), [batch, onEdit]);
+  const handleDelete = useCallback(() => onDelete(batch.id), [batch.id, onDelete]);
+  
+  return (
+    <tr>
+      <td>{batch.batch}</td>
+      <td>{batch.stock}</td>
+      <td>
+        {batch.expirationDate ? (
+          new Date(batch.expirationDate).toLocaleDateString()
+        ) : (
+          <span style={{ color: "#bbb" }}>—</span>
+        )}
+      </td>
+      <td style={{ textAlign: "center" }}>
+        <button
+          type="button"
+          className="batch-action-btn batch-edit-btn"
+          title="Editar lote"
+          onClick={handleEdit}
+          disabled={isLoading}
+        >
+          <MdEdit />
+        </button>
+        <button
+          type="button"
+          className="batch-action-btn batch-delete-btn"
+          title="Eliminar lote"
+          onClick={handleDelete}
+          disabled={isLoading}
+        >
+          <MdDelete />
+        </button>
+      </td>
+    </tr>
+  );
+});
+BatchRow.displayName = 'BatchRow';
 
 function AddProductModal({ onClose, onAddProduct, onSaveProduct, product }) {
   // ============================================================================
@@ -417,10 +482,16 @@ function AddProductModal({ onClose, onAddProduct, onSaveProduct, product }) {
    * Abre el modal para agregar un nuevo lote
    */
   const openAddBatchModal = useCallback(() => {
+    // Solo permitir agregar lotes en modo edición
+    if (!isEditMode || !product?.id) {
+      alert("Error: Solo se pueden agregar lotes cuando se está editando un producto existente");
+      return;
+    }
+    
     setBatchEditData(null);
     setBatchModalMode("add");
     setBatchModalOpen(true);
-  }, []);
+  }, [isEditMode, product?.id]);
 
   /**
    * Abre el modal para editar un lote existente
@@ -445,109 +516,55 @@ function AddProductModal({ onClose, onAddProduct, onSaveProduct, product }) {
    */
   const handleSaveBatch = useCallback(async (batchData) => {
     try {
-      if (batchModalMode === "add") {
-        // Agregar nuevo lote
-        const response = await authenticatedFetch(`/api/products/${product.id}/batches`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(batchData),
-          signal: abortControllerRef.current.signal
-        });
-        
-        if (!response.ok) throw new Error('Failed to add batch');
-        
-        const newBatch = await response.json();
-        setBatches(prev => [...prev, newBatch]);
-        
-      } else if (batchModalMode === "edit" && batchEditData) {
-        // Editar lote existente
-        const response = await authenticatedFetch(`/api/products/batches/${batchEditData.id}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(batchData),
-          signal: abortControllerRef.current.signal
-        });
-        
-        if (!response.ok) throw new Error('Failed to update batch');
-        
-        setBatches(prev => prev.map(x => 
-          x.id === batchEditData.id ? { ...x, ...batchData } : x
-        ));
-      }
-      
-      setBatchModalOpen(false);
+        // Verificar que estemos en modo edición y que el producto tenga ID
+        if (!isEditMode || !product?.id) {
+            alert("Error: Solo se pueden gestionar lotes en modo edición de producto");
+            setBatchModalOpen(false);
+            return;
+        }
+
+        if (batchModalMode === "add") {
+            // Agregar nuevo lote
+            const response = await authenticatedFetch(`/api/products/${product.id}/batches`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(batchData),
+                signal: abortControllerRef.current.signal
+            });
+
+            if (!response.ok) throw new Error('Failed to add batch');
+
+            const newBatch = await response.json();
+            setBatches(prev => [...prev, newBatch]);
+
+        } else if (batchModalMode === "edit" && batchEditData) {
+            // Editar lote existente
+            const response = await authenticatedFetch(`/api/products/batches/${batchEditData.id}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(batchData),
+                signal: abortControllerRef.current.signal
+            });
+
+            if (!response.ok) {
+                const errorData = await response.text();
+                console.error("Error response:", errorData);
+                throw new Error(`Failed to update batch: ${response.status} ${response.statusText}`);
+            }
+
+            setBatches(prev => prev.map(x => 
+                x.id === batchEditData.id ? { ...x, ...batchData } : x
+            ));
+        }
+
+        setBatchModalOpen(false);
     } catch (error) {
-      if (error.name !== 'AbortError') {
-        console.error("Error saving batch:", error);
-        alert("Error al guardar el lote");
-      }
+        if (error.name !== 'AbortError') {
+            console.error("Error saving batch:", error);
+            alert("Error al guardar el lote: " + error.message);
+        }
     }
-  }, [batchModalMode, batchEditData, product?.id]);
-
-// ============================================================================
-// COMPONENTES MEMOIZADOS PARA OPTIMIZACIÓN
-// ============================================================================
-
-/**
- * Componente memoizado para renderizar las opciones de categorías
- * Evita re-renders innecesarios cuando las categorías no cambian
- */
-const CategoryOptions = memo(({ categories }) => {
-  if (!Array.isArray(categories) || categories.length === 0) {
-    return null;
-  }
-  
-  return categories.map((c) => (
-    <option key={c.id} value={c.id}>
-      {c.name}
-    </option>
-  ));
-});
-CategoryOptions.displayName = 'CategoryOptions';
-
-/**
- * Componente memoizado para renderizar una fila de lote en la tabla
- * Optimiza el rendimiento al memoizar las filas individuales
- */
-const BatchRow = memo(({ batch, onEdit, onDelete, isLoading }) => {
-  const handleEdit = useCallback(() => onEdit(batch), [batch, onEdit]);
-  const handleDelete = useCallback(() => onDelete(batch.id), [batch.id, onDelete]);
-  
-  return (
-    <tr>
-      <td>{batch.batch}</td>
-      <td>{batch.stock}</td>
-      <td>
-        {batch.expirationDate ? (
-          new Date(batch.expirationDate).toLocaleDateString()
-        ) : (
-          <span style={{ color: "#bbb" }}>—</span>
-        )}
-      </td>
-      <td style={{ textAlign: "center" }}>
-        <button
-          type="button"
-          className="batch-action-btn batch-edit-btn"
-          title="Editar lote"
-          onClick={handleEdit}
-          disabled={isLoading}
-        >
-          <MdEdit />
-        </button>
-        <button
-          type="button"
-          className="batch-action-btn batch-delete-btn"
-          title="Eliminar lote"
-          onClick={handleDelete}
-          disabled={isLoading}
-        >
-          <MdDelete />
-        </button>
-      </td>
-    </tr>
-  );
-});
-BatchRow.displayName = 'BatchRow';
+}, [batchModalMode, batchEditData, product?.id, isEditMode]);
 
   // ============================================================================
   // VALORES COMPUTADOS MEMOIZADOS
