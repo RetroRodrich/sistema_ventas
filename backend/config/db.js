@@ -13,7 +13,8 @@ const pool = mysql.createPool({
   database: DB_DATABASE,   // Nombre de la base de datos
   waitForConnections: true, // Espera si todas las conexiones están ocupadas
   connectionLimit: 5,      // Máximo de conexiones simultáneas en el pool (AJUSTA AQUÍ SEGÚN TU PROVEEDOR)
-  queueLimit: 0             // Número máximo de solicitudes en cola (0 = sin límite)
+  queueLimit: 0,             // Número máximo de solicitudes en cola (0 = sin límite)
+  ssl: { rejectUnauthorized: false }
 });
 
 // Prueba la conexión al pool al iniciar la aplicación.
