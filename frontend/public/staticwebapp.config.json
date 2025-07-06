@@ -1,6 +1,12 @@
 {
   "routes": [
     {
+      "route": "/assets/*",
+      "headers": {
+        "Cache-Control": "public, max-age=31536000"
+      }
+    },
+    {
       "route": "/api/*",
       "allowedRoles": ["anonymous"]
     },
@@ -11,10 +17,12 @@
   ],
   "navigationFallback": {
     "rewrite": "/index.html",
-    "exclude": ["/images/*.{png,jpg,gif}", "/css/*"]
+    "exclude": ["/images/*.{png,jpg,gif}", "/css/*", "/js/*", "/assets/*"]
   },
   "mimeTypes": {
-    ".json": "text/json"
+    ".json": "application/json",
+    ".js": "text/javascript",
+    ".css": "text/css"
   },
   "globalHeaders": {
     "X-Frame-Options": "DENY",
