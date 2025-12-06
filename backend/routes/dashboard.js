@@ -7,11 +7,6 @@ const {
   asyncHandler 
 } = require('../middleware');
 
-
-// Instalar node-fetch si no está instalado: npm install node-fetch
-const fetch = require('node-fetch');
-const { PYTHON_API_URL } = require('../config');
-
 // Endpoint temporal para debug
 router.get('/debug-test', asyncHandler(async (req, res) => {
   const query = `
@@ -125,41 +120,8 @@ router.get('/summary', readOnlyRateLimit, asyncHandler(async (req, res) => {
       const historicalData = historicalDataMap[mesKey];
       
       if (historicalData) {
-        try {
-          // Preparar datos para el servicio Python
-          const dataForPrediction = {
-            mes: mesNumero,
-            cantidad_productos: historicalData.cantidad_productos,
-            ticket_promedio: historicalData.ticket_promedio,
-            clientes_unicos: historicalData.clientes_unicos
-          };
-
-          console.log('Enviando datos al servicio Python:', dataForPrediction);
-
-          // Llamar al servicio Python
-          const response = await fetch(`${PYTHON_API_URL}/predict`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify([dataForPrediction])
-          });
-
-          if (!response.ok) {
-            throw new Error(`Error del servicio Python: ${response.status}`);
-          }
-
-          const predictions = await response.json();
-          console.log('Predicciones recibidas del servicio Python:', predictions);
-          
-          if (predictions && predictions.length > 0) {
-            prediccion = Math.round(predictions[0].prediccion);
-          }
-        } catch (error) {
-          console.error('Error al llamar al servicio Python:', error);
-          // Fallback con cálculo simple
-          prediccion = Math.round(historicalData.total * 1.05);
-        }
+        // Cálculo simple basado en datos históricos con incremento del 5%
+        prediccion = Math.round(historicalData.total * 1.05);
       } else {
         // Usar promedio histórico como fallback
         const promedioHistorico = Object.values(historicalDataMap)

@@ -49,16 +49,16 @@ const PIE_COLORS = [
  * 
  * CARACTERÍSTICAS PRINCIPALES:
  * - 📊 KPIs en tiempo real con WebSocket
- * - 🎯 Predicción de ventas con ML (Random Forest)
+ * - 🎯 Proyección de ventas basada en histórico
  * - 📈 Gráficos interactivos y responsivos
  * - 🔄 Cacheo inteligente con React Query
  * - 🎨 Interfaz moderna y mobile-first
  * 
  * DATOS MOSTRADOS:
  * - Ventas del día actual
- * - Análisis mensual con predicciones
+ * - Análisis mensual con proyecciones
  * - Top categorías más vendidas
- * - Comparación ventas reales vs predicción
+ * - Comparación ventas reales vs proyección
  */
 function Home() {
   // ============================================================================
@@ -82,11 +82,11 @@ function Home() {
   // ============================================================================
 
   /**
-   * 🔥 FETCH DE VENTAS MENSUALES CON PREDICCIONES INTEGRADAS
+   * 🔥 FETCH DE VENTAS MENSUALES CON PROYECCIONES INTEGRADAS
    * 
    * Esta query obtiene:
    * - Ventas reales por mes
-   * - Predicciones de ML ya calculadas en el backend
+   * - Proyecciones basadas en histórico calculadas en el backend
    * - Filtrado por fechas
    * - Cache inteligente (5 min stale, 30 min cache)
    */
@@ -507,12 +507,12 @@ function Home() {
           )}
         </div>
 
-        {/* 🔥 GRÁFICO DE BARRAS - VENTAS MENSUALES CON PREDICCIÓN ML */}
+        {/* 🔥 GRÁFICO DE BARRAS - VENTAS MENSUALES CON PROYECCIÓN */}
         <div className="home-card-grafico home-card-grafico-mes">
           <div className="home-bar-title-container">
             <h2 className="home-section-title home-bar-title">
               <FaChartBar className="home-title-icon" />
-              Ventas mensuales con predicción IA
+              Ventas mensuales con proyección
             </h2>
             
             {/* Leyenda del gráfico */}
@@ -523,12 +523,12 @@ function Home() {
               </div>
               <div className="home-bar-legend-item">
                 <span className="home-bar-legend-dot" style={{ background: 'linear-gradient(135deg, #f59e0b, #fb923c)', opacity: 0.7 }}></span>
-                <span className="home-bar-legend-text">Predicción ML</span>
+                <span className="home-bar-legend-text">Proyección</span>
               </div>
             </div>
           </div>
 
-          {/* 🔥 PANEL DE ESTADÍSTICAS DE PREDICCIÓN */}
+          {/* 🔥 PANEL DE ESTADÍSTICAS DE PROYECCIÓN */}
           {estadisticasActuales && estadisticasActuales.prediccion > 0 && (
             <div className="home-bar-stats">
               <div className="home-bar-stats-header">
@@ -540,7 +540,7 @@ function Home() {
                   <span className="home-bar-stat-value">S/. {estadisticasActuales.ventasReales.toLocaleString()}</span>
                 </div>
                 <div className="home-bar-stat-item">
-                  <span className="home-bar-stat-label">🎯 Predicción IA:</span>
+                  <span className="home-bar-stat-label">🎯 Proyección:</span>
                   <span className="home-bar-stat-value">S/. {estadisticasActuales.prediccion.toLocaleString()}</span>
                 </div>
                 <div className="home-bar-stat-item">
@@ -550,10 +550,10 @@ function Home() {
                   </span>
                 </div>
                 <div className="home-bar-stat-item">
-                  <span className="home-bar-stat-label">⚡ Precisión:</span>
+                  <span className="home-bar-stat-label">⚡ Estado:</span>
                   <span className={`home-bar-stat-status home-bar-stat-status-${estadisticasActuales.estado}`}>
                     {estadisticasActuales.estado === 'superado' ? '🎉 Meta superada' : 
-                     estadisticasActuales.estado === 'exacto' ? '✅ Predicción exacta' : 
+                     estadisticasActuales.estado === 'exacto' ? '✅ Proyección exacta' : 
                      `📊 ${estadisticasActuales.porcentajeCumplimiento}% de la meta`}
                   </span>
                 </div>

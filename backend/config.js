@@ -15,7 +15,6 @@ const DB_USER = process.env.DB_USER;
 const DB_PASSWORD = process.env.DB_PASSWORD;
 const PORT = process.env.PORT;
 const JWT_SECRET = process.env.JWT_SECRET;
-const PYTHON_API_URL = process.env.PYTHON_API_URL;
 
 module.exports = {
   FRONTEND_URL,
@@ -25,6 +24,5 @@ module.exports = {
   DB_USER,
   DB_PASSWORD,
   PORT,
-  JWT_SECRET,
-  PYTHON_API_URL
+  JWT_SECRET
 };
