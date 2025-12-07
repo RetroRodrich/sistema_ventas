@@ -1,20 +1,26 @@
 {
-  "name": "backend",
+  "name": "pet-world-backend",
   "version": "1.0.0",
+  "description": "Backend para sistema de ventas Pet World - Clínica Veterinaria",
   "main": "index.js",
   "scripts": {
-    "test": "jest",
-    "start": "node index.js"
+    "start": "node index.js",
+    "dev": "node index.js",
+    "test": "jest --coverage"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": ["veterinaria", "ventas", "inventario", "pet-world"],
+  "author": "Rodrigo Quiroz",
   "license": "ISC",
-  "description": "",
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "dependencies": {
     "bcryptjs": "^3.0.2",
     "body-parser": "^2.2.0",
+    "compression": "^1.8.1",
     "cors": "^2.8.5",
     "express": "^5.1.0",
+    "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.14.0",
     "node-fetch": "^2.7.0",

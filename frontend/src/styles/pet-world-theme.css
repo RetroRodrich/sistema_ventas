@@ -1,0 +1,134 @@
+/* ============================================
+   VARIABLES DE TEMA - PET WORLD
+   ============================================
+   Paleta de colores basada en el logo de Pet World
+   - Naranja: Color principal (#FF8C42, #FF9F5A)
+   - Verde Jade: Color secundario (#5C9A8B, #4A8277)
+   - Blanco: Fondo principal (#FFFFFF, #F8FAFC)
+   - Tonos complementarios para hover y estados
+============================================ */
+
+:root {
+  /* ========== COLORES PRINCIPALES ========== */
+  --pet-primary: #FF8C42;           /* Naranja principal del logo */
+  --pet-primary-light: #FFB088;     /* Naranja más claro */
+  --pet-primary-dark: #E87A30;      /* Naranja oscuro */
+  --pet-primary-gradient: linear-gradient(135deg, #FF8C42, #FF9F5A);
+  
+  --pet-secondary: #005842;         /* Verde oscuro elegante (reemplaza jade) */
+  --pet-secondary-light: #007856;   /* Verde oscuro claro */
+  --pet-secondary-dark: #003d2e;    /* Verde muy oscuro */
+  --pet-secondary-gradient: linear-gradient(135deg, #005842, #007856);
+  
+  /* ========== COLORES DE FONDO ========== */
+  --pet-bg-primary: #FFFFFF;        /* Blanco puro */
+  --pet-bg-secondary: #F7F9FC;      /* Gris muy claro azulado */
+  --pet-bg-tertiary: #EEF2F6;       /* Gris claro */
+  --pet-bg-sidebar: #FAFBFC;        /* Fondo sidebar blanco-gris */
+  
+  /* ========== COLORES DE TEXTO ========== */
+  --pet-text-primary: #1E293B;      /* Texto principal oscuro */
+  --pet-text-secondary: #475569;    /* Texto secundario */
+  --pet-text-muted: #94A3B8;        /* Texto apagado */
+  --pet-text-white: #FFFFFF;        /* Texto blanco */
+  
+  /* ========== COLORES DE ESTADO ========== */
+  --pet-success: #10B981;           /* Verde éxito */
+  --pet-warning: #F59E0B;           /* Amarillo advertencia */
+  --pet-error: #EF4444;             /* Rojo error */
+  --pet-info: #3B82F6;              /* Azul información */
+  
+  /* ========== COLORES DE HOVER ========== */
+  --pet-hover-primary: #FF9F5A;     /* Hover naranja */
+  --pet-hover-secondary: #007856;   /* Hover verde oscuro */
+  
+  /* ========== SOMBRAS ========== */
+  --pet-shadow-sm: 0 1px 2px 0 rgba(0, 88, 66, 0.05);
+  --pet-shadow-md: 0 4px 6px -1px rgba(0, 88, 66, 0.1), 0 2px 4px -1px rgba(0, 88, 66, 0.06);
+  --pet-shadow-lg: 0 10px 15px -3px rgba(0, 88, 66, 0.1), 0 4px 6px -2px rgba(0, 88, 66, 0.05);
+  --pet-shadow-xl: 0 20px 25px -5px rgba(0, 88, 66, 0.1), 0 10px 10px -5px rgba(0, 88, 66, 0.04);
+  
+  /* ========== BORDES ========== */
+  --pet-border-color: #E2E8F0;
+  --pet-border-radius: 12px;
+  --pet-border-radius-sm: 8px;
+  --pet-border-radius-lg: 16px;
+  
+  /* ========== ESPACIADO ========== */
+  --pet-spacing-xs: 4px;
+  --pet-spacing-sm: 8px;
+  --pet-spacing-md: 16px;
+  --pet-spacing-lg: 24px;
+  --pet-spacing-xl: 32px;
+  
+  /* ========== TIPOGRAFÍA ========== */
+  --pet-font-family: 'Nunito', 'Poppins', sans-serif;
+  --pet-font-size-xs: 12px;
+  --pet-font-size-sm: 14px;
+  --pet-font-size-md: 16px;
+  --pet-font-size-lg: 18px;
+  --pet-font-size-xl: 20px;
+  --pet-font-size-2xl: 24px;
+  --pet-font-size-3xl: 30px;
+  
+  /* ========== TRANSICIONES ========== */
+  --pet-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --pet-transition-fast: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ============================================
+   CLASES UTILITARIAS
+============================================ */
+
+.pet-gradient-primary {
+  background: var(--pet-primary-gradient);
+}
+
+.pet-gradient-secondary {
+  background: var(--pet-secondary-gradient);
+}
+
+.pet-text-primary {
+  color: var(--pet-primary);
+}
+
+.pet-text-secondary {
+  color: var(--pet-secondary);
+}
+
+.pet-bg-primary {
+  background-color: var(--pet-primary);
+}
+
+.pet-bg-secondary {
+  background-color: var(--pet-secondary);
+}
+
+.pet-border-primary {
+  border-color: var(--pet-primary);
+}
+
+.pet-border-secondary {
+  border-color: var(--pet-secondary);
+}
+
+/* ============================================
+   EFECTOS DE HOVER
+============================================ */
+
+.pet-hover-lift {
+  transition: var(--pet-transition);
+}
+
+.pet-hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--pet-shadow-lg);
+}
+
+.pet-hover-glow {
+  transition: var(--pet-transition);
+}
+
+.pet-hover-glow:hover {
+  box-shadow: 0 0 20px rgba(255, 140, 66, 0.3);
+}

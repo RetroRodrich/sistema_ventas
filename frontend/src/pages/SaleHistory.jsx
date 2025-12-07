@@ -466,131 +466,138 @@ function SaleHistory() {
 
       {/* Modal de detalles de venta */}
       {selectedSale && (
-        <div className="sh-modal">
-          <div className="sh-modal__content">
+        <div className="sh-modal" onClick={() => setSelectedSale(null)}>
+          <div className="sh-modal__content" onClick={(e) => e.stopPropagation()}>
+            {/* Header */}
             <div className="sh-modal__header">
-              <h3>Detalles del Pedido #{selectedSale.id}</h3>
+              <h3 className="sh-modal__title">
+                <HiOutlineShoppingBag className="sh-modal__title-icon" />
+                Pedido #{selectedSale.id}
+              </h3>
               <button
                 className="sh-modal__close"
                 onClick={() => setSelectedSale(null)}
                 title="Cerrar"
               >
-                <HiOutlineX size={22} />
+                <HiOutlineX size={20} />
               </button>
             </div>
+
+            {/* Body */}
             <div className="sh-modal__body">
-              {/* Información general de la venta */}
-              <div className="sh-modal__info">
-                <div className="sh-modal__info-item">
-                  <span>Cliente:</span>{" "}
-                  <span>{selectedSale.customer_name}</span>
+              {/* Info Cards Grid */}
+              <div className="sh-modal__info-grid">
+                <div className="sh-modal__info-card">
+                  <span className="sh-modal__info-label">Cliente</span>
+                  <span className="sh-modal__info-value">{selectedSale.customer_name}</span>
                 </div>
-                <div className="sh-modal__info-item">
-                  <span>Vendedor:</span>{" "}
-                  <span>{selectedSale.user_name}</span>
+                <div className="sh-modal__info-card">
+                  <span className="sh-modal__info-label">Vendedor</span>
+                  <span className="sh-modal__info-value">{selectedSale.user_name}</span>
                 </div>
-                <div className="sh-modal__info-item">
-                  <span>Fecha:</span>{" "}
-                  <span>
-                    {new Date(selectedSale.createdAt).toLocaleString()}
+                <div className="sh-modal__info-card">
+                  <span className="sh-modal__info-label">Fecha</span>
+                  <span className="sh-modal__info-value">
+                    {new Date(selectedSale.createdAt).toLocaleDateString('es-PE')}
                   </span>
                 </div>
-                <div className="sh-modal__info-item">
-                  <span>Estado:</span>
-                  <span style={{ marginLeft: 6 }}>
-                    <span
-                      className={`status-${selectedSale.status} sh-table-status`}
-                    >
-                      {selectedSale.status.charAt(0).toUpperCase() +
-                        selectedSale.status.slice(1)}
-                    </span>
+                <div className="sh-modal__info-card">
+                  <span className="sh-modal__info-label">Estado</span>
+                  <span className={`sh-modal__status sh-modal__status--${selectedSale.status}`}>
+                    {selectedSale.status.charAt(0).toUpperCase() + selectedSale.status.slice(1)}
                   </span>
                 </div>
               </div>
-              <div className="sh-modal__table-separator"></div>
-              {/* Tabla de productos de la venta (agrupados por producto) */}
-              <table className="sh-modal__table">
-                <thead>
-                  <tr>
-                    <th>Producto</th>
-                    <th>Cant.</th>
-                    <th>Precio</th>
-                    <th>Subt.</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {detailsLoading ? (
-                    <tr>
-                      <td colSpan={4} className="sh-modal__loading">
-                        Cargando...
-                      </td>
-                    </tr>
-                  ) : details.length === 0 ? (
-                    <tr>
-                      <td colSpan={4} className="sh-modal__empty">
-                        Sin productos
-                      </td>
-                    </tr>
-                  ) : (
-                    groupDetailsByProduct(details).map((d, i) => (
-                      <tr key={i}>
-                        <td>{d.product_name || d.productId}</td>
-                        <td>{d.quantity}</td>
-                        <td>S/ {Number(d.price).toFixed(2)}</td>
-                        <td>S/ {Number(d.subtotal).toFixed(2)}</td>
+
+              {/* Products Table */}
+              <div className="sh-modal__products">
+                <h4 className="sh-modal__products-title">Productos</h4>
+                <div className="sh-modal__table-container">
+                  <table className="sh-modal__table">
+                    <thead>
+                      <tr>
+                        <th>Producto</th>
+                        <th>Cant.</th>
+                        <th>Precio</th>
+                        <th>Subtotal</th>
                       </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-              <div className="sh-modal__table-separator-bottom"></div>
-              {/* Totales de la venta */}
-              <div className="sh-modal__igv-total">
-                <div className="sh-modal__sin-igv">
-                  <b>Total Gravado:</b> S/{" "}
-                  {Number(selectedSale.total - (selectedSale.igv || 0)).toFixed(2)}
-                </div>
-                <div className="sh-modal__igv">
-                  <b>IGV:</b> S/ {Number(selectedSale.igv || 0).toFixed(2)}
-                </div>
-                <div className="sh-modal__total">
-                  <b>Total:</b> S/ {Number(selectedSale.total).toFixed(2)}
+                    </thead>
+                    <tbody>
+                      {detailsLoading ? (
+                        <tr>
+                          <td colSpan={4} className="sh-modal__table-loading">
+                            Cargando productos...
+                          </td>
+                        </tr>
+                      ) : details.length === 0 ? (
+                        <tr>
+                          <td colSpan={4} className="sh-modal__table-empty">
+                            Sin productos registrados
+                          </td>
+                        </tr>
+                      ) : (
+                        groupDetailsByProduct(details).map((d, i) => (
+                          <tr key={i}>
+                            <td className="sh-modal__table-product">{d.product_name || d.productId}</td>
+                            <td className="sh-modal__table-qty">{d.quantity}</td>
+                            <td className="sh-modal__table-price">S/ {Number(d.price).toFixed(2)}</td>
+                            <td className="sh-modal__table-subtotal">S/ {Number(d.subtotal).toFixed(2)}</td>
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
                 </div>
               </div>
-              {/* Acciones del modal */}
-              <div className="sh-modal__actions">
-                {selectedSale.status === "pagada" && (
-                  <BoletaButton
-                    sale={selectedSale}
-                    details={groupDetailsByProduct(details)}
-                    icon={<HiOutlinePrinter />}
-                    className="btn-print"
-                    title="Imprimir boleta"
-                  />
-                )}
-                {selectedSale.status === "pendiente" && (
-                  <>
-                    <button
-                      className="sh-btn sh-btn--success"
-                      disabled={updating}
-                      onClick={() => updateStatus(selectedSale.id, "pagada")}
-                      title="Marcar como Pagada"
-                    >
-                      <HiOutlineCheckCircle />
-                      Pagar
-                    </button>
-                    <button
-                      className="sh-btn sh-btn--danger"
-                      disabled={updating}
-                      onClick={() => updateStatus(selectedSale.id, "anulada")}
-                      title="Anular"
-                    >
-                      <HiOutlineBan />
-                      Anular
-                    </button>
-                  </>
-                )}
+
+              {/* Totales */}
+              <div className="sh-modal__totals">
+                <div className="sh-modal__totals-row">
+                  <span>Gravado:</span>
+                  <span>S/ {Number(selectedSale.total - (selectedSale.igv || 0)).toFixed(2)}</span>
+                </div>
+                <div className="sh-modal__totals-row">
+                  <span>IGV (18%):</span>
+                  <span>S/ {Number(selectedSale.igv || 0).toFixed(2)}</span>
+                </div>
+                <div className="sh-modal__totals-row sh-modal__totals-row--final">
+                  <span>TOTAL:</span>
+                  <span>S/ {Number(selectedSale.total).toFixed(2)}</span>
+                </div>
               </div>
+            </div>
+
+            {/* Footer con acciones */}
+            <div className="sh-modal__footer">
+              {selectedSale.status === "pagada" && (
+                <BoletaButton
+                  sale={selectedSale}
+                  details={groupDetailsByProduct(details)}
+                  icon={<HiOutlinePrinter size={18} />}
+                  className="sh-modal__btn sh-modal__btn--print"
+                  title="Imprimir boleta"
+                />
+              )}
+              {selectedSale.status === "pendiente" && (
+                <>
+                  <button
+                    className="sh-modal__btn sh-modal__btn--success"
+                    disabled={updating}
+                    onClick={() => updateStatus(selectedSale.id, "pagada")}
+                  >
+                    <HiOutlineCheckCircle size={18} />
+                    Marcar Pagada
+                  </button>
+                  <button
+                    className="sh-modal__btn sh-modal__btn--danger"
+                    disabled={updating}
+                    onClick={() => updateStatus(selectedSale.id, "anulada")}
+                  >
+                    <HiOutlineBan size={18} />
+                    Anular
+                  </button>
+                </>
+              )}
             </div>
           </div>
         </div>

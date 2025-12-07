@@ -7,8 +7,8 @@ import {
   MdOutlineShoppingCart,
   MdOutlineBarChart,
 } from 'react-icons/md'
-import { FaUserCircle } from 'react-icons/fa'
-import { HiOutlineShoppingBag } from 'react-icons/hi'
+import { FiUser } from 'react-icons/fi'
+import petWorldLogo from '../assets/images/pet-world-logo.png'
 import '../styles/Sidebar.css'
 
 /**
@@ -99,44 +99,49 @@ const Sidebar = ({ isOpen, onClose }) => {
       />
 
       <aside className={`sidebar${isOpen ? ' open' : ''}`} aria-label="Menú lateral de navegación">
-        {/* Logo y título */}
-        <div className="sidebar-header sidebar-header-compact">
-          <HiOutlineShoppingBag className="sidebar-header-icon" size={28} />
-          <span className="sidebar-header-title">
-            More Sales...
-          </span>
+        {/* Logo de la empresa */}
+        <div className="sidebar-logo">
+          <img 
+            src={petWorldLogo} 
+            alt="Pet World Logo" 
+            className="sidebar-logo-img"
+          />
         </div>
 
         {/* Información del usuario */}
         <div className="sidebar-user">
-          <FaUserCircle className="sidebar-avatar" />
-          <div className="sidebar-user-info">
-            <div className="sidebar-username">{username}</div>
-            <div className="sidebar-role">{userRole}</div>
-            <div className="sidebar-status">Online</div>
+          <div className="sidebar-avatar">
+            <FiUser />
           </div>
+          <div className="sidebar-user-info">
+            <span className="sidebar-username">{username}</span>
+            <span className="sidebar-role">{userRole}</span>
+          </div>
+          <span className="sidebar-status-dot"></span>
         </div>
 
-        {/* Enlaces de navegación */}
-        <ul className="sidebar-menu">
-          {menuItems.map(item => (
-            <li key={item.to}>
-              <Link
-                to={item.to}
-                className={location.pathname === item.path ? 'active link' : 'link'}
-                onClick={handleLinkClick}
-                tabIndex={0}
-                aria-current={location.pathname === item.path ? 'page' : undefined}
-              >
-                {item.icon} {item.label}
-              </Link>
-            </li>
-          ))}
-        </ul>
+        {/* Navegación */}
+        <nav className="sidebar-nav">
+          <ul className="sidebar-menu">
+            {menuItems.map(item => (
+              <li key={item.to}>
+                <Link
+                  to={item.to}
+                  className={`sidebar-link ${location.pathname === item.path ? 'active' : ''}`}
+                  onClick={handleLinkClick}
+                  aria-current={location.pathname === item.path ? 'page' : undefined}
+                >
+                  <span className="sidebar-link-icon">{item.icon}</span>
+                  <span className="sidebar-link-text">{item.label}</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
 
         {/* Footer */}
         <div className="sidebar-footer">
-          © 2025 MiniSales
+          <span>© 2025 Pet World</span>
         </div>
       </aside>
     </>

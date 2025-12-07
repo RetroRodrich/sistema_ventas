@@ -2,42 +2,32 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { API_BASE_URL } from '../Conexion';
 import '../styles/Register.css';
-import { HiOutlineShoppingCart } from 'react-icons/hi';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
+import { HiOutlineUser, HiOutlineMail, HiOutlineLockClosed, HiOutlineUserGroup } from 'react-icons/hi';
 
 /**
  * Register - Página de registro de nuevos usuarios.
- * Permite crear una cuenta con nombre, correo, contraseña y rol.
- *
- * Props:
- * - onRegister: función opcional que se ejecuta tras el registro exitoso.
  */
 function Register({ onRegister }) {
-  // Estado del formulario
   const [form, setForm] = useState({
     name: '',
     email: '',
     password: '',
     role: 'employee'
   });
-  // Estado para mostrar errores
   const [error, setError] = useState('');
-  // Hook de navegación
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  /**
-   * Actualiza el estado del formulario al escribir en los campos.
-   */
   const handleChange = e => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  /**
-   * Envía el formulario al backend para registrar el usuario.
-   * Si es exitoso, guarda el token y usuario en localStorage y redirige al home.
-   */
   const handleSubmit = async e => {
     e.preventDefault();
     setError('');
+    setLoading(true);
     try {
       const res = await fetch(`${API_BASE_URL}/api/auth/register`, {
         method: 'POST',
@@ -55,57 +45,134 @@ function Register({ onRegister }) {
       }
     } catch {
       setError('Error de conexión');
+    } finally {
+      setLoading(false);
     }
   };
 
-  // Renderizado del formulario de registro
   return (
-    <div className="register-bg">
+    <div className="register-page">
+      {/* Decoración de fondo */}
+      <div className="register-decoration">
+        <div className="register-decoration__circle register-decoration__circle--1"></div>
+        <div className="register-decoration__circle register-decoration__circle--2"></div>
+        <div className="register-decoration__paw register-decoration__paw--1">🐾</div>
+        <div className="register-decoration__paw register-decoration__paw--2">🐾</div>
+      </div>
+
       <div className="register-card">
-        <div className="register-icon">
-          <HiOutlineShoppingCart />
+        {/* Header */}
+        <div className="register-header">
+          <div className="register-logo">
+            <span className="register-logo__icon">🐱</span>
+          </div>
+          <h1 className="register-title">Crear Cuenta</h1>
+          <p className="register-subtitle">Únete a Pet World</p>
         </div>
-        <h2>Crear Cuenta</h2>
+
+        {/* Formulario */}
         <form className="register-form" onSubmit={handleSubmit}>
-          {error && <div className="register-error">{error}</div>}
-          <input
-            type="text"
-            name="name"
-            placeholder="Nombre completo"
-            value={form.name}
-            onChange={handleChange}
-            required
-          />
-          <input
-            type="email"
-            name="email"
-            placeholder="Correo electrónico"
-            value={form.email}
-            onChange={handleChange}
-            required
-          />
-          <input
-            type="password"
-            name="password"
-            placeholder="Contraseña"
-            value={form.password}
-            onChange={handleChange}
-            required
-          />
-          <select
-            name="role"
-            value={form.role}
-            onChange={handleChange}
-            required
-          >
-            <option value="employee">Empleado</option>
-            <option value="admin">Administrador</option>
-          </select>
-          <button type="submit" className="register-btn">Registrarme</button>
+          {error && (
+            <div className="register-error">
+              <span>⚠️</span> {error}
+            </div>
+          )}
+
+          <div className="register-input-group">
+            <label className="register-label">Nombre completo</label>
+            <div className="register-input-wrapper">
+              <HiOutlineUser className="register-input-icon" />
+              <input
+                type="text"
+                name="name"
+                className="register-input"
+                placeholder="Tu nombre"
+                value={form.name}
+                onChange={handleChange}
+                required
+              />
+            </div>
+          </div>
+
+          <div className="register-input-group">
+            <label className="register-label">Correo electrónico</label>
+            <div className="register-input-wrapper">
+              <HiOutlineMail className="register-input-icon" />
+              <input
+                type="email"
+                name="email"
+                className="register-input"
+                placeholder="ejemplo@petworld.com"
+                value={form.email}
+                onChange={handleChange}
+                required
+              />
+            </div>
+          </div>
+
+          <div className="register-input-group">
+            <label className="register-label">Contraseña</label>
+            <div className="register-input-wrapper">
+              <HiOutlineLockClosed className="register-input-icon" />
+              <input
+                type={showPassword ? 'text' : 'password'}
+                name="password"
+                className="register-input"
+                placeholder="••••••••"
+                value={form.password}
+                onChange={handleChange}
+                required
+              />
+              <button
+                type="button"
+                className="register-toggle-password"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
+              </button>
+            </div>
+          </div>
+
+          <div className="register-input-group">
+            <label className="register-label">Rol</label>
+            <div className="register-input-wrapper">
+              <HiOutlineUserGroup className="register-input-icon" />
+              <select
+                name="role"
+                className="register-input register-select"
+                value={form.role}
+                onChange={handleChange}
+                required
+              >
+                <option value="employee">Empleado</option>
+                <option value="admin">Administrador</option>
+              </select>
+            </div>
+          </div>
+
+          <button type="submit" className="register-btn" disabled={loading}>
+            {loading ? (
+              <span>Registrando...</span>
+            ) : (
+              <>
+                <span>Crear cuenta</span>
+                <span className="register-btn__icon">→</span>
+              </>
+            )}
+          </button>
         </form>
-        <p className="register-link">
-          ¿Ya tienes cuenta? <Link to="/login">Inicia sesión</Link>
-        </p>
+
+        {/* Footer */}
+        <div className="register-footer">
+          <p>¿Ya tienes cuenta? <Link to="/login">Inicia sesión</Link></p>
+        </div>
+
+        {/* Mascotas decorativas */}
+        <div className="register-pets">
+          <span className="register-pets__item">🐕</span>
+          <span className="register-pets__item">🐹</span>
+          <span className="register-pets__item">🐦</span>
+        </div>
       </div>
     </div>
   );

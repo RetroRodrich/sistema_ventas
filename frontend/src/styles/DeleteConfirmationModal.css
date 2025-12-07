@@ -1,124 +1,139 @@
+/* ============================================
+   DELETE CONFIRMATION MODAL - Pet World
+   Diseño moderno y minimalista
+   ============================================ */
+
 .modal-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.6);
+  inset: 0;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(4px);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000;
+  z-index: 9999;
 }
 
 .modal-content {
-  background-color: white;
+  background: #FFFFFF;
   padding: 2rem;
-  border-radius: 8px;
+  border-radius: 16px;
   text-align: center;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  max-width: 400px;
+  width: 90%;
 }
 
 .modal-buttons {
   display: flex;
-  justify-content: space-around;
-  margin-top: 1rem;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
 }
 
 .confirm-button {
-  background-color: #e74c3c;
-  color: white;
+  background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+  color: #FFFFFF;
   border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 5px;
+  padding: 0.75rem 1.5rem;
+  border-radius: 10px;
   cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: all 0.25s ease;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
 }
 
 .confirm-button:hover {
-  background-color: #c0392b;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
 }
 
 .cancel-button {
-  background-color: #ccc;
-  color: black;
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 5px;
+  background: #FFFFFF;
+  color: #64748B;
+  border: 1px solid #E2E8F0;
+  padding: 0.75rem 1.5rem;
+  border-radius: 10px;
   cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: all 0.25s ease;
 }
 
 .cancel-button:hover {
-  background-color: #bbb;
+  background: #F8FAFC;
+  border-color: #CBD5E1;
+  color: #1E293B;
 }
 
 /* Fondo oscuro semitransparente */
 .delete-modal-overlay {
   position: fixed;
-  top: 0; left: 0;
-  width: 100vw; height: 100vh;
-  background: rgba(34, 48, 71, 0.45);
+  inset: 0;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(4px);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1200;
-  backdrop-filter: blur(2px);
+  z-index: 9999;
+  animation: fadeIn 0.2s ease-out;
 }
 
 /* Contenedor del modal */
 .delete-modal-content {
-  background: #fff;
+  background: #FFFFFF;
   border-radius: 16px;
-  width: 370px;
-  max-width: 92vw;
-  box-shadow: 0 8px 32px rgba(34,48,71,0.18);
+  width: 380px;
+  max-width: 90vw;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
   text-align: center;
-  padding: 2.2rem 1.5rem 1.5rem 1.5rem;
-  animation: fadeIn 0.3s cubic-bezier(.4,0,.2,1);
-  position: relative;
+  padding: 2rem 1.5rem 1.5rem;
+  animation: modalSlide 0.25s ease-out;
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-24px);}
-  to   { opacity: 1; transform: translateY(0);}
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
-/* Título del modal */
+@keyframes modalSlide {
+  from { 
+    opacity: 0; 
+    transform: translateY(-20px) scale(0.95);
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Icono del modal */
 .delete-modal-icon {
-  background: #fbeaea;
-  color: #e74c3c;
+  background: rgba(239, 68, 68, 0.1);
+  color: #DC2626;
   border-radius: 50%;
-  width: 54px;
-  height: 54px;
+  width: 60px;
+  height: 60px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 2rem;
-  margin: 0 auto 1rem auto;
-  box-shadow: 0 2px 8px #e74c3c22;
+  font-size: 1.75rem;
+  margin: 0 auto 1.25rem auto;
 }
 
 .delete-modal-title {
-  font-size: 1.35rem;
-  color: #223047;
+  font-size: 1.25rem;
+  color: #1E293B;
   font-weight: 700;
-  margin-bottom: 0.7rem;
+  margin-bottom: 0.5rem;
   margin-top: 0;
-  letter-spacing: 0.01em;
+  letter-spacing: -0.01em;
   line-height: 1.3;
 }
 
 .delete-modal-title strong {
-  color: #e74c3c;
-}
-
-.delete-modal-title::after {
-  content: '';
-  display: block;
-  width: 60px;
-  height: 3px;
-  background: linear-gradient(90deg, #e74c3c 60%, #223047 100%);
-  margin: 0.7rem auto 0;
-  border-radius: 2px;
+  color: #DC2626;
 }
 
 /* Botones del modal */
@@ -126,32 +141,49 @@
   display: flex;
   gap: 1rem;
   justify-content: center;
-  margin-top: 2rem;
+  margin-top: 1.5rem;
 }
 
 .delete-confirm-button,
 .delete-cancel-button {
-  flex: 1 1 0;
-  min-width: 0;
-  padding: 0.7rem 0;
-  font-size: 1rem;
-  border-radius: 8px;
+  flex: 1;
+  padding: 0.75rem 1rem;
+  font-size: 0.9rem;
+  border-radius: 10px;
   font-weight: 600;
   cursor: pointer;
   border: none;
-  box-sizing: border-box;
-  transition: background 0.18s, color 0.18s, border 0.18s, transform 0.15s;
+  transition: all 0.25s ease;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
+  font-family: inherit;
 }
 
 .delete-confirm-button {
-  background: #e74c3c;
-  color: #fff;
-  border: 1.5px solid #e74c3c;
+  background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+  color: #FFFFFF;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
 }
+
+.delete-confirm-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+}
+
+.delete-cancel-button {
+  background: #FFFFFF;
+  color: #64748B;
+  border: 1px solid #E2E8F0;
+}
+
+.delete-cancel-button:hover {
+  background: #F8FAFC;
+  border-color: #CBD5E1;
+  color: #1E293B;
+}
+
 .delete-confirm-button:hover {
   background: #c0392b;
   border-color: #c0392b;

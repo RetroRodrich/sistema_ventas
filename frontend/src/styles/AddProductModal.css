@@ -1,30 +1,29 @@
-/* Overlay - GPU Acceleration */
+/* ============================================
+   ADD PRODUCT MODAL - Pet World Design System
+   Diseño moderno, minimalista y profesional
+   ============================================ */
+
+/* Overlay - Fondo oscuro suave */
 .add-modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(31, 42, 55, 0.65);
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 9999;
-  animation: fadeIn 0.15s ease-out;
-  transform: translateZ(0);
-  padding: 0;
+  animation: fadeIn 0.2s ease-out;
+  padding: 1rem;
   overflow-y: auto;
-  overflow-x: hidden;
 }
 
-/* Asegurar que el modal esté centrado en móviles y cambiar a columna única */
 @media (max-width: 768px) {
   .add-modal-overlay {
     align-items: flex-start;
-    padding: 1rem 0;
-    overflow-x: hidden; /* Prevenir scroll horizontal */
-    width: 100vw;
-    max-width: 100vw;
+    padding: 1rem;
   }
   
-  /* Forzar columna única para todas las resoluciones móviles */
   .add-modal-body.add-modal-body-cols {
     flex-direction: column !important;
   }
@@ -40,63 +39,42 @@
   to { opacity: 1; }
 }
 
-/* --- Modal principal --- Optimizado para pantallas medianas (13-14 pulgadas) */
+/* --- Modal principal --- */
 .add-modal-content {
-  border-radius: 20px;
-  width: 98vw;
-  max-width: 1100px;
-  height: 90vh; /* Aprovecha mejor el espacio vertical */
-  max-height: 650px; /* Ajustado para pantallas medianas */
-  min-height: 480px; /* Mínimo optimizado */
+  background: #FFFFFF;
+  border-radius: 16px;
+  width: 95vw;
+  max-width: 900px;
+  max-height: 90vh;
+  min-height: 400px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  animation: modalSlideIn 0.08s ease-out;
-  position: relative;
-  will-change: transform, opacity;
-  transform: translateZ(0);
-  contain: layout style paint;
+  animation: modalSlideIn 0.25s ease-out;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
   margin: auto;
 }
 
 @keyframes modalSlideIn {
   from { 
     opacity: 0; 
-    transform: translateZ(0) translateY(-3px) scale(0.995); 
+    transform: translateY(-20px) scale(0.95); 
   }
   to { 
     opacity: 1; 
-    transform: translateZ(0) translateY(0) scale(1); 
+    transform: translateY(0) scale(1); 
   }
 }
 
-/* Cabecera ultra compacta */
+/* Cabecera del modal */
 .add-modal-header {
-  background: linear-gradient(135deg, #1f2a37 0%, #0d4c52 50%, #0cb1a0 100%);
-  color: #ffffff;
-  padding: 0.6rem 1.2rem; /* Más compacto */
+  background: linear-gradient(135deg, #005842 0%, #007856 100%);
+  color: #FFFFFF;
+  padding: 1rem 1.5rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  position: relative;
-  border-bottom: 1px solid rgba(12, 177, 160, 0.2);
-  flex-shrink: 0; /* No se encoge */
-}
-
-.add-modal-header::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, 
-    transparent 0%, 
-    rgba(12, 177, 160, 0.6) 20%, 
-    rgba(12, 177, 160, 0.8) 50%, 
-    rgba(12, 177, 160, 0.6) 80%, 
-    transparent 100%
-  );
+  flex-shrink: 0;
 }
 
 .add-modal-header h2 {
@@ -106,47 +84,39 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
 .add-modal-header h2 svg {
-  font-size: 1.2rem;
-  filter: drop-shadow(0 0 8px rgba(12, 177, 160, 0.4));
+  font-size: 1.25rem;
 }
 
 .modal-close-btn {
-  background: rgba(47, 202, 189, 0.15);
-  border: 1px solid rgba(47, 202, 189, 0.4);
-  color: #e9e9e9;
-  font-size: 1.2rem;
-  cursor: pointer;
-  padding: 0.5rem;
-  border-radius: 50%;
-  transition: all 0.3s ease;
+  width: 36px;
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  color: #FFFFFF;
+  font-size: 1.15rem;
+  cursor: pointer;
+  transition: all 0.25s ease;
 }
 
 .modal-close-btn:hover { 
-  background: rgba(47, 202, 189, 0.25);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 16px rgba(47, 202, 189, 0.3);
+  background: rgba(255, 255, 255, 0.2);
+  transform: rotate(90deg);
 }
 
-.modal-close-btn:active {
-  transform: translateZ(0) scale(0.95) rotate(90deg);
-  transition: all 0.1s ease;
-}
-
-/* --- Cuerpo principal --- Ultra compacto para pantallas medianas */
+/* --- Cuerpo principal --- */
 .add-modal-body.add-modal-body-cols {
   display: flex;
   flex-direction: row;
-  gap: 0.8rem; /* Gap aún más pequeño */
-  background: transparent;
-  padding: 0.8rem; /* Padding ultra compacto */
+  gap: 1.5rem;
+  background: #FFFFFF;
+  padding: 1.5rem;
   overflow-y: auto;
   overflow-x: hidden;
   flex: 1; /* Toma todo el espacio disponible */

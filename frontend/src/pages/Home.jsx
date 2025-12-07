@@ -7,15 +7,20 @@ import {
   CartesianGrid, LabelList, PieChart, Pie, Cell, Tooltip
 } from 'recharts';
 import { 
-  FaDollarSign, 
-  FaCalendarAlt, 
-  FaCalendarDay,
-  FaChartLine, 
-  FaTrophy,
-  FaChartPie,
-  FaChartBar,
-  FaFilter
-} from 'react-icons/fa';
+  FiShoppingCart,
+  FiDollarSign, 
+  FiCalendar, 
+  FiTrendingUp, 
+  FiAward,
+  FiPieChart,
+  FiBarChart2,
+  FiFilter,
+  FiInfo,
+  FiAlertTriangle,
+  FiCheckCircle,
+  FiTarget,
+  FiActivity
+} from 'react-icons/fi';
 import { API_BASE_URL } from '../Conexion';
 import '../styles/Home.css';
 
@@ -24,20 +29,20 @@ import '../styles/Home.css';
 // ============================================================================
 
 /**
- * Paleta de colores para gráficos de barras - Tonos azules y verdes
+ * Paleta de colores para gráficos de barras - Tonos Pet World
  */
 const COLORS = [
-  '#2fcabd', '#0ea5e9', '#3b82f6', '#009688', '#0284c7',
-  '#26a69a', '#1d4ed8', '#f59e0b', '#4db6ac', '#0369a1',
-  '#80cbc4', '#d97706', '#0891b2', '#06b6d4', '#8b5cf6'
+  '#FF8C42', '#005842', '#FFA366', '#00704D', '#FF7A29',
+  '#008F5C', '#FFB088', '#00A575', '#FF6610', '#00C890',
+  '#FFD4B8', '#005030', '#FF9F5E', '#007A50', '#FFBB92'
 ];
 
 /**
- * Paleta de colores para gráfico de torta - Más vibrante y variada
+ * Paleta de colores para gráfico de torta - Colores Pet World profesionales
  */
 const PIE_COLORS = [
-  '#2fcabd', '#0ea5e9', '#3b82f6', '#8b5cf6', '#ec4899',
-  '#f59e0b', '#10b981', '#6366f1', '#ef4444', '#06b6d4'
+  '#FF8C42', '#005842', '#FFA366', '#00704D', '#FF7A29',
+  '#008F5C', '#FFB088', '#00A575', '#FF6610', '#00C890'
 ];
 
 // ============================================================================
@@ -70,7 +75,7 @@ function Home() {
    */
   const [fechaInicio, setFechaInicio] = useState('');
   const [fechaFin, setFechaFin] = useState('');
-  const [chartSize, setChartSize] = useState({ width: 240, height: 240, radius: 110 });
+  const [chartSize, setChartSize] = useState({ width: 200, height: 200, radius: 80 });
 
   /**
    * Cliente de React Query para invalidar cache
@@ -338,13 +343,13 @@ function Home() {
       timeout = setTimeout(() => {
         const width = window.innerWidth;
         if (width >= 1600) {
-          setChartSize({ width: 300, height: 300, radius: 130 });
+          setChartSize({ width: 220, height: 220, radius: 90 });
         } else if (width <= 480) {
-          setChartSize({ width: 180, height: 180, radius: 75 });
+          setChartSize({ width: 160, height: 160, radius: 65 });
         } else if (width <= 768) {
-          setChartSize({ width: 200, height: 200, radius: 85 });
+          setChartSize({ width: 180, height: 180, radius: 75 });
         } else {
-          setChartSize({ width: 240, height: 240, radius: 110 });
+          setChartSize({ width: 200, height: 200, radius: 80 });
         }
       }, 100);
     };
@@ -364,33 +369,29 @@ function Home() {
 
   return (
     <div className="home-bg">
-      {/* ============================================================================
-          SECCIÓN DE FILTROS DE FECHA
-          ============================================================================ */}
+      {/* FILTROS DE FECHA */}
       <div className="home-filtros">
         <div className="home-filtros-icon">
-          <FaFilter />
+          <FiFilter />
         </div>
-        <label className="home-label">
-          Desde:&nbsp;
+        <label>
+          Desde:
           <input
             type="date"
             value={fechaInicio}
             onChange={e => setFechaInicio(e.target.value)}
-            className="home-input"
           />
         </label>
-        <label className="home-label">
-          Hasta:&nbsp;
+        <label>
+          Hasta:
           <input
             type="date"
             value={fechaFin}
             onChange={e => setFechaFin(e.target.value)}
-            className="home-input"
           />
         </label>
         <button
-          className="home-btn"
+          className="home-btn-limpiar"
           onClick={() => { setFechaInicio(''); setFechaFin(''); }}
         >
           Limpiar filtros
@@ -401,69 +402,83 @@ function Home() {
           SECCIÓN DE KPIS PRINCIPALES
           ============================================================================ */}
       <div className="home-kpis">
-        {/* 🔥 KPI PRINCIPAL: VENTAS DEL DÍA */}
-        <div className="home-card kpi-hoy">
-          <div className="home-kpi-icon">
-            <FaCalendarDay />
+        {/* KPI: VENTAS DEL DÍA */}
+        <div className="home-kpi-card">
+          <div className="home-kpi-header">
+            <div className="home-kpi-title">Ventas de Hoy</div>
+            <div className="home-kpi-icon ventas">
+              <FiShoppingCart />
+            </div>
           </div>
-          <div className="home-kpi-title">Ventas de Hoy</div>
           <div className="home-kpi-value">
             {loadingVentasHoy ? '...' : `S/. ${ventasHoy.total?.toFixed(2) || '0.00'}`}
           </div>
+          <div className="home-kpi-subtitle">{ventasHoy.cantidad || 0} transacciones</div>
         </div>
 
-        {/* KPIs secundarios con métricas calculadas */}
-        <div className="home-card kpi-total kpi-secondary">
-          <div className="home-kpi-icon">
-            <FaDollarSign />
+        {/* KPI: MONTO TOTAL */}
+        <div className="home-kpi-card">
+          <div className="home-kpi-header">
+            <div className="home-kpi-title">Monto Total</div>
+            <div className="home-kpi-icon monto">
+              <FiDollarSign />
+            </div>
           </div>
-          <div className="home-kpi-title">Monto total vendido</div>
           <div className="home-kpi-value">S/. {totalVentas.toLocaleString()}</div>
         </div>
         
-        <div className="home-card kpi-meses kpi-secondary">
-          <div className="home-kpi-icon">
-            <FaCalendarAlt />
+        {/* KPI: MESES ANALIZADOS */}
+        <div className="home-kpi-card">
+          <div className="home-kpi-header">
+            <div className="home-kpi-title">Meses Analizados</div>
+            <div className="home-kpi-icon meses">
+              <FiCalendar />
+            </div>
           </div>
-          <div className="home-kpi-title">Meses analizados</div>
           <div className="home-kpi-value">{cantidadMeses}</div>
         </div>
         
-        <div className="home-card kpi-promedio kpi-secondary">
-          <div className="home-kpi-icon">
-            <FaChartLine />
+        {/* KPI: PROMEDIO MENSUAL */}
+        <div className="home-kpi-card">
+          <div className="home-kpi-header">
+            <div className="home-kpi-title">Promedio Mensual</div>
+            <div className="home-kpi-icon promedio">
+              <FiTrendingUp />
+            </div>
           </div>
-          <div className="home-kpi-title">Promedio mensual</div>
           <div className="home-kpi-value">S/. {promedioVentasMes}</div>
         </div>
         
-        <div className="home-card kpi-mesmax kpi-secondary">
-          <div className="home-kpi-icon">
-            <FaTrophy />
+        {/* KPI: MEJOR MES */}
+        <div className="home-kpi-card">
+          <div className="home-kpi-header">
+            <div className="home-kpi-title">Mejor Mes</div>
+            <div className="home-kpi-icon mejor-mes">
+              <FiAward />
+            </div>
           </div>
-          <div className="home-kpi-title">Mejor mes</div>
           <div className="home-kpi-value">{mesMasVentas}</div>
         </div>
       </div>
 
       {/* ============================================================================
-          SECCIÓN DE GRÁFICOS INTERACTIVOS
+          SECCIÓN DE GRÁFICOS
           ============================================================================ */}
       <div className="home-graficos">
         
-        {/* 🔥 GRÁFICO DE TORTA - TOP CATEGORÍAS */}
+        {/* GRÁFICO DE TORTA - CATEGORÍAS */}
         <div className="home-card-grafico home-card-grafico-torta">
           <h2 className="home-section-title">
-            <FaChartPie className="home-title-icon" />
+            <FiPieChart className="home-title-icon" />
             Categorías más vendidas
           </h2>
           
           {/* Estados de carga */}
           {loadingCategorias && (
-            <div className="home-list-empty">📊 Cargando datos de categorías...</div>
+            <div className="home-list-empty"><FiInfo /> Cargando categorías...</div>
           )}
           {errorCategorias && (
-            <div className="home-list-empty">❌ Error al cargar categorías</div>
+            <div className="home-list-empty"><FiAlertTriangle /> Error al cargar</div>
           )}
           
           {/* Gráfico de torta con leyenda */}
@@ -507,70 +522,69 @@ function Home() {
           )}
         </div>
 
-        {/* 🔥 GRÁFICO DE BARRAS - VENTAS MENSUALES CON PROYECCIÓN */}
+        {/* GRÁFICO DE BARRAS - VENTAS MENSUALES */}
         <div className="home-card-grafico home-card-grafico-mes">
           <div className="home-bar-title-container">
             <h2 className="home-section-title home-bar-title">
-              <FaChartBar className="home-title-icon" />
-              Ventas mensuales con proyección
+              <FiBarChart2 className="home-title-icon" />
+              Ventas mensuales
             </h2>
             
             {/* Leyenda del gráfico */}
             <div className="home-bar-legend">
               <div className="home-bar-legend-item">
-                <span className="home-bar-legend-dot" style={{ background: 'linear-gradient(135deg, #3b82f6, #2fcabd)' }}></span>
+                <span className="home-bar-legend-dot" style={{ background: '#FF8C42' }}></span>
                 <span className="home-bar-legend-text">Ventas Reales</span>
               </div>
               <div className="home-bar-legend-item">
-                <span className="home-bar-legend-dot" style={{ background: 'linear-gradient(135deg, #f59e0b, #fb923c)', opacity: 0.7 }}></span>
+                <span className="home-bar-legend-dot" style={{ background: '#005842' }}></span>
                 <span className="home-bar-legend-text">Proyección</span>
               </div>
             </div>
           </div>
 
-          {/* 🔥 PANEL DE ESTADÍSTICAS DE PROYECCIÓN */}
           {estadisticasActuales && estadisticasActuales.prediccion > 0 && (
             <div className="home-bar-stats">
               <div className="home-bar-stats-header">
-                <strong>📊 Análisis del mes: {estadisticasActuales.mes}</strong>
+                <FiActivity /> <strong>Análisis: {estadisticasActuales.mes}</strong>
               </div>
               <div className="home-bar-stats-grid">
                 <div className="home-bar-stat-item">
-                  <span className="home-bar-stat-label">💰 Ventas Reales:</span>
+                  <span className="home-bar-stat-label"><FiDollarSign /> Ventas:</span>
                   <span className="home-bar-stat-value">S/. {estadisticasActuales.ventasReales.toLocaleString()}</span>
                 </div>
                 <div className="home-bar-stat-item">
-                  <span className="home-bar-stat-label">🎯 Proyección:</span>
+                  <span className="home-bar-stat-label"><FiTarget /> Proyección:</span>
                   <span className="home-bar-stat-value">S/. {estadisticasActuales.prediccion.toLocaleString()}</span>
                 </div>
                 <div className="home-bar-stat-item">
-                  <span className="home-bar-stat-label">📈 Diferencia:</span>
-                  <span className="home-bar-stat-value" style={{ color: estadisticasActuales.diferencia >= 0 ? '#10b981' : '#ef4444' }}>
+                  <span className="home-bar-stat-label"><FiTrendingUp /> Diferencia:</span>
+                  <span className="home-bar-stat-value" style={{ color: estadisticasActuales.diferencia >= 0 ? '#059669' : '#DC2626' }}>
                     {estadisticasActuales.diferencia >= 0 ? '+' : ''}S/. {estadisticasActuales.diferencia.toLocaleString()}
                   </span>
                 </div>
                 <div className="home-bar-stat-item">
-                  <span className="home-bar-stat-label">⚡ Estado:</span>
+                  <span className="home-bar-stat-label"><FiCheckCircle /> Estado:</span>
                   <span className={`home-bar-stat-status home-bar-stat-status-${estadisticasActuales.estado}`}>
-                    {estadisticasActuales.estado === 'superado' ? '🎉 Meta superada' : 
-                     estadisticasActuales.estado === 'exacto' ? '✅ Proyección exacta' : 
-                     `📊 ${estadisticasActuales.porcentajeCumplimiento}% de la meta`}
+                    {estadisticasActuales.estado === 'superado' ? 'Meta superada' : 
+                     estadisticasActuales.estado === 'exacto' ? 'Proyección exacta' : 
+                     `${estadisticasActuales.porcentajeCumplimiento}% de la meta`}
                   </span>
                 </div>
               </div>
             </div>
           )}
 
-          {/* 🔥 GRÁFICO DE BARRAS RESPONSIVO */}
-          <div className="home-grafico-container">
+          {/* GRÁFICO DE BARRAS */}
+          <div className="home-grafico-barras-container">
             {loadingVentas && (
-              <div className="home-list-empty">📊 Cargando datos de ventas...</div>
+              <div className="home-list-empty"><FiInfo /> Cargando ventas...</div>
             )}
             {errorVentas && (
-              <div className="home-list-empty">❌ Error al cargar ventas</div>
+              <div className="home-list-empty"><FiAlertTriangle /> Error al cargar</div>
             )}
             {!loadingVentas && !errorVentas && (
-              <ResponsiveContainer width="100%" height="100%">
+              <ResponsiveContainer width="100%" height={250}>
                 <BarChart 
                   data={ventasPorMes} 
                   barSize={(() => {

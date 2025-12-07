@@ -13,7 +13,7 @@
  * - onOpenSidebar: función para abrir/cerrar el sidebar lateral
  */
 import React, { useState, useRef, useEffect } from 'react'
-import { MdMenu, MdLogout, MdNotifications } from 'react-icons/md'
+import { MdMenu, MdLogout, MdNotifications, MdPets } from 'react-icons/md'
 import '../styles/Navbar.css'
 import { API_BASE_URL } from "../Conexion"
 import socket from './socket'
@@ -76,7 +76,7 @@ const Navbar = ({ onLogout, onOpenSidebar }) => {
 
   return (
     <nav className="navbar">
-      {/* Sección izquierda: Menú hamburguesa y logo */}
+      {/* Sección izquierda: Menú hamburguesa y branding */}
       <div className="navbar-left">
         <button 
           className="navbar-hamburger" 
@@ -85,7 +85,10 @@ const Navbar = ({ onLogout, onOpenSidebar }) => {
         >
           <MdMenu size={24} />
         </button>
-        <span className="navbar-sucursal">MiniSales</span>
+        <div className="navbar-brand">
+          <MdPets className="navbar-brand-icon" />
+          <span className="navbar-brand-text">Pet World</span>
+        </div>
       </div>
 
       {/* Sección derecha: Notificaciones y botón de salir */}

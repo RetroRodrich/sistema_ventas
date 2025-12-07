@@ -1,19 +1,33 @@
-/* =========================
-   Navbar Principal - Fondo Blanco
-   ========================= */
+/* ===========================================
+   NAVBAR PRINCIPAL - Pet World
+   Diseño moderno, profesional con neumorfismo
+   =========================================== */
+
+:root {
+  --navbar-bg: #FFFFFF;
+  --navbar-shadow: 0 2px 16px rgba(0, 88, 66, 0.06);
+  --navbar-border: #E5E7EB;
+  --navbar-text: #1E293B;
+  --navbar-accent: #FF8C42;
+  --navbar-accent-hover: #E87A30;
+  --navbar-secondary: #005842;
+}
+
 .navbar {
-  background: #fff;
-  color: #263544;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  height: 65px;
+  background: var(--navbar-bg);
+  color: var(--navbar-text);
+  box-shadow: var(--navbar-shadow);
+  height: 68px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 1.5rem;
+  padding: 0 2rem;
   position: sticky;
   top: 0;
   z-index: 1100;
-  border-bottom: 1px solid #e6e6e6;
+  border-bottom: 1px solid var(--navbar-border);
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.98);
 }
 
 /* =========================
@@ -22,31 +36,73 @@
 .navbar-left {
   display: flex;
   align-items: center;
-  gap: 1.2rem;
+  gap: 1.25rem;
 }
 
-/* Botón hamburguesa con efectos elegantes */
+/* Botón hamburguesa - Neumorfismo sutil */
 .navbar-hamburger {
-  background: none;
-  border: none;
-  color: #168b80;
+  background: #FFFFFF;
+  border: 1px solid var(--navbar-border);
+  color: var(--navbar-secondary);
   cursor: pointer;
   display: block;
-  padding: 0.6rem;
+  padding: 0.65rem;
   border-radius: 12px;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-.navbar-hamburger:hover {
-  background: rgba(22, 139, 128, 0.1);
-  transform: translateY(-2px);
+  box-shadow: 
+    3px 3px 6px rgba(0, 88, 66, 0.06),
+    -3px -3px 6px rgba(255, 255, 255, 0.8);
 }
 
-/* Logo/nombre de la sucursal con estilo premium */
+.navbar-hamburger:hover {
+  background: #FAFBFC;
+  color: var(--navbar-accent);
+  transform: translateY(-1px);
+  box-shadow: 
+    4px 4px 8px rgba(0, 88, 66, 0.08),
+    -4px -4px 8px rgba(255, 255, 255, 1);
+}
+
+.navbar-hamburger:active {
+  transform: translateY(0);
+  box-shadow: 
+    inset 2px 2px 4px rgba(0, 88, 66, 0.08),
+    inset -2px -2px 4px rgba(255, 255, 255, 0.5);
+}
+
+.navbar-hamburger svg {
+  display: block;
+}
+
+/* Logo/nombre de la sucursal */
 .navbar-sucursal {
-  font-size: 1.4rem;
+  font-size: 1.35rem;
   font-weight: 700;
   white-space: nowrap;
-  color: #168b80;
+  background: linear-gradient(135deg, var(--navbar-accent), #E87A30);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -0.02em;
+}
+
+/* Branding - Pet World con huellita */
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.navbar-brand-icon {
+  font-size: 1.5rem;
+  color: var(--navbar-accent);
+}
+
+.navbar-brand-text {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--navbar-secondary);
+  letter-spacing: -0.01em;
 }
 
 /* =========================
@@ -58,282 +114,331 @@
   gap: 1rem;
 }
 
-/* Información del usuario con diseño glass-morphism */
+/* Información del usuario */
 .navbar-user {
   display: flex;
   align-items: center;
   gap: 0.5rem;
   font-weight: 500;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   white-space: nowrap;
   padding: 0.5rem 1rem;
-  border-radius: 20px;
-  background: #f4f7fa;
-  border: 1px solid #e6e6e6;
+  border-radius: 12px;
+  background: #FAFBFC;
+  border: 1px solid var(--navbar-border);
   transition: all 0.3s ease;
 }
+
 .navbar-user:hover {
-  background: #e6fcfa;
-}
-.navbar-user-icon {
-  color: #168b80;
-  font-size: 1.1rem;
-}
-.navbar-user-text {
-  font-size: 0.95rem;
-  color: #263544;
+  background: rgba(255, 140, 66, 0.08);
+  border-color: rgba(255, 140, 66, 0.3);
 }
 
-/* Botón de cierre de sesión con diseño moderno */
-.navbar-logout {
-  background: #168b80;
-  color: #fff;
-  border: none;
-  padding: 0.5rem 1.2rem;
-  border-radius: 20px;
-  cursor: pointer;
+.navbar-user-icon {
+  color: var(--navbar-accent);
+  font-size: 1.1rem;
+}
+
+.navbar-user-text {
   font-size: 0.9rem;
+  color: var(--navbar-text);
+  font-weight: 500;
+}
+
+/* Botón de logout - Neumorfismo profesional */
+.navbar-logout {
+  background: #FFFFFF;
+  color: var(--navbar-secondary);
+  border: 1px solid var(--navbar-border);
+  padding: 0.65rem 1.25rem;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 0.875rem;
   font-weight: 600;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  box-shadow: 
+    4px 4px 8px rgba(0, 88, 66, 0.06),
+    -4px -4px 8px rgba(255, 255, 255, 0.9);
 }
+
 .navbar-logout:hover {
-  background: #1e9a8a;
+  color: #003D2E;
+  background: #FAFBFC;
+  box-shadow: 
+    5px 5px 10px rgba(0, 88, 66, 0.1),
+    -5px -5px 10px rgba(255, 255, 255, 1);
+  transform: translateY(-1px);
 }
+
+.navbar-logout:active {
+  box-shadow: 
+    inset 3px 3px 6px rgba(0, 88, 66, 0.08),
+    inset -3px -3px 6px rgba(255, 255, 255, 0.5);
+  transform: translateY(0);
+}
+
 .navbar-logout-icon {
   font-size: 1.1rem;
 }
 
 /* =========================
-   Notificaciones de Stock Bajo
+   Notificaciones de Stock Bajo - Neumorfismo
    ========================= */
-
-/* Botón de notificaciones con estilo elegante */
 .navbar-notifications {
-  border-radius: 50%;
+  border-radius: 12px;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  padding: 0.6rem; /* Aumentar el tamaño del padding */
+  padding: 0.65rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #168b80; /* Color verde fuerte para contraste */
-  color: #fff;
-  border: 2px solid #fff; /* Borde blanco para mayor visibilidad */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombra para resaltar */
-}
-.navbar-notifications:hover {
-  background: #1e9a8a;
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); /* Sombra más pronunciada al hover */
-}
-.navbar-notifications.active {
-  background: #1e9a8a;
-}
-.navbar-notifications svg {
-  color: #263544; /* Color oscuro para mejor contraste */
-  font-size: 1rem; /* Incrementar tamaño del ícono */
-}
-.navbar-notifications:hover svg,
-.navbar-notifications.active svg {
-  color: #fff; /* Mantener blanco al hover o activo */
+  background: #FFFFFF;
+  color: var(--navbar-accent);
+  border: 1px solid var(--navbar-border);
+  box-shadow: 
+    4px 4px 8px rgba(0, 88, 66, 0.06),
+    -4px -4px 8px rgba(255, 255, 255, 0.9);
+  cursor: pointer;
+  position: relative;
 }
 
-/* Burbuja de notificaciones con diseño elegante y tamaño reducido */
+.navbar-notifications:hover {
+  color: var(--navbar-accent-hover);
+  background: #FAFBFC;
+  box-shadow: 
+    5px 5px 10px rgba(0, 88, 66, 0.1),
+    -5px -5px 10px rgba(255, 255, 255, 1);
+  transform: translateY(-1px);
+}
+.navbar-notifications:active,
+.navbar-notifications.active {
+  box-shadow: 
+    inset 3px 3px 6px rgba(0, 88, 66, 0.08),
+    inset -3px -3px 6px rgba(255, 255, 255, 0.5);
+  transform: translateY(0);
+}
+
+.navbar-notifications svg {
+  color: var(--navbar-accent);
+  font-size: 1.15rem;
+  transition: all 0.3s ease;
+  display: block;
+}
+
+.navbar-notifications:hover svg {
+  color: var(--navbar-accent-hover);
+  transform: scale(1.08);
+}
+
+.navbar-notifications.active svg {
+  color: var(--navbar-secondary);
+}
+
+/* Burbuja de notificaciones - Diseño moderno */
 .navbar-notifications-bubble.elegant.left {
   position: absolute;
-  top: 0;
-  right: calc(100% + 10px);
-  min-width: 220px; /* Reducir el ancho mínimo */
-  background: #263544;
-  color: #e6fcfa;
-  border-radius: 12px; /* Bordes redondeados para diseño elegante */
-  padding: 0.8rem; /* Reducir el padding */
+  top: calc(100% + 12px);
+  right: 0;
+  min-width: 280px;
+  background: #FFFFFF;
+  color: var(--navbar-text);
+  border-radius: 16px;
+  padding: 0;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
   animation: notifBubbleIn 0.25s cubic-bezier(0.4, 1.3, 0.6, 1);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2); /* Sombra más suave */
+  border: 1px solid var(--navbar-border);
+  box-shadow: 
+    0 10px 40px rgba(0, 88, 66, 0.12),
+    0 4px 12px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
 }
 
-/* Lista de notificaciones con diseño compacto */
+.navbar-notifications-bubble.elegant.left::before {
+  content: '';
+  position: absolute;
+  top: -6px;
+  right: 20px;
+  width: 12px;
+  height: 12px;
+  background: #FFFFFF;
+  border: 1px solid var(--navbar-border);
+  border-right: none;
+  border-bottom: none;
+  transform: rotate(45deg);
+}
+
+/* Header de notificaciones */
+.navbar-notifications-header {
+  padding: 1rem 1.25rem;
+  background: linear-gradient(135deg, #FAFBFC 0%, #FFFFFF 100%);
+  border-bottom: 1px solid var(--navbar-border);
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--navbar-text);
+}
+
+/* Lista de notificaciones */
 .navbar-notifications-list {
   list-style: none;
   margin: 0;
-  padding: 0;
+  padding: 0.5rem;
   width: 100%;
+  max-height: 300px;
+  overflow-y: auto;
 }
+
 .navbar-notifications-list li {
-  font-size: 0.8rem; /* Reducir tamaño de fuente */
-  color: #e8f4f3;
+  font-size: 0.85rem;
+  color: var(--navbar-text);
   font-weight: 400;
-  padding: 0.5rem; /* Reducir padding de cada elemento */
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0.75rem 1rem;
   display: flex;
   align-items: center;
-  gap: 0.5rem; /* Reducir espacio entre ícono y texto */
-  letter-spacing: 0.02em;
-  line-height: 1.4; /* Ajustar altura de línea */
-  transition: background 0.2s ease;
+  gap: 0.75rem;
+  letter-spacing: 0.01em;
+  line-height: 1.4;
+  transition: all 0.2s ease;
+  border-radius: 10px;
+  margin: 0.25rem 0;
 }
+
 .navbar-notifications-list li:hover {
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 8px;
+  background: rgba(255, 140, 66, 0.08);
 }
+
 .navbar-notifications-list li:last-child {
   border-bottom: none;
 }
 
-/* Badge de notificaciones con diseño premium */
+/* Badge de notificaciones */
 .navbar-notifications-badge {
   position: absolute;
-  top: -2px;
-  right: -2px;
+  top: -5px;
+  right: -5px;
   min-width: 20px;
   height: 20px;
-  background: linear-gradient(135deg, #ff4757, #ff3742);
+  background: linear-gradient(135deg, #EF4444, #DC2626);
   color: #fff;
-  font-size: 0.65rem;
-  font-weight: 600;
+  font-size: 0.7rem;
+  font-weight: 700;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 8px rgba(255, 71, 87, 0.4);
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
   pointer-events: none;
   z-index: 2;
   line-height: 1;
   padding: 0;
-  border: 2px solid rgba(255, 255, 255, 0.3);
+  border: 2px solid #FFFFFF;
+  animation: badgePulse 2s ease-in-out infinite;
+}
+
+@keyframes badgePulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
 }
 
 /* =========================
-   Responsive Design - Adaptación Móvil y Desktop
+   Responsive Design
    ========================= */
 
 /* Desktop: ocultar hamburguesa y ajustar padding para sidebar */
 @media (min-width: 1024px) {
   .navbar {
-    padding-left: 250px; /* Ajuste para sidebar más ancho */
+    padding-left: calc(260px + 2rem); /* Sidebar width + padding */
   }
   .navbar-hamburger {
     display: none;
   }
 }
 
-/* Tablet: ajustes intermedios */
+/* Tablet */
 @media (max-width: 1023px) and (min-width: 601px) {
   .navbar {
-    padding: 0 1.2rem;
+    padding: 0 1.5rem;
+    height: 64px;
   }
   .navbar-left {
     gap: 1rem;
   }
   .navbar-right {
-    gap: 0.8rem;
+    gap: 0.75rem;
   }
 }
 
-/* Móvil: optimización para pantallas pequeñas */
+/* Móvil */
 @media (max-width: 600px) {
   .navbar {
     height: 60px;
     padding: 0 1rem;
   }
   .navbar-left {
-    gap: 0.8rem;
+    gap: 0.75rem;
   }
   .navbar-sucursal {
-    font-size: 1.2rem;
+    font-size: 1.15rem;
   }
   .navbar-right {
     gap: 0.5rem;
   }
   .navbar-user-text,
   .navbar-logout-text {
-    display: none; /* Ocultar texto en móvil */
+    display: none;
   }
   .navbar-user,
   .navbar-logout {
-    padding: 0.4rem 0.6rem;
+    padding: 0.5rem 0.65rem;
     min-width: auto;
   }
-  .navbar-user-icon,
-  .navbar-logout-icon {
-    font-size: 1.2rem;
+  .navbar-hamburger {
+    padding: 0.5rem;
   }
-  /* Ajustar burbuja de notificaciones en móvil */
   .navbar-notifications-bubble.elegant.left {
-    right: calc(100% + 5px);
-    min-width: 240px;
-    padding: 0.8rem 1rem;
+    right: -10px;
+    min-width: 260px;
   }
 }
 
 /* =========================
-   Animaciones Suaves y Modernas
+   Animaciones
    ========================= */
 @keyframes notifBubbleIn {
   from {
     opacity: 0;
-    transform: translateX(20px) scale(0.98);
+    transform: translateY(-10px) scale(0.95);
   }
   to {
     opacity: 1;
-    transform: translateX(0) scale(1);
+    transform: translateY(0) scale(1);
   }
 }
 
-/* Animación de hover para elementos interactivos */
-@keyframes pulse {
-  0% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.05);
-  }
-  100% {
-    transform: scale(1);
-  }
+/* Focus styles for accessibility */
+.navbar-hamburger:focus-visible,
+.navbar-logout:focus-visible,
+.navbar-notifications:focus-visible {
+  outline: 2px solid var(--navbar-accent);
+  outline-offset: 2px;
 }
 
-/* Efecto de glassmorphism para elementos hover */
-.navbar-hamburger:active,
-.navbar-logout:active,
-.navbar-notifications:active {
-  transform: translateY(1px);
+/* Custom scrollbar for notifications */
+.navbar-notifications-list::-webkit-scrollbar {
+  width: 4px;
 }
 
-/* Estilos para el botón de notificaciones */
-.navbar-notifications {
-  background: none;
-  border: none;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  position: relative;
+.navbar-notifications-list::-webkit-scrollbar-track {
+  background: transparent;
 }
 
-/* Estilos para el badge de notificaciones */
-.navbar-notifications-badge {
-  position: absolute;
-  top: -2px;
-  right: -2px;
-  min-width: 20px;
-  height: 20px;
-  background: linear-gradient(135deg, #ff4757, #ff3742);
-  color: #fff;
-  font-size: 0.65rem;
-  font-weight: 600;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 2px 8px rgba(255, 71, 87, 0.4);
-  pointer-events: none;
-  z-index: 2;
-  line-height: 1;
-  padding: 0;
-  border: 2px solid rgba(255, 255, 255, 0.3);
+.navbar-notifications-list::-webkit-scrollbar-thumb {
+  background: var(--navbar-border);
+  border-radius: 4px;
+}
+
+.navbar-notifications-list::-webkit-scrollbar-thumb:hover {
+  background: #94A3B8;
 }
