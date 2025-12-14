@@ -23,8 +23,8 @@ app.use(express.static(path.join(__dirname, 'dist'), {
   maxAge: '1h'
 }));
 
-// SPA fallback - todas las rutas van a index.html
-app.get('*', (req, res) => {
+// SPA fallback - todas las rutas van a index.html (Express 5 syntax)
+app.get('/{*splat}', (req, res) => {
   res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 
