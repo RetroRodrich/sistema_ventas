@@ -33,32 +33,35 @@ router.get('/summary', readOnlyRateLimit, asyncHandler(async (req, res) => {
 
   let where = "WHERE status = 'pagada'";
   const params = [];
-  const now = new Date();
-  const currentYear = now.getFullYear();
+  
+  // Calcular año actual en zona horaria de Perú (UTC-5)
+  const nowPeru = new Date(Date.now() - 5 * 60 * 60 * 1000);
+  const currentYear = nowPeru.getUTCFullYear();
 
   if (!start && !end) {
-    where += " AND YEAR(createdAt) = ?";
+    // Usar zona horaria de Perú para el año
+    where += " AND YEAR(CONVERT_TZ(createdAt, '+00:00', '-05:00')) = ?";
     params.push(currentYear);
   }
   if (start) {
-    where += " AND DATE(createdAt) >= ?";
+    where += " AND DATE(CONVERT_TZ(createdAt, '+00:00', '-05:00')) >= ?";
     params.push(start);
   }
   if (end) {
-    where += " AND DATE(createdAt) <= ?";
+    where += " AND DATE(CONVERT_TZ(createdAt, '+00:00', '-05:00')) <= ?";
     params.push(end);
   }
 
-  // Consulta principal
+  // Consulta principal (usar zona horaria Perú para agrupar)
   const query = `
-    SELECT DATE_FORMAT(createdAt, '%m-%Y') AS periodo,
+    SELECT DATE_FORMAT(CONVERT_TZ(createdAt, '+00:00', '-05:00'), '%m-%Y') AS periodo,
            SUM(total) AS total,
            COUNT(id) AS cantidad_productos,
            ROUND(AVG(total), 2) AS ticket_promedio,
            COUNT(DISTINCT customer_dni) AS clientes_unicos
     FROM sales s
     ${where}
-    GROUP BY DATE_FORMAT(createdAt, '%m-%Y')
+    GROUP BY DATE_FORMAT(CONVERT_TZ(createdAt, '+00:00', '-05:00'), '%m-%Y')
   `;
 
   const results = await new Promise((resolve, reject) => {
@@ -165,15 +168,16 @@ router.get('/top-categorias', readOnlyRateLimit, asyncHandler(async (req, res) =
   let where = "WHERE s.status = 'pagada'";
   const params = [];
 
+  // Usar zona horaria de Perú (UTC-5)
   if (!start && !end) {
-    where += " AND DATE(s.createdAt) = CURDATE()";
+    where += " AND DATE(CONVERT_TZ(s.createdAt, '+00:00', '-05:00')) = DATE(CONVERT_TZ(NOW(), '+00:00', '-05:00'))";
   } else {
     if (start) {
-      where += " AND DATE(s.createdAt) >= ?";
+      where += " AND DATE(CONVERT_TZ(s.createdAt, '+00:00', '-05:00')) >= ?";
       params.push(start);
     }
     if (end) {
-      where += " AND DATE(s.createdAt) <= ?";
+      where += " AND DATE(CONVERT_TZ(s.createdAt, '+00:00', '-05:00')) <= ?";
       params.push(end);
     }
   }

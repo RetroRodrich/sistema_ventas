@@ -109,12 +109,13 @@ const getAllSales = async (req, res) => {
   `;
   const params = [];
 
+  // Usar zona horaria de Perú (UTC-5) para todas las consultas de fecha
   if (filter === "hoy") {
-    query += " WHERE DATE(s.createdAt) = CURDATE()";
+    query += " WHERE DATE(CONVERT_TZ(s.createdAt, '+00:00', '-05:00')) = DATE(CONVERT_TZ(NOW(), '+00:00', '-05:00'))";
   } else if (filter === "mes") {
-    query += " WHERE YEAR(s.createdAt) = YEAR(CURDATE()) AND MONTH(s.createdAt) = MONTH(CURDATE())";
+    query += " WHERE YEAR(CONVERT_TZ(s.createdAt, '+00:00', '-05:00')) = YEAR(CONVERT_TZ(NOW(), '+00:00', '-05:00')) AND MONTH(CONVERT_TZ(s.createdAt, '+00:00', '-05:00')) = MONTH(CONVERT_TZ(NOW(), '+00:00', '-05:00'))";
   } else if (filter === "anio") {
-    query += " WHERE YEAR(s.createdAt) = YEAR(CURDATE())";
+    query += " WHERE YEAR(CONVERT_TZ(s.createdAt, '+00:00', '-05:00')) = YEAR(CONVERT_TZ(NOW(), '+00:00', '-05:00'))";
   } else if (filter === "personalizado" && from && to) {
     query += " WHERE DATE(s.createdAt) BETWEEN ? AND ?";
     params.push(from, to);
