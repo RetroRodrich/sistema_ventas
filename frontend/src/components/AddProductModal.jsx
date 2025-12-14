@@ -421,6 +421,7 @@ function AddProductModal({ onClose, onAddProduct, onSaveProduct, product }) {
         cost: parseNumber(formData.cost),
         minStock: parseNumber(formData.minStock),
         stock: parseNumber(formData.stock),
+        categoryId: parseNumber(formData.categoryId),
       };
 
       // Validar datos procesados
@@ -624,6 +625,11 @@ function AddProductModal({ onClose, onAddProduct, onSaveProduct, product }) {
           <button className="modal-close-btn" onClick={onClose} aria-label="Cerrar modal">
             <MdClose />
           </button>
+        </div>
+        
+        {/* Nota de campos obligatorios */}
+        <div className="required-fields-note">
+          <span className="required-asterisk">*</span> Campos obligatorios: Nombre, Precio, Categoría, Lote y Stock
         </div>
 
         {/* ============================================================================ */}

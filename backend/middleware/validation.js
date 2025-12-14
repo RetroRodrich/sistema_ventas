@@ -50,14 +50,30 @@ const validateProductData = (req, res, next) => {
     });
   }
 
-  if (!price || !isValidNumber(price, 0.01, 999999)) {
+  // Precio: debe existir y ser mayor a 0
+  if (price === undefined || price === null || price === '') {
+    return res.status(400).json({ 
+      error: 'Precio es requerido',
+      field: 'price' 
+    });
+  }
+  
+  if (!isValidNumber(price, 0.01, 999999)) {
     return res.status(400).json({ 
       error: 'Precio debe ser un número válido mayor a 0',
       field: 'price' 
     });
   }
 
-  if (!categoryId || !isValidNumber(categoryId, 1, 999999)) {
+  // Categoría: debe existir y ser un ID válido
+  if (categoryId === undefined || categoryId === null || categoryId === '') {
+    return res.status(400).json({ 
+      error: 'Categoría es requerida',
+      field: 'categoryId' 
+    });
+  }
+  
+  if (!isValidNumber(categoryId, 1, 999999)) {
     return res.status(400).json({ 
       error: 'Categoría debe ser un ID válido',
       field: 'categoryId' 

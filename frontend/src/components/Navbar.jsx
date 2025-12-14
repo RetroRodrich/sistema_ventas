@@ -13,7 +13,7 @@
  * - onOpenSidebar: función para abrir/cerrar el sidebar lateral
  */
 import React, { useState, useRef, useEffect } from 'react'
-import { MdMenu, MdLogout, MdNotifications, MdPets } from 'react-icons/md'
+import { MdMenu, MdLogout, MdNotifications, MdPets, MdInventory, MdCheckCircle, MdWarning } from 'react-icons/md'
 import '../styles/Navbar.css'
 import { API_BASE_URL } from "../Conexion"
 import socket from './socket'
@@ -96,7 +96,7 @@ const Navbar = ({ onLogout, onOpenSidebar }) => {
         {/* Panel de notificaciones */}
         <div ref={notifRef} style={{ position: "relative" }}>
           <button
-            className={`navbar-notifications${showNotifications ? " active" : ""}`}
+            className={`navbar-notifications${showNotifications ? " active" : ""}${lowStockProducts.length > 0 ? " has-alerts" : ""}`}
             title="Notificaciones de stock bajo"
             onClick={handleNotificationsClick}
             aria-label={`Notificaciones ${lowStockProducts.length > 0 ? `(${lowStockProducts.length})` : ''}`}
@@ -110,13 +110,39 @@ const Navbar = ({ onLogout, onOpenSidebar }) => {
           {/* Burbuja de notificaciones con posicionamiento preservado */}
           {showNotifications && (
             <div className="navbar-notifications-bubble elegant left">
+              {/* Header de la burbuja */}
+              <div className="navbar-notifications-header">
+                <MdNotifications className="header-icon" />
+                <span>Alertas de Stock</span>
+                {lowStockProducts.length > 0 && (
+                  <span className="header-count">{lowStockProducts.length}</span>
+                )}
+              </div>
+              
+              {/* Lista de notificaciones */}
               <ul className="navbar-notifications-list">
                 {lowStockProducts.length === 0 ? (
-                  <li>✅ Sin alertas de stock bajo</li>
+                  <li className="notification-item notification-success">
+                    <div className="notification-icon-wrapper success">
+                      <MdCheckCircle className="notification-icon" />
+                    </div>
+                    <div className="notification-content">
+                      <span className="notification-title">Todo en orden</span>
+                      <span className="notification-subtitle">No hay alertas de stock bajo</span>
+                    </div>
+                  </li>
                 ) : (
                   lowStockProducts.map(prod => (
-                    <li key={prod.id}>
-                      📦 {prod.name} | Stock: {prod.stock}, Mínimo: {prod.minStock}
+                    <li key={prod.id} className="notification-item notification-warning">
+                      <div className="notification-icon-wrapper warning">
+                        <MdWarning className="notification-icon" />
+                      </div>
+                      <div className="notification-content">
+                        <span className="notification-title">{prod.name}</span>
+                        <span className="notification-subtitle">
+                          Stock: <strong>{prod.stock}</strong> / Mínimo: <strong>{prod.minStock}</strong>
+                        </span>
+                      </div>
                     </li>
                   ))
                 )}
