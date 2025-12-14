@@ -1,20 +1,26 @@
 {
-  "name": "frontend",
+  "name": "pet-world-frontend",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "start": "serve -s dist",
+    "start": "node server.js",
+    "serve": "node server.js",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
     "heroku-postbuild": "npm run build",
     "test": "jest"
   },
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "dependencies": {
     "@tanstack/react-query": "^5.81.5",
     "axios": "^1.10.0",
+    "compression": "^1.8.1",
+    "express": "^5.1.0",
     "file-saver": "^2.0.5",
     "jspdf": "^3.0.1",
     "react": "^19.0.0",
@@ -22,7 +28,6 @@
     "react-icons": "^5.5.0",
     "react-router-dom": "^7.5.1",
     "recharts": "^2.15.3",
-    "serve": "^14.2.4",
     "socket.io-client": "^4.8.1",
     "xlsx": "^0.18.5"
   },
