@@ -55,6 +55,18 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(timeoutHandler(30000));
 
 // ============================================
+// HEALTH CHECK (disponible en todos los entornos)
+// ============================================
+app.get('/health', (req, res) => {
+  res.json({ 
+    status: 'ok', 
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+    environment: process.env.NODE_ENV || 'development'
+  });
+});
+
+// ============================================
 // RUTAS DE DESARROLLO (solo en dev)
 // ============================================
 if (process.env.NODE_ENV !== 'production') {
@@ -62,15 +74,6 @@ if (process.env.NODE_ENV !== 'production') {
   app.post('/api/dev/clear-rate-limits', (req, res) => {
     clearAllRateLimits();
     res.json({ message: 'Rate limits cleared successfully' });
-  });
-  
-  // Health check
-  app.get('/api/health', (req, res) => {
-    res.json({ 
-      status: 'ok', 
-      timestamp: new Date().toISOString(),
-      uptime: process.uptime()
-    });
   });
 }
 

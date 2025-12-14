@@ -53,27 +53,96 @@ npm run dev
 - Frontend: http://localhost:5173
 - Backend API: http://localhost:5000
 
-## 🐳 Instalación con Docker
+## 🐳 Despliegue en Producción
+
+### Railway (Recomendado para BD + Backend)
+
+#### 1. Base de Datos MySQL
+1. Ir a [Railway](https://railway.app) → New Project → Database → MySQL
+2. Copiar las variables de conexión que Railway proporciona:
+   - `MYSQL_HOST`, `MYSQL_PORT`, `MYSQL_DATABASE`, `MYSQL_USER`, `MYSQL_PASSWORD`
+
+#### 2. Backend en Railway
+1. New Project → Deploy from GitHub repo
+2. Seleccionar el repositorio y la carpeta `/backend`
+3. Configurar variables de entorno:
+   ```
+   NODE_ENV=production
+   PORT=5000
+   DB_HOST=<MYSQL_HOST de Railway>
+   DB_PORT=<MYSQL_PORT de Railway>
+   DB_DATABASE=<MYSQL_DATABASE de Railway>
+   DB_USER=<MYSQL_USER de Railway>
+   DB_PASSWORD=<MYSQL_PASSWORD de Railway>
+   JWT_SECRET=<generar uno seguro de 64+ caracteres>
+   FRONTEND_URL=https://tu-frontend.vercel.app
+   ```
+4. Railway detectará el `Procfile` automáticamente
+
+### Heroku (Alternativa para Backend)
 
 ```bash
-# Clonar y entrar al directorio
-git clone https://github.com/RetroRodrich/sistema_ventas.git
-cd sistema_ventas
+# Instalar Heroku CLI
+# Login
+heroku login
 
-# Copiar y configurar variables de entorno
-cp .env.example .env
-# Editar .env con valores seguros
+# Crear app
+cd backend
+heroku create petworld-backend
 
-# Iniciar con Docker Compose
-docker-compose up -d
+# Configurar variables
+heroku config:set NODE_ENV=production
+heroku config:set DB_HOST=<host_mysql>
+heroku config:set DB_DATABASE=<nombre_bd>
+heroku config:set DB_USER=<usuario>
+heroku config:set DB_PASSWORD=<password>
+heroku config:set JWT_SECRET=<secreto_seguro>
+heroku config:set FRONTEND_URL=https://tu-frontend.vercel.app
 
-# Ver logs
-docker-compose logs -f
+# Deploy
+git subtree push --prefix backend heroku main
 ```
 
-Acceder a:
-- Frontend: http://localhost:3000
-- Backend API: http://localhost:5000
+### Frontend en Vercel/Netlify
+
+#### Vercel (Recomendado)
+1. Ir a [Vercel](https://vercel.com) → Import Project
+2. Seleccionar repositorio → Root Directory: `frontend`
+3. Build Settings:
+   - Framework: Vite
+   - Build Command: `npm run build`
+   - Output: `dist`
+4. Environment Variables:
+   ```
+   VITE_BACKEND_URL=https://tu-backend.railway.app
+   ```
+
+#### Netlify
+1. Ir a [Netlify](https://netlify.com) → Add new site
+2. Configurar:
+   - Base directory: `frontend`
+   - Build command: `npm run build`
+   - Publish directory: `frontend/dist`
+3. Environment Variables:
+   ```
+   VITE_BACKEND_URL=https://tu-backend.railway.app
+   ```
+
+> **Nota:** El archivo `frontend/public/_redirects` ya está configurado para SPA routing en Netlify.
+
+### Variables de Entorno Resumen
+
+| Servicio | Variable | Valor |
+|----------|----------|-------|
+| Backend | `NODE_ENV` | production |
+| Backend | `PORT` | 5000 (Railway lo asigna automáticamente) |
+| Backend | `DB_HOST` | Host de MySQL en Railway |
+| Backend | `DB_DATABASE` | Nombre de la BD |
+| Backend | `DB_USER` | Usuario MySQL |
+| Backend | `DB_PASSWORD` | Contraseña MySQL |
+| Backend | `JWT_SECRET` | Secreto de 64+ caracteres |
+| Backend | `FRONTEND_URL` | URL del frontend desplegado |
+| Frontend | `VITE_BACKEND_URL` | URL del backend desplegado |
 
 ## 📁 Estructura del Proyecto
 
